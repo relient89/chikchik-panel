@@ -526,7 +526,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 </div></div>
 
 <div class="view" data-view="pay"><div class="page">
-  <h1>Баланс</h1><div class="note" style="margin:0"><b style="color:var(--txt);font-size:17px" id="bal">0</b> <span id="balW">монтажей</span> на балансе, без срока</div>
+  <h1>Баланс</h1><div class="note" style="margin:0"><b style="color:var(--txt);font-size:17px" id="bal">0</b> <span id="balW">монтажей</span></div>
   <h3>Пакеты</h3><div id="plans"></div>
   <div class="dock" style="padding-left:0;padding-right:0"><button class="save" id="payBtn" style="opacity:.5">Оплата скоро будет подключена</button></div>
   <div class="note">Цены предварительные. Монтаж списывается при запуске и возвращается, если ролик не получился.</div>
@@ -580,13 +580,19 @@ const DEF = {style:'focus',profile:'reels',sfx:'normal',pauses:true,fillers:true
   cards_freq:'often',card_size:'compact',card_color:'video',fmt:'',denoise:false,speed:100,camera:'off'};
 let P = {...DEF};
 const Q = new URLSearchParams(location.search);
-let gotPrefs = false;
-try{ const m = location.hash.match(/p=([^&]+)/); if(m){ const j = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); for(const k in DEF) if(k in j) P[k]=j[k]; gotPrefs=true; } }catch(e){}
+let gotPrefs = false, gotFmt = false;
+try{ const m = location.hash.match(/p=([^&]+)/); if(m){ const j = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); for(const k in DEF) if(k in j) P[k]=j[k]; gotPrefs=true; gotFmt=true; } }catch(e){}
 /* запуск кнопкой у скрепки: Telegram заменяет часть адреса после #, настройки приходят коротким кодом ?c= */
 function readCode(code){ if(!code || code.slice(0,2)!==D.codecSign) return false; const A=D.alphabet; let pos=2; const out={};
   for(const [k,vals] of D.codec){ let i; if(D.codeWide.includes(k)){ i=A.indexOf(code[pos])*64+A.indexOf(code[pos+1]); pos+=2; } else { i=A.indexOf(code[pos]); pos+=1; } if(!(i>=0 && i<vals.length)) return false; out[k]=vals[i]; }
   if(pos!==code.length) return false; for(const k in out) if(k in DEF) P[k]=out[k]; return true; }
-if(!gotPrefs) gotPrefs = readCode(Q.get('c'));
+if(!gotPrefs){ gotPrefs = readCode(Q.get('c')); gotFmt = gotPrefs; }
+/* Облако Telegram (своё у каждого пользователя бота): приложение помнит настройки, даже если клиент открыл его
+   по общему адресу без кода. Формат выбирают и в чате, поэтому из облака он не берётся и не отправляется, пока его
+   не тронули здесь. */
+const cloud = tg && tg.CloudStorage && tg.initData ? tg.CloudStorage : null;
+let fmtTouched = false, knowBalance = Q.has('n') || /[#&]u=/.test(location.hash);
+if(!gotPrefs && cloud){ try{ cloud.getItem('prefs', (err, val) => { if(!err && val){ const keep=P.fmt; if(readCode(val)){ P.fmt=keep; gotPrefs=true; render(); if(sheet) renderSheet(); } } }); }catch(e){} }
 const I = (d, w=20) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const IC = {
   head:I('<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 6.5c1.2 1 1.2 3 0 4M19.5 4.5c2.4 2.2 2.4 5.800 0 8"/>'),
@@ -742,16 +748,16 @@ function render(){
     if(!dis) press(b, ()=>{ o.set((v+1)%o.vals.length); render(); }, ()=>popup(b,o.name,o.vals,v,i=>o.set(i))); tb.appendChild(b); });
   applyLook(); }
 $('#magicIc').innerHTML=IC.magic; $('#magic').onclick=()=>{ P.auto=!P.auto; render(); };
-$('#fmtBtn').onclick=()=>popup($('#fmtBtn'),'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; if(P.fmt==='head') P.pauses=true; });
+$('#fmtBtn').onclick=()=>popup($('#fmtBtn'),'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; });
 $('#scrim').addEventListener('click',hidePop);
-function prefsCode(){ let out=D.codecSign; for(const [k,vals] of D.codec){ let i=vals.indexOf(P[k]); if(i<0) i=0; const A=D.alphabet; out += D.codeWide.includes(k) ? A[Math.floor(i/64)]+A[i%64] : A[Math.min(i,63)]; } return out; }
+function prefsCode(forBot){ let out=D.codecSign; for(const [k,vals] of D.codec){ let i=vals.indexOf(P[k]); if(i<0) i=0; if(forBot && k==='fmt' && !fmtTouched && !gotFmt) i=0; const A=D.alphabet; out += D.codeWide.includes(k) ? A[Math.floor(i/64)]+A[i%64] : A[Math.min(i,63)]; } return out; }
 $('#save').onclick=()=>{ const data=JSON.stringify({v:2,prefs:P});
   if(!tg){ $('#save').textContent='Открыто не в Telegram: сохранить некуда'; return; }
   /* кнопка в клавиатуре бота: данные уходят боту напрямую. Кнопка у скрепки: через ссылку с коротким кодом */
   if(tg.initData==='' && tg.sendData){ tg.sendData(data); return; }
   const bot=U.bot || ((U.ref||'').match(/t\.me\/([A-Za-z0-9_]+)/)||[])[1]; if(!bot){ $('#save').textContent='Не знаю адрес бота: откройте из чата'; return; }
-  if(!gotPrefs){ $('#save').textContent='Сначала напишите боту /start'; return; }
-  $('#save').textContent='Сохраняю…'; tg.openTelegramLink(`https://t.me/${bot}?start=s_${prefsCode()}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); };
+  if(cloud){ try{ cloud.setItem('prefs', prefsCode()); }catch(e){} }
+  $('#save').textContent='Сохраняю…'; tg.openTelegramLink(`https://t.me/${bot}?start=s_${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); };
 window.__code = prefsCode;
 
 // ---------- разделы: Ролики, Бонусы, Баланс (данные приходят от бота в адресе, после #) ----------
@@ -763,7 +769,7 @@ if(!('balance' in U)){ const bot=(Q.get('b')||'').replace(/[^A-Za-z0-9_]/g,''), 
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let curPlan=0;
 function fillPages(){
-  const bal=+U.balance||0; $('#bal').textContent=bal; $('#balW').textContent=plural(bal,'монтаж','монтажа','монтажей');
+  const bal=+U.balance||0; $('#bal').textContent=knowBalance?bal:''; $('#balW').textContent=knowBalance?plural(bal,'монтаж','монтажа','монтажей')+' на балансе, без срока':'Сколько монтажей осталось, покажет кнопка «Баланс» в чате';
   const pk=U.packages||[]; if(pk.length && !fillPages.init){ fillPages.init=1; curPlan=Math.max(0,pk.findIndex(p=>p.best)); }
   $('#plans').innerHTML=pk.map((p,i)=>`<button class="plan${i===curPlan?' on':''}" data-plan="${i}">${p.best?'<span class="flag">ВЫГОДНЕЕ ВСЕГО</span>':''}<span class="rd"></span><span><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${esc(p.note||'не сгорают')}</small></span><span class="pr">${esc(p.price)}</span></button>`).join('') || '<div class="empty">Пакеты появятся здесь.</div>';
   $$('[data-plan]').forEach(b=>b.onclick=()=>{ curPlan=+b.dataset.plan; fillPages(); });
@@ -779,7 +785,7 @@ $('#copyref').onclick=async e=>{ if(!U.ref) return; try{ await navigator.clipboa
 const NAV=[['bonus','gift','Бонусы'],['jobs','play','Ролики'],['pay','wallet','Баланс']]; let curView='edit';
 function go(id){ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); render(); } }
 function nav(){ $('#topnav').innerHTML=''; NAV.forEach(([id,ic,nm])=>{ const b=document.createElement('button'); b.className=id===curView?'on':'';
-  b.innerHTML=(id==='pay'?`<span class="cnt">${+U.balance||0}</span>`:IC[ic])+nm; b.onclick=()=>go(id===curView?'edit':id); $('#topnav').appendChild(b); });
+  b.innerHTML=(id==='pay'&&knowBalance?`<span class="cnt">${+U.balance||0}</span>`:IC[ic])+nm; b.onclick=()=>go(id===curView?'edit':id); $('#topnav').appendChild(b); });
   $('#fab').classList.toggle('on',curView!=='edit'); }
 $('#fab').innerHTML=IC.cut; $('#fab').onclick=()=>go('edit');
 fillPages(); nav();
