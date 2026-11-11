@@ -114,7 +114,8 @@ h3{margin:16px 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercas
 .frames{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .fr{padding:8px 6px 9px;border-radius:14px;background:var(--p2);border:1.5px solid var(--line);font-size:12.5px;font-weight:800;text-align:left}
 .fr.on{border-color:var(--acc);background:var(--accbg)}
-.fr .aa{display:grid;place-items:center;height:30px;border-radius:9px;background:#8f959c;margin-bottom:7px;font:800 15px 'Manr';color:#fff;overflow:hidden}
+.fr .aa{display:block;position:relative;height:34px;border-radius:9px;background:#8f959c;margin-bottom:7px;overflow:hidden}
+.fr .frs{display:inline-block;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.3);white-space:nowrap}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tile{position:relative;display:block;width:100%;border-radius:18px;overflow:hidden;background:var(--p1);border:1.5px solid var(--line);text-align:left;transition:border-color .15s}
 .tile.on{border-color:var(--acc)}
@@ -576,7 +577,7 @@ const tg = window.Telegram && Telegram.WebApp && Telegram.WebApp.initData !== un
 const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const DEF = {style:'focus',profile:'reels',sfx:'normal',pauses:true,fillers:true,filler_words:false,cards:true,captions:true,
   auto:false,cap_frame:'default',cap_color:'dark',cap_accent:'',cap_main:'',cap_size:80,cap_words:0,card_style:'liquid',
-  cards_freq:'often',card_size:'compact',card_color:'video',fmt:''};
+  cards_freq:'often',card_size:'compact',card_color:'video',fmt:'',denoise:false,speed:100,camera:'off'};
 let P = {...DEF};
 try{ const m = location.hash.match(/p=([^&]+)/); if(m){ const j = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); for(const k in DEF) if(k in j) P[k]=j[k]; } }catch(e){}
 const I = (d, w=20) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -590,6 +591,8 @@ const IC = {
   phone:I('<rect x="7" y="3" width="10" height="18" rx="2.500"/><path d="M11 17.500h2"/>'), bell:I('<path d="M4 10v4h3l5 4V6L7 10z"/><path d="M16 9c1.400 1.700 1.400 4.300 0 6M18.500 6.500c2.800 3 2.800 8 0 11"/>'),
   gift:I('<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M4 13h16M12 9v11M12 9c-4-.5-5-5-2-5 1.600 0 2 2.500 2 5zm0 0c4-.5 5-5 2-5-1.600 0-2 2.500-2 5z"/>',22),
   play:I('<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M10.500 9.500v5l4-2.500z" fill="currentColor"/>',22), wallet:I('<rect x="3.500" y="6" width="17" height="13" rx="3"/><path d="M15 12.500h2"/>',22),
+  cam:I('<rect x="3.500" y="7" width="12" height="10" rx="2.500"/><path d="M15.500 10.500l5-2.500v8l-5-2.500z"/>'),
+  spd:I('<path d="M4.500 16a8 8 0 1115 0"/><path d="M12 16l3.500-5"/>'), dn:I('<path d="M4 12h2M8 8v8M12 5v14M16 9v6M20 11v2"/>'),
   cut:I('<circle cx="7" cy="7" r="2.600"/><circle cx="7" cy="17" r="2.600"/><path d="M9.200 8.500L20 17M9.200 15.500L20 7"/>',26)};
 
 const WORDS = [['Первые',.25,.62],['три',.62,.9],['секунды',.9,1.4],['решают',1.4,1.85],['всё.',1.85,2.3],
@@ -677,7 +680,7 @@ function renderSheet(){ if(!sheet) return; const S=SHEETS[sheet], pane=deep?shee
   minis.length=0; cardLive.length=0;
   if(sheet==='sub' && !deep){ $('#sTitle').textContent=S.title; $('#sizeV').textContent=P.cap_size+' %'; $('#wordsV').textContent=P.cap_words||'авто'; $('#safeV').textContent=$('#safe').classList.contains('on')?'показаны':'скрыты';
     const fb=$('#frames'); fb.innerHTML=''; D.frames.forEach(f=>{ const b=document.createElement('button'); b.className='fr'+(f.id===P.cap_frame?' on':'');
-      b.innerHTML=`<span class="aa"><span class="${f.id!=='default'?'fr-'+f.id:''}"><span class="cap" style="font:800 15px 'Manr';color:#fff">Аа</span></span></span>${f.name}`; b.onclick=()=>{P.cap_frame=f.id;P.auto=false;renderSheet();applyLook();}; fb.appendChild(b); });
+      b.innerHTML=`<span class="aa"><span class="frs"><span class="s-onest${f.id!=='default'?' fr-'+f.id:''}"><span class="cap"><span class="w t1">Аа</span></span></span></span></span>${f.name}`; b.onclick=()=>{P.cap_frame=f.id;P.auto=false;renderSheet();applyLook();}; fb.appendChild(b); });
     picks('#capcolors',[{id:'dark',name:'Тёмный',d:'обрамление чёрным'},{id:'video',name:'Цвет ролика',d:'подберу из кадра'}],P.cap_color,id=>{P.cap_color=id;});
     const gb=$('#sgroups'); gb.innerHTML=''; D.groups.forEach(g=>{ const has=g.ids.includes(P.style); capTile(gb, has?P.style:g.ids[0], g.name, stylesWord(g.ids.length)+(has?' · выбран «'+ST[P.style].name+'»':''), has, ()=>{ curGroup=g.id; deep=true; renderSheet(); $('#sbody').scrollTop=0; }); }); }
   if(sheet==='sub' && deep){ const g=D.groups.find(x=>x.id===curGroup)||D.groups[0]; $('#sTitle').textContent=g.name; const box=$('#styles'); box.innerHTML='';
@@ -707,6 +710,9 @@ $('#safeBtn').onclick=()=>{ $('#safe').classList.toggle('on'); renderSheet(); };
 const fillLevel=()=>P.filler_words?2:(P.fillers?1:0);
 const OPTS=[
   {id:'fill',name:'Слова-паразиты',ic:'mic',vals:[['Не трогать',''],['«э-э», «м-м»','только звуки-запинки'],['+ «ну», «вот»','и лишние слова']],get:fillLevel,set:v=>{P.fillers=v>0;P.filler_words=v>1;},off:()=>P.fmt==='raw'},
+  {id:'cam',name:'Камера',ic:'cam',vals:[['Выкл','кадр как снят'],['Наезд','плавное приближение'],['Наезд + удары','смена плана на фразах']],get:()=>['off','zoom','punch'].indexOf(P.camera),set:v=>{P.camera=['off','zoom','punch'][v];}},
+  {id:'spd',name:'Скорость',ic:'spd',vals:[['×1','без ускорения'],['×1.05',''],['×1.1',''],['×1.15','']],get:()=>[100,105,110,115].indexOf(P.speed),set:v=>{P.speed=[100,105,110,115][v];}},
+  {id:'dn',name:'Шумоподавление',ic:'dn',vals:[['Выкл','звук как записан'],['Вкл','убираю шум комнаты и улицы']],get:()=>P.denoise?1:0,set:v=>{P.denoise=!!v;}},
   {id:'sfx',name:'Звуки',ic:'bell',vals:[['Стандарт','под голосом'],['Тихо','еле слышно'],['Выкл','без звуков']],get:()=>['normal','quiet','off'].indexOf(P.sfx),set:v=>{P.sfx=['normal','quiet','off'][v];}},
   {id:'freq',name:'Плашек в ролике',ic:'card',vals:[['Часто','до 8 на ролик'],['Редко','до 3 на ролик']],get:()=>P.cards_freq==='rare'?1:0,set:v=>{P.cards_freq=v?'rare':'often';}},
   {id:'prof',name:'Площадка',ic:'phone',vals:D.profiles.map(id=>[PROF[id],'']),get:()=>D.profiles.indexOf(P.profile),set:v=>{P.profile=D.profiles[v];}}];
