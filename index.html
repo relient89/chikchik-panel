@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ЧикЧик: настройки монтажа</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+@font-face{font-family:'Unb';src:url('fonts/Unbounded[wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Mont';src:url('fonts/Montserrat[wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Jost';src:url('fonts/Jost[wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Onest';src:url('fonts/Onest[wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Manr';src:url('fonts/Manrope[wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Russo';src:url('fonts/RussoOne-Regular.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Marck';src:url('fonts/MarckScript-Regular.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Osw';src:url('fonts/Oswald[wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Rubik';src:url('fonts/Rubik[wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Inter';src:url('fonts/Inter[opsz,wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Cav';src:url('fonts/Caveat[wght].ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Mono';src:url('fonts/IBMPlexMono-Bold.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Px';src:url('fonts/PressStart2P-Regular.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Lob';src:url('fonts/Lobster-Regular.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Phil';src:url('fonts/Philosopher-Bold.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'RMono';src:url('fonts/RubikMonoOne-Regular.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Glitch';src:url('fonts/RubikGlitch-Regular.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Rus';src:url('fonts/RuslanDisplay-Regular.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Pac';src:url('fonts/Pacifico-Regular.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Amat';src:url('fonts/AmaticSC-Bold.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Neucha';src:url('fonts/Neucha.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Fira';src:url('fonts/FiraSans-Black.ttf');font-weight:100 900;font-display:swap}
+@font-face{font-family:'Forum';src:url('fonts/Forum-Regular.ttf');font-weight:100 900;font-display:swap}
+:root{--bg:#070707;--panel:#151413;--line:#2b2927;--txt:#f4f2ef;--mut:#8c8782;--acc:#ff7a1a;--ok:#35d07f;--spot:radial-gradient(ellipse 75% 85% at 50% 46%,#3b3733 0,#24211f 52%,#141312 100%)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:Onest,system-ui,sans-serif;font-size:15px;overscroll-behavior:none}
+body{padding-bottom:150px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 14px 8px}
+.stagewrap{position:relative;margin:0 auto;border-radius:22px;overflow:hidden;background:#141312;box-shadow:0 0 0 1px #2b2927,0 14px 44px rgba(0,0,0,.7)}
+.stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden}
+.bgimg{position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 30%,#6b6661 0,#3a3633 45%,#171615 100%)}
+.bgimg.photo{background-size:cover;background-position:center}
+.person{position:absolute;left:50%;top:560px;width:560px;height:660px;margin-left:-280px;border-radius:50% 50% 46% 46%;background:linear-gradient(180deg,#c9ab95,#9a7a66)}
+.person::after{content:'';position:absolute;left:-210px;top:600px;width:980px;height:900px;border-radius:44% 44% 0 0;background:linear-gradient(180deg,#2c2a28,#191817)}
+.safe{position:absolute;left:80px;right:140px;top:270px;bottom:420px;border:4px dashed rgba(255,255,255,.55);border-radius:18px;display:none}
+.safe.on{display:block}
+.safe::before{content:'безопасная зона';position:absolute;left:14px;top:10px;font:600 30px Onest;color:rgba(255,255,255,.8)}
+.ui{position:absolute;left:0;right:0;bottom:0;height:420px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.55));display:none}
+.safe.on~.ui{display:block}
+.ui::after{content:'@ник · подпись ролика · кнопки';position:absolute;left:80px;bottom:120px;font:500 32px Onest;color:rgba(255,255,255,.7)}
+.capbox{position:absolute;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
+.capin{display:inline-block;transform-origin:center}
+.rev .cur{animation:wordin .17s ease-out}
+@keyframes wordin{from{translate:0 34px;opacity:.1}}
+.linein{animation:linein .17s ease-out}
+@keyframes linein{from{translate:0 30px;opacity:.2}}
+.lineout{animation:lineout .15s ease-in forwards}
+@keyframes lineout{to{translate:0 -24px;opacity:.15}}
+.cardbox{position:absolute;left:0;right:0;top:300px;display:flex;justify-content:center;opacity:0;transition:opacity .22s;pointer-events:none}
+.cardbox.on{opacity:1}
+.cardzoom{transform-origin:top center}
+.liquidfx .card{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hint{display:flex;justify-content:space-between;align-items:center;margin-top:8px;color:var(--mut);font-size:12.5px}
+.hint button{padding:5px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px}
+.hint button.on{border-color:var(--acc);color:var(--acc)}
+.tabs{display:flex;gap:6px;padding:4px 14px 10px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:9px 15px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-weight:600;white-space:nowrap}
+.tab.on{background:var(--txt);border-color:var(--txt);color:#111}
+.pane{display:none;padding:0 14px}
+.pane.on{display:block}
+h3{margin:18px 0 8px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:8px}
+.row small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.sw{flex:none;width:46px;height:28px;border-radius:999px;background:#3a3633;position:relative;transition:background .15s}
+.sw::after{content:'';position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw.on{background:var(--ok)}.sw.on::after{transform:translateX(18px)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:8px 12px;border-radius:12px;background:var(--panel);border:1.5px solid var(--line);font-weight:600;font-size:14px;color:#d9d5d0}
+.chip.on{border-color:var(--acc);color:var(--acc)}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:6px;border:1px solid rgba(255,255,255,.35)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tile{position:relative;border-radius:18px;overflow:hidden;background:#141312;border:1.5px solid #2b2927;text-align:left;padding:0;transition:border-color .15s}
+.tile.on{border-color:var(--acc);box-shadow:inset 3px 0 0 var(--acc),inset -3px 0 0 var(--acc)}
+.tile{display:block;width:100%}.tile .mini{display:block;position:relative;height:122px;overflow:hidden;background:var(--spot)}
+.tile .ministage{position:absolute;left:50%;top:50%;width:1080px;margin-left:-540px;display:flex;justify-content:center;transform-origin:center;pointer-events:none}
+.tile .nm{display:block;padding:9px 12px 10px;background:#141312;border-top:1px solid #23211f;font-size:13px;font-weight:600;color:#d9d5d0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile.cardtile .mini{height:104px}
+.stepper{display:flex;align-items:center;gap:12px}
+.stepper button{width:38px;height:38px;border-radius:12px;background:#2b2927;font-size:22px;font-weight:700}
+.stepper b{min-width:54px;text-align:center}
+.cta{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 14px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 30%)}
+.cta button{width:100%;padding:15px;border-radius:16px;background:var(--acc);color:#111;font-weight:800;font-size:16px}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;background:#0d0c0c;border-top:1px solid var(--line);
+  padding:6px 6px calc(8px + env(safe-area-inset-bottom))}
+.nav button{flex:1;padding:7px 2px 5px;border-radius:12px;color:var(--mut);font-size:11.5px;font-weight:600;line-height:1.5}
+.nav button b{display:block;font-size:19px;font-weight:400}
+.nav button.on{color:var(--acc)}
+.view{display:none}.view.on{display:block}
+.cta{bottom:58px !important}
+.page{padding:18px 14px}
+.page h2{margin:4px 0 14px;font-size:24px;font-weight:800;letter-spacing:-.01em}
+.big{background:var(--spot);border:1px solid var(--line);border-radius:20px;padding:22px 18px;margin-bottom:12px}
+.big .num{font:800 54px/1 Onest;letter-spacing:-.02em}.big .num small{font-size:16px;font-weight:600;color:var(--mut);margin-left:8px}
+.plan{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:14px 16px;margin-bottom:8px}
+.plan.best{border-color:var(--acc)}
+.plan b{font-size:16px}.plan small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.plan .pr{font-weight:800;font-size:17px;white-space:nowrap}
+.soon{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:#2b2927;color:var(--mut);font-size:11px;font-weight:700;vertical-align:2px}
+.ghost{width:100%;padding:14px;border-radius:16px;border:1.5px solid var(--line);font-weight:700;margin-top:6px}
+.ghost[disabled]{opacity:.55}
+.link{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:13px 14px;font-size:13.5px;word-break:break-all;color:#d9d5d0}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.stat div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+.stat b{display:block;font-size:24px;font-weight:800}.stat span{color:var(--mut);font-size:12.5px}
+.job{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:13px 14px;margin-bottom:8px}
+.job small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.badge{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#2b2927;color:#d9d5d0}
+.badge.done{background:rgba(53,208,127,.16);color:#57e39a}.badge.failed{background:rgba(255,80,80,.16);color:#ff8a8a}
+.empty{color:var(--mut);text-align:center;padding:40px 10px;line-height:1.5}
+.note{color:var(--mut);font-size:12.5px;margin:6px 2px 0;line-height:1.4}
+.magic{width:100%;padding:14px;border-radius:16px;background:linear-gradient(120deg,#ff7a1a,#ff2d6f 60%,#a96bff);color:#fff;font-weight:800;margin-bottom:8px}
+.magic.on{outline:3px solid #fff}
+/* ---- стили субтитров из каталога (те же, что в рендере) ---- */
+.s-onest .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 22px;font-family:Onest;font-weight:800;font-size:96px;
+           color:var(--m,#fff);line-height:1.08;text-shadow:0 4px 22px rgba(0,0,0,.45)}
+.s-onest .w{display:inline-block}
+.s-onest .t1{color:var(--a,var(--m,#fff))}
+.s-onest .old{opacity:.68}
+.s-onest .t3{font-size:.7em;font-weight:600;opacity:.96}
+.s-wide .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 24px;color:var(--m,#fff);line-height:1}
+.s-wide .t1,.s-wide .t2{font-family:Mont;font-weight:900;text-transform:uppercase;letter-spacing:.03em;text-shadow:0 5px 24px rgba(0,0,0,.45)}
+.s-wide .t1{font-size:132px}
+.s-wide .t2{font-size:86px}
+.s-wide .t3{font-family:Jost;font-weight:600;font-size:82px;color:var(--m,#fff);text-shadow:0 3px 12px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.75)}
+.s-wide .t1.on{color:var(--a,#ffb4f2)}
+.s-accent .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:6px 22px;line-height:1}
+.s-accent .t1{font-family:Mont;font-weight:800;font-size:150px;color:var(--a,#ff4a14);text-transform:uppercase;text-shadow:0 8px 26px rgba(0,0,0,.4)}
+.s-accent .t2{font-family:Mont;font-weight:700;font-size:84px;color:var(--m,#fff);text-shadow:0 5px 20px rgba(0,0,0,.45)}
+.s-accent .t3{font-family:Jost;font-weight:600;font-size:84px;color:var(--m,#fff);text-shadow:0 3px 12px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.75)}
+.s-focus .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 18px;font-family:Mont;
+           font-weight:900;font-size:92px;text-transform:uppercase;color:var(--m,#fff);line-height:1.1;
+           text-shadow:0 5px 0 rgba(0,0,0,.35),0 0 24px rgba(0,0,0,.4)}
+.s-focus .on{background:linear-gradient(135deg,#ff9a00,#ff3d00);padding:2px 26px 8px;border-radius:30px;
+          box-shadow:0 14px 34px rgba(255,70,0,.55);transform:rotate(-2.5deg);text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.s-sticker .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 16px;font-family:Mont;font-weight:900;font-size:86px;
+           text-transform:uppercase;color:#111}
+.s-sticker .w{background:#fff;padding:2px 24px 8px;border-radius:22px;border:6px solid #111;box-shadow:0 9px 0 #111}
+.s-sticker .w:nth-child(odd){transform:rotate(-3deg)}
+.s-sticker .w:nth-child(even){transform:rotate(2deg) translateY(5px)}
+.s-sticker .on{background:var(--a,#ffe600)}
+.s-glass .cap{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:4px 20px;padding:22px 48px 26px;border-radius:54px;
+           background:rgba(18,20,34,.6);border:2px solid rgba(255,255,255,.28);font-family:Manr;font-weight:800;font-size:78px;
+           color:var(--m,#fff);box-shadow:0 18px 50px rgba(0,0,0,.5),inset 0 0 30px rgba(255,255,255,.08)}
+.s-glass .on{background:linear-gradient(90deg,#4ef2ff,#a96bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.s-gold .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 22px;font-family:Russo;font-size:112px;text-transform:uppercase;line-height:1.05}
+.s-gold .w{position:relative;color:transparent;background:linear-gradient(180deg,#fffbd0 0%,#ffe14d 35%,#ff9d00 70%,#ff5a00 100%);
+         -webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 7px 0 #1a0f00) drop-shadow(0 0 18px rgba(255,120,0,.55))}
+.s-gold .on{background:linear-gradient(180deg,#fff,#d8f6ff 40%,#7fd6ff);-webkit-background-clip:text;background-clip:text;
+          filter:drop-shadow(0 7px 0 #002a40) drop-shadow(0 0 22px rgba(80,200,255,.8))}
+.s-collage .cap{display:flex;flex-direction:column;align-items:center;gap:6px;line-height:1}
+.s-collage .small{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;font-family:Unb;font-weight:800;font-size:54px;
+             color:var(--m,#fff);text-shadow:0 3px 16px rgba(0,0,0,.5)}
+.s-collage .big{font-family:Unb;font-weight:900;font-size:150px;text-transform:uppercase;white-space:nowrap;color:transparent;
+           background:repeating-linear-gradient(180deg,#fff 0 9px,rgba(255,255,255,.12) 9px 15px);
+           -webkit-background-clip:text;background-clip:text;-webkit-text-stroke:4px #fff;filter:drop-shadow(0 6px 20px rgba(0,0,0,.45))}
+.s-collage .big.on{background:none;color:var(--a,var(--m,#fff));-webkit-text-stroke:0}
+.s-hook .cap{display:flex;flex-direction:column;align-items:center;line-height:1}
+.s-hook .big{font-family:Onest;font-weight:800;font-size:170px;letter-spacing:-.03em;color:rgba(235,235,235,.78);
+           text-shadow:0 6px 26px rgba(0,0,0,.45);white-space:nowrap}
+.s-hook .small{display:flex;flex-wrap:wrap;justify-content:center;gap:0 16px;font-family:Onest;font-weight:800;font-size:64px;
+             color:var(--m,#fff);text-shadow:0 3px 14px rgba(0,0,0,.5);margin-top:6px}
+.s-neonwave .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 22px;font-family:Onest;font-weight:500;font-size:92px;
+           color:var(--m,#fff);line-height:1.08;text-shadow:0 3px 12px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.75)}
+.s-neonwave .on{font-weight:800;color:var(--m,#fff);text-shadow:0 0 6px #ff3b6b,0 0 16px #ff1f55,0 0 34px #ff1f55,0 0 60px #c40032}
+.s-stack .cap{display:flex;flex-direction:column;align-items:flex-start;line-height:.88;letter-spacing:-.035em;font-family:Manr}
+.s-stack .t2,.s-stack .t3{font-weight:800;font-size:215px;color:var(--m,#fff);text-shadow:0 6px 28px rgba(0,0,0,.4)}
+.s-stack .t3{font-size:150px}
+.s-stack .t1{font-weight:800;font-size:98px;color:var(--a,#ffe600);letter-spacing:0;margin-top:8px;text-shadow:0 4px 18px rgba(0,0,0,.45)}
+.s-tri .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 18px;line-height:.98}
+.s-tri .t1{font-family:Osw;font-weight:700;font-size:168px;text-transform:uppercase;color:var(--a,#ff7a1a);
+           text-shadow:0 6px 24px rgba(0,0,0,.5)}
+.s-tri .t2{font-family:Osw;font-weight:600;font-size:88px;text-transform:uppercase;color:var(--m,#fff);text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-tri .t3{font-family:Jost;font-weight:600;font-size:78px;color:var(--m,#fff);text-transform:lowercase;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-tri2 .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 20px;line-height:1}
+.s-tri2 .t1{font-family:Unb;font-weight:900;font-size:118px;text-transform:uppercase;color:var(--a,#b6ff3c);
+           text-shadow:0 6px 24px rgba(0,0,0,.5)}
+.s-tri2 .t2{font-family:Unb;font-weight:700;font-size:62px;text-transform:uppercase;color:var(--m,#fff);text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-tri2 .t3{font-family:Jost;font-weight:600;font-size:70px;color:var(--m,#fff);text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-words .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 20px;font-family:Onest;font-weight:800;font-size:92px;color:var(--m,#fff);line-height:1.1;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-words .past{color:rgba(255,255,255,.66)}
+.s-contour .cap{display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1}
+.s-contour .small{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 16px;font-family:Unb;font-weight:800;font-size:54px;
+             color:var(--m,#fff);text-shadow:0 3px 12px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.75)}
+.s-contour .big{font-family:Unb;font-weight:900;font-size:160px;text-transform:uppercase;white-space:nowrap;color:transparent;
+           -webkit-text-stroke:5px #fff;filter:drop-shadow(0 6px 18px rgba(0,0,0,.5))}
+.s-contour .big.on{-webkit-text-stroke-color:var(--a,#fff);background:repeating-linear-gradient(180deg,var(--a,#fff) 0 8px,transparent 8px 16px);-webkit-background-clip:text;background-clip:text}
+.s-kinetic .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;align-items:center;gap:8px 16px;font-family:Rubik;font-weight:900;font-size:86px;text-transform:uppercase;
+            color:var(--m,#fff);line-height:1.08;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-kinetic .t1{background:var(--a,#ff2d6f);color:#14161c;padding:4px 24px 8px;border-radius:18px;transform:rotate(-2deg);
+           text-shadow:none;box-shadow:0 10px 26px rgba(0,0,0,.4)}
+.s-kinetic .cur{transform:translateY(-6px) scale(1.06)}
+.s-kinetic .t1.cur{transform:rotate(-2deg) scale(1.08)}
+.s-pulse .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 20px;font-family:Mont;font-weight:800;font-size:84px;color:var(--m,#fff);line-height:1.1;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-pulse .on{font-size:1.32em;color:var(--a,#ffe600)}
+.s-hookcap .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 18px;font-family:Mont;font-weight:900;font-size:98px;color:var(--m,#fff);line-height:1.05;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-hookcap .t1{font-size:1.35em;color:var(--a,#ff7a1a)}
+.s-hookcap .cur::after{content:'';display:inline-block;width:10px;height:.9em;margin-left:10px;background:#fff;vertical-align:-0.08em}
+.s-clean .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 18px;font-family:Inter;font-weight:700;font-size:76px;color:rgba(255,255,255,.78);line-height:1.15;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-clean .on{color:var(--m,#fff)}
+.s-box .cap{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:0 18px;padding:14px 34px 18px;border-radius:20px;
+           background:rgba(0,0,0,.82);font-family:Inter;font-weight:700;font-size:70px;color:var(--m,#fff);line-height:1.15}
+.s-box .on{color:var(--a,#ffe600)}
+.s-whitebox .cap{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:0 18px;padding:14px 34px 18px;border-radius:20px;
+           background:#fff;font-family:Inter;font-weight:800;font-size:70px;color:#111;line-height:1.15;
+           box-shadow:0 12px 34px rgba(0,0,0,.35)}
+.s-whitebox .on{color:var(--a,#ff2d6f)}
+.s-yellow .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 20px;font-family:Rubik;font-weight:800;font-size:88px;
+           color:#ffe600;line-height:1.1;-webkit-text-stroke:9px #000;paint-order:stroke fill}
+.s-yellow .on{color:var(--m,#fff)}
+.s-biz .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 22px;font-family:Mont;font-weight:900;font-size:98px;
+           text-transform:uppercase;color:var(--m,#fff);line-height:1.06;-webkit-text-stroke:11px #000;paint-order:stroke fill;
+           filter:drop-shadow(0 6px 0 rgba(0,0,0,.55))}
+.s-biz .on{color:var(--a,#3cff6b)}
+.s-mini .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 14px;font-family:Jost;font-weight:500;font-size:64px;color:rgba(255,255,255,.92);
+            text-transform:lowercase;line-height:1.2;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-mini .on{color:var(--m,#fff);font-weight:600}
+.s-capswide .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 22px;font-family:Unb;font-weight:700;font-size:54px;letter-spacing:.08em;text-transform:uppercase;
+            color:var(--m,#fff);line-height:1.25;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-capswide .on{color:var(--a,#3ce8ff)}
+.s-underline .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 20px;font-family:Manr;font-weight:800;font-size:82px;color:var(--m,#fff);line-height:1.2;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-underline .on{box-shadow:inset 0 -14px 0 var(--a,#ff7a1a)}
+.s-bar .cap{display:inline-flex;flex-wrap:wrap;gap:0 16px;padding:14px 30px 16px 34px;background:rgba(10,12,18,.72);
+           border-left:12px solid var(--a,#ff7a1a);font-family:Inter;font-weight:600;font-size:64px;color:var(--m,#fff);line-height:1.2}
+.s-bar .on{color:var(--a,#ff7a1a)}
+.s-one .cap{font-family:Osw;font-weight:700;font-size:170px;text-transform:uppercase;color:var(--m,#fff);line-height:1;white-space:nowrap;
+           text-shadow:0 8px 30px rgba(0,0,0,.55)}
+.s-one .t1{color:var(--a,#fff)}
+.s-marker .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;font-family:Rubik;font-weight:800;font-size:84px;
+           color:var(--m,#fff);line-height:1.12;text-shadow:0 4px 16px rgba(0,0,0,.55)}
+.s-marker .w{padding:0 12px}
+.s-marker .on{background:var(--a,#ffe600);color:#111;text-shadow:none;transform:rotate(-1.5deg);border-radius:6px}
+.s-hand .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 20px;font-family:Cav;font-weight:700;font-size:128px;color:var(--m,#fff);line-height:.95;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-hand .t1{color:var(--a,#ffe600);box-shadow:inset 0 -10px 0 rgba(255,255,255,.35)}
+.s-script .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 20px;line-height:1.05}
+.s-script .t1{font-family:Lob;font-size:150px;color:var(--a,#ff8fd0);text-shadow:0 6px 22px rgba(0,0,0,.5)}
+.s-script .t2,.s-script .t3{font-family:Jost;font-weight:500;font-size:68px;color:var(--m,#fff);letter-spacing:.04em;text-transform:uppercase;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-serif .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 20px;font-family:Phil;font-weight:700;font-size:96px;color:var(--m,#fff);line-height:1.08;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-serif .t1{font-style:italic;color:var(--a,#ffd9a0);font-size:1.25em}
+.s-serif .t3{font-size:.72em;opacity:.96}
+.s-grad .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 20px;font-family:Unb;font-weight:900;font-size:86px;
+           text-transform:uppercase;line-height:1.08}
+.s-grad .w{color:var(--m,#fff);filter:drop-shadow(0 5px 14px rgba(0,0,0,.55))}
+.s-grad .on{color:transparent;background:linear-gradient(90deg,#ff5ea8,#a96bff 55%,#4ef2ff);-webkit-background-clip:text;
+          background-clip:text}
+.s-d3 .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 22px;font-family:RMono;font-size:84px;
+           text-transform:uppercase;color:var(--m,#fff);line-height:1.12;
+           text-shadow:3px 3px 0 var(--a,#ff2d6f),6px 6px 0 var(--a,#ff2d6f),9px 9px 0 #111,12px 12px 22px rgba(0,0,0,.5)}
+.s-d3 .on{color:#ffe600}
+.s-comic .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;font-family:RMono;font-size:86px;
+           text-transform:uppercase;color:#ffe600;line-height:1.1;-webkit-text-stroke:10px #111;paint-order:stroke fill;
+           filter:drop-shadow(7px 7px 0 #111)}
+.s-comic .w:nth-child(odd){transform:rotate(-3deg)}
+.s-comic .w:nth-child(even){transform:rotate(2deg)}
+.s-comic .on{color:var(--m,#fff);transform:scale(1.12) rotate(-3deg)}
+.s-type .cap{display:inline-flex;flex-wrap:wrap;gap:0 18px;padding:12px 26px;background:rgba(0,0,0,.6);font-family:Mono;
+           font-weight:700;font-size:62px;color:#eaffea;line-height:1.25}
+.s-type .cur::after{content:'▍';color:var(--a,#3cff6b);margin-left:6px}
+.s-pixel .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px;font-family:Px;font-size:50px;color:var(--m,#fff);
+           line-height:1.5;text-shadow:5px 5px 0 #000}
+.s-pixel .on{color:var(--a,#3cff6b)}
+.s-glitch .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 20px;line-height:1.05}
+.s-glitch .t1{font-family:Glitch;font-size:132px;text-transform:uppercase;color:var(--m,#fff);
+           text-shadow:-5px 0 0 #ff2d6f,5px 0 0 #3ce8ff,0 6px 22px rgba(0,0,0,.5)}
+.s-glitch .t2,.s-glitch .t3{font-family:Rubik;font-weight:700;font-size:70px;color:var(--m,#fff);text-transform:uppercase;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-slav .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 22px;font-family:Rus;font-size:104px;color:var(--m,#fff);
+           line-height:1.1;-webkit-text-stroke:8px #5a0d0d;paint-order:stroke fill;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.s-slav .on{color:var(--a,#ffd24a)}
+.s-soft .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 12px;font-family:Rubik;font-weight:700;font-size:72px;
+           color:var(--m,#fff);line-height:1.1}
+.s-soft .w{background:rgba(20,22,30,.55);padding:4px 22px 8px;border-radius:999px;
+         box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.s-soft .on{background:var(--a,#fff);color:#111;box-shadow:none}
+.s-duo .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 20px;font-family:Osw;font-weight:700;font-size:118px;text-transform:uppercase;line-height:1;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-duo .t1{color:var(--a,#ffe600)}
+.s-duo .t2{color:var(--m,#fff)}
+.s-duo .t3{color:rgba(255,255,255,.95);font-size:.68em}
+.s-tall .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 22px;font-family:Osw;font-weight:600;font-size:108px;text-transform:uppercase;color:var(--m,#fff);
+            line-height:1.05;letter-spacing:.01em;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-tall .on{color:var(--a,#ff7a1a)}
+.s-amatic .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 24px;font-family:Amat;font-weight:700;font-size:150px;text-transform:uppercase;color:var(--m,#fff);
+            line-height:.95;letter-spacing:.03em;text-shadow:0 4px 16px rgba(0,0,0,.65),0 1px 3px rgba(0,0,0,.75)}
+.s-amatic .on{color:var(--a,#ffe600)}
+.s-pacific .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 22px;font-family:Pac;font-size:98px;color:var(--m,#fff);
+           line-height:1.15;text-shadow:4px 4px 0 var(--a,#ff2d6f),0 8px 22px rgba(0,0,0,.45)}
+.s-pacific .on{color:#ffe600}
+.s-plain .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 18px;font-family:Inter;font-weight:700;font-size:74px;color:var(--m,#fff);line-height:1.16;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-bold .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 20px;font-family:Mont;font-weight:900;font-size:84px;text-transform:uppercase;color:var(--m,#fff);
+            line-height:1.08;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-bold .on{color:var(--a,#ffe600)}
+.s-karaoke .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 18px;font-family:Mont;font-weight:800;font-size:76px;color:var(--m,#fff);line-height:1.14;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-karaoke .on{color:var(--a,#ffe600)}
+.s-stroke .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 18px;font-family:Rubik;font-weight:700;font-size:76px;
+           color:var(--m,#fff);line-height:1.14;-webkit-text-stroke:8px #000;paint-order:stroke fill}
+.s-stroke .on{color:var(--a,#fff)}
+.s-hardsh .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 18px;font-family:Manr;font-weight:800;font-size:78px;
+           color:var(--m,#fff);line-height:1.14;text-shadow:5px 5px 0 #000}
+.s-hardsh .on{color:var(--a,#fff)}
+.s-lower .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 18px;font-family:Manr;font-weight:800;font-size:80px;text-transform:lowercase;color:var(--m,#fff);
+            line-height:1.12;letter-spacing:-.01em;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-lower .on{color:var(--a,#fff)}
+.s-round .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 18px;font-family:Rubik;font-weight:600;font-size:76px;color:var(--m,#fff);line-height:1.16;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-round .on{color:var(--a,#fff)}
+.s-thincaps .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 22px;font-family:Jost;font-weight:500;font-size:62px;text-transform:uppercase;letter-spacing:.12em;
+            color:var(--m,#fff);line-height:1.25;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-thincaps .on{font-weight:700;color:var(--a,#fff)}
+.s-book .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 18px;font-family:Forum;font-size:86px;color:var(--m,#fff);line-height:1.12;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-book .on{color:var(--a,#fff)}
+.s-monoplain .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 20px;font-family:Mono;font-weight:700;font-size:62px;color:var(--m,#fff);line-height:1.2;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-monoplain .on{color:var(--a,#fff)}
+.s-movie .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 14px;font-family:Inter;font-weight:500;font-size:58px;
+           color:var(--m,#fff);line-height:1.2;-webkit-text-stroke:5px #000;paint-order:stroke fill}
+.s-twoline .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0 14px;font-family:Inter;font-weight:600;font-size:60px;color:var(--m,#fff);line-height:1.2;text-shadow:0 3px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.8)}
+.s-twoline .on{color:var(--a,#ffe600)}
+.s-dimbox .cap{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:0 16px;padding:16px 36px 20px;border-radius:14px;
+           background:rgba(0,0,0,.5);font-family:Manr;font-weight:700;font-size:64px;color:var(--m,#fff);line-height:1.2}
+.s-dimbox .on{color:var(--a,#fff)}
+/* ---- обрамления ---- */
+.fr-outline .cap,.fr-outline .cap *{-webkit-text-stroke:7px rgba(0,0,0,1);paint-order:stroke fill;text-shadow:0 4px 14px rgba(0,0,0,0.45) !important}
+.fr-thin .cap,.fr-thin .cap *{-webkit-text-stroke:2.5px rgba(0,0,0,1);paint-order:stroke fill;text-shadow:none !important}
+.fr-none .cap,.fr-none .cap *{-webkit-text-stroke:0;text-shadow:none !important}
+.fr-shadow .cap,.fr-shadow .cap *{-webkit-text-stroke:0;text-shadow:0 6px 22px rgba(0,0,0,0.75),0 2px 6px rgba(0,0,0,0.6) !important}
+.fr-hard .cap,.fr-hard .cap *{-webkit-text-stroke:0;text-shadow:6px 6px 0 rgba(0,0,0,1) !important}
+.fr-plate .cap,.fr-plate .cap *{-webkit-text-stroke:0;text-shadow:none !important}.fr-plate .cap{background:rgba(0,0,0,0.62);padding:14px 30px 18px;border-radius:26px}
+.fr-glow .cap,.fr-glow .cap *{-webkit-text-stroke:0;text-shadow:0 0 10px rgba(0,0,0,0.95),0 0 26px rgba(0,0,0,0.85),0 0 54px rgba(0,0,0,0.6) !important}
+/* ---- плашки ---- */
+
+.card{width:fit-content;max-width:860px;box-sizing:border-box;display:flex;gap:30px;align-items:center;padding:30px 40px;border-radius:46px;
+      background:rgba(16,18,32,.68);border:2px solid rgba(255,255,255,.22);color:#fff;font-family:Onest;
+      box-shadow:0 22px 60px rgba(0,0,0,.5),inset 0 0 40px rgba(255,255,255,.06)}
+.ic{flex:none;width:100px;height:100px;border-radius:50%;display:grid;place-items:center;background:var(--c);
+    color:#10121e;font-weight:800;font-size:64px;line-height:1;box-shadow:0 0 30px var(--c)}
+.lab{font-size:26px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--c);margin-bottom:10px}
+.tx{font-size:50px;font-weight:700;line-height:1.13}
+.tx.big{font-size:104px;font-weight:800;line-height:1}
+.hl{background:linear-gradient(90deg,var(--c),#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+ul{margin:0;padding:0;list-style:none}li{font-size:44px;font-weight:700;line-height:1.3}
+li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--c);margin-right:18px;vertical-align:middle}
+.st-classic .card{background:#fff;color:#15171f;border:none;border-radius:30px;box-shadow:0 18px 44px rgba(0,0,0,.38)}
+.st-classic .ic{box-shadow:none}
+.st-classic .hl{background:none;-webkit-text-fill-color:initial;color:var(--c);-webkit-background-clip:border-box}
+.st-classic .stamp{background:#fff}
+.st-frost .card{background:linear-gradient(135deg,color-mix(in srgb,var(--c) 52%,rgba(18,18,34,.62)),rgba(18,18,34,.62));
+      border:2px solid rgba(255,255,255,.38)}
+.st-frost .ic{background:#fff;box-shadow:none}
+.st-marker .card{background:rgba(12,12,12,.6);border:4px dashed rgba(255,255,255,.55);border-radius:26px;transform:rotate(-1.6deg);
+      font-family:Marck;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.st-marker .tx,.st-marker .lab,.st-marker li{font-family:Marck;font-weight:400}
+.st-marker .tx{font-size:62px}.st-marker .tx.big{font-size:118px}
+.st-marker .hl{background:linear-gradient(transparent 58%,var(--c) 58%);-webkit-text-fill-color:#fff;color:#fff}
+.st-neon .card{background:rgba(8,10,20,.72);border:3px solid var(--c);box-shadow:0 0 22px var(--c),inset 0 0 26px rgba(255,255,255,.05)}
+.st-neon .ic{background:transparent;border:3px solid var(--c);color:var(--c)}
+.st-clear .card{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.55);box-shadow:0 14px 40px rgba(0,0,0,.3)}
+.st-clear .tx,.st-clear li{text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.st-dark .card{background:#12141c;border:none;border-radius:28px;box-shadow:0 18px 44px rgba(0,0,0,.45)}
+.st-dark .ic{box-shadow:none}
+.st-paper .card{background:#ffe96b;color:#191919;border:none;border-radius:10px;transform:rotate(-1.4deg);
+      box-shadow:8px 12px 0 rgba(0,0,0,.28)}
+.st-paper .ic{background:#191919;color:#ffe96b;box-shadow:none}.st-paper .lab{color:#6b5a00}
+.st-paper .hl{background:none;-webkit-text-fill-color:initial;color:#c2185b}
+.st-pill .card{background:#fff;color:#15171f;border:none;border-radius:999px;padding:24px 54px 24px 28px;
+      box-shadow:0 16px 40px rgba(0,0,0,.36)}
+.st-pill .ic{box-shadow:none}.st-pill .hl{background:none;-webkit-text-fill-color:initial;color:var(--c)}
+.st-stripe .card{background:rgba(14,16,24,.86);border:none;border-left:16px solid var(--c);border-radius:14px;
+      box-shadow:0 18px 44px rgba(0,0,0,.42)}
+.st-stripe .ic{display:none}
+.st-grad .card{background:linear-gradient(120deg,var(--c),#7a3cff 70%,#ff3c8e);border:none;box-shadow:0 20px 50px rgba(0,0,0,.42)}
+.st-grad .ic{background:rgba(255,255,255,.92);box-shadow:none}.st-grad .lab{color:#fff}
+.st-grad .hl{background:none;-webkit-text-fill-color:initial;color:#fff;text-decoration:underline;text-decoration-thickness:6px}
+.st-solid .card{background:var(--c);color:#10121e;border:none;border-radius:30px;box-shadow:0 18px 44px rgba(0,0,0,.4)}
+.st-solid .ic{background:#10121e;color:var(--c);box-shadow:none}.st-solid .lab{color:#10121e;opacity:.75}
+.st-solid .hl{background:none;-webkit-text-fill-color:initial;color:#fff}
+.st-news .card{background:#fff;color:#12141c;border:none;border-radius:0;padding:0 34px 0 0;gap:26px;
+      box-shadow:0 16px 40px rgba(0,0,0,.38)}
+.st-news .ic{border-radius:0;width:120px;height:auto;align-self:stretch;box-shadow:none;min-height:130px}
+.st-news .lab{margin-top:18px}.st-news .tx,.st-news ul{margin-bottom:20px}
+.st-news .hl{background:none;-webkit-text-fill-color:initial;color:#d0102c}
+.st-chalk .card{background:#22352c;border:6px solid #caa76a;border-radius:10px;font-family:Neucha;
+      box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.st-chalk .tx,.st-chalk .lab,.st-chalk li{font-family:Neucha;font-weight:400}.st-chalk .tx{font-size:58px}
+.st-chalk .tx.big{font-size:112px}.st-chalk .ic{background:transparent;border:4px solid var(--c);color:var(--c);box-shadow:none}
+.st-chalk .hl{background:none;-webkit-text-fill-color:initial;color:var(--c)}
+.st-line .card{background:none;border:none;box-shadow:none;padding:6px 0 6px 30px;border-left:8px solid var(--c);border-radius:0}
+.st-line .ic{display:none}.st-line .tx,.st-line li,.st-line .lab{text-shadow:0 3px 14px rgba(0,0,0,.75),0 1px 3px rgba(0,0,0,.8)}
+.st-tag .card{background:#12141c;border:none;border-radius:14px;padding:22px 34px;gap:22px;
+      box-shadow:0 14px 34px rgba(0,0,0,.42)}
+.st-tag .ic{width:64px;height:64px;font-size:40px;box-shadow:none}
+.st-tag .lab{display:inline-block;background:var(--c);color:#12141c;padding:4px 14px;border-radius:8px;letter-spacing:.1em}
+.st-clear .hl,.st-line .hl{background:none;-webkit-text-fill-color:var(--c);color:var(--c)}
+.st-solid .hl{-webkit-text-fill-color:#fff}
+.st-soft .card,.st-ghost .card,.st-hush .card,.st-lite .card,.st-under .card,.st-dot .card{
+      width:auto;max-width:820px;padding:22px 34px;gap:20px;border-radius:26px;box-shadow:none}
+.st-soft .tx,.st-ghost .tx,.st-hush .tx,.st-lite .tx,.st-under .tx,.st-dot .tx{font-size:44px;font-weight:600;line-height:1.18}
+.st-soft .tx.big,.st-ghost .tx.big,.st-hush .tx.big,.st-lite .tx.big,.st-under .tx.big,.st-dot .tx.big{font-size:84px;font-weight:700}
+.st-soft li,.st-ghost li,.st-hush li,.st-lite li,.st-under li,.st-dot li{font-size:40px;font-weight:600}
+.st-soft .lab,.st-ghost .lab,.st-hush .lab,.st-lite .lab,.st-under .lab,.st-dot .lab{font-size:20px;letter-spacing:.16em;
+      color:rgba(255,255,255,.72);margin-bottom:6px;font-weight:600}
+.st-soft .ic,.st-ghost .ic,.st-hush .ic,.st-lite .ic,.st-under .ic{display:none}
+.st-soft .hl,.st-ghost .hl,.st-hush .hl,.st-lite .hl,.st-under .hl,.st-dot .hl{background:none;-webkit-text-fill-color:var(--c);
+      color:var(--c)}
+.st-soft .stamp,.st-ghost .stamp,.st-hush .stamp,.st-lite .stamp,.st-under .stamp,.st-dot .stamp{display:none}
+.st-soft .card{background:rgba(20,22,30,.34);border:1.5px solid rgba(255,255,255,.22)}
+.st-ghost .card{background:rgba(0,0,0,.12);border:2px solid rgba(255,255,255,.7)}
+.st-ghost .tx,.st-ghost li,.st-under .tx,.st-under li,.st-dot .tx,.st-dot li{text-shadow:0 2px 12px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.75)}
+.st-hush .card{background:rgba(0,0,0,.5);border:none;border-radius:16px}
+.st-lite .card{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4)}
+.st-lite .tx,.st-lite li{text-shadow:0 2px 10px rgba(0,0,0,.55)}
+.st-under .card{background:none;border:none;border-bottom:4px solid var(--c);border-radius:0;padding:8px 6px 14px}
+.st-under .lab,.st-dot .lab{text-shadow:0 2px 8px rgba(0,0,0,.7)}
+.st-dot .card{background:none;border:none;padding:8px 6px}
+.st-dot .ic{width:22px;height:22px;font-size:0;box-shadow:none;align-self:flex-start;margin-top:38px}
+.st-liquid .card,.st-liquid_tint .card,.st-liquid_dark .card,.st-liquid_pill .card,.st-liquid_rim .card,.st-liquid_mini .card{position:relative;overflow:hidden;border-radius:40px;padding:26px 40px 28px 30px;gap:26px;background:rgba(255,255,255,.035);border:1.5px solid rgba(255,255,255,.30);box-shadow:inset 0 0 36px rgba(0,0,0,.26),inset 0 1.5px 0 rgba(255,255,255,.40),inset 0 -1px 0 rgba(255,255,255,.10)}
+.st-liquid .card::before,.st-liquid_tint .card::before,.st-liquid_dark .card::before,.st-liquid_pill .card::before,.st-liquid_rim .card::before,.st-liquid_mini .card::before{content:'';position:absolute;left:0;top:0;right:0;height:46%;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0));pointer-events:none}
+.st-liquid .tx,.st-liquid_tint .tx,.st-liquid_dark .tx,.st-liquid_pill .tx,.st-liquid_rim .tx,.st-liquid_mini .tx{font-size:52px;font-weight:700;line-height:1.2;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+.st-liquid .tx.big,.st-liquid_tint .tx.big,.st-liquid_dark .tx.big,.st-liquid_pill .tx.big,.st-liquid_rim .tx.big,.st-liquid_mini .tx.big{font-size:92px;font-weight:800}
+.st-liquid li,.st-liquid_tint li,.st-liquid_dark li,.st-liquid_pill li,.st-liquid_rim li,.st-liquid_mini li{font-size:46px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+.st-liquid .lab,.st-liquid_tint .lab,.st-liquid_dark .lab,.st-liquid_pill .lab,.st-liquid_rim .lab,.st-liquid_mini .lab{display:inline-block;font-size:21px;letter-spacing:.06em;font-weight:800;color:#12141c;background:#fff;padding:5px 16px 4px;border-radius:999px;margin-bottom:12px}
+.st-liquid .ic,.st-liquid_tint .ic,.st-liquid_dark .ic,.st-liquid_pill .ic,.st-liquid_rim .ic,.st-liquid_mini .ic{width:104px;height:104px;font-size:56px;background:var(--c);color:#12141c;box-shadow:none}
+.st-liquid .hl,.st-liquid_tint .hl,.st-liquid_dark .hl,.st-liquid_pill .hl,.st-liquid_rim .hl,.st-liquid_mini .hl{background:var(--c);-webkit-text-fill-color:#12141c;color:#12141c;padding:0 10px 2px;border-radius:8px;text-shadow:none;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.st-liquid .stamp,.st-liquid_tint .stamp,.st-liquid_dark .stamp,.st-liquid_pill .stamp,.st-liquid_rim .stamp,.st-liquid_mini .stamp{display:none}
+.st-liquid_tint .card{background:color-mix(in srgb,var(--c) 20%,rgba(255,255,255,.03))}
+.st-liquid_dark .card{background:rgba(8,10,16,.30);box-shadow:inset 0 0 40px rgba(0,0,0,.4),inset 0 1.5px 0 rgba(255,255,255,.28)}
+.st-liquid_pill .card{border-radius:999px;padding:22px 52px 24px 24px}
+.st-liquid_rim .card{border:4px solid rgba(255,255,255,.55);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35),inset 0 0 40px rgba(0,0,0,.28)}
+.st-liquid_mini .ic{display:none}.st-liquid_mini .card{padding:24px 38px 26px}
+.stamp{position:absolute;right:26px;top:-24px;transform:rotate(8deg);border:6px solid #ff4d6d;color:#ff4d6d;padding:4px 20px;
+       font-weight:800;font-size:44px;border-radius:12px;background:rgba(16,18,32,.9)}
+
+</style>
+</head>
+<body>
+<div class="view on" data-view="edit">
+<div class="top">
+  <div class="stagewrap" id="wrap">
+    <div class="stage" id="stage">
+      <div class="bgimg" id="bg"></div><div class="person" id="person"></div>
+      <div class="cardbox" id="cardbox"><div class="cardzoom" id="cardzoom"></div></div>
+      <div class="capbox" id="capbox"><div class="capin" id="capin"></div></div>
+      <div class="safe" id="safe"></div><div class="ui"></div>
+    </div>
+  </div>
+  <div class="hint"><span id="hint">Превью: так будут появляться слова</span><button id="btnSafe">Зоны Instagram</button></div>
+</div>
+<div class="tabs" id="tabs"></div>
+
+<div class="pane" data-pane="auto">
+  <h3>Сделать классно</h3>
+  <button class="magic" id="magic">✨ Подобрать всё за меня</button>
+  <p class="note">Подберу согласованный набор: стиль подписи, цвет и плашку. Ниже наборы, из которых я выбираю, можно взять любой вручную.</p>
+  <h3>Готовые наборы</h3><div class="chips" id="presets"></div>
+</div>
+<div class="pane" data-pane="sub">
+  <div class="row"><div>Субтитры<small>Слова на экране по ходу речи</small></div><button class="sw" data-bool="captions"></button></div>
+  <h3>Группа стилей</h3><div class="chips" id="groups"></div>
+  <h3>Стиль</h3><div class="grid" id="styles"></div>
+  <h3>Обрамление</h3><div class="chips" id="frames"></div>
+  <h3>Размер и строки</h3>
+  <div class="row"><div>Размер<small>от размера стиля</small></div><div class="stepper"><button data-size="-1">−</button><b id="sizeV"></b><button data-size="1">+</button></div></div>
+  <div class="row"><div>Слов в строке</div><div class="chips" id="words"></div></div>
+</div>
+<div class="pane" data-pane="col">
+  <h3>Цвет главного слова</h3><div class="chips" id="accents"></div>
+  <h3>Цвет остального текста</h3><div class="chips" id="mains"></div>
+  <p class="note">«Цвет ролика» подбирается из вашего видео при монтаже, в превью он показан оранжевым.</p>
+</div>
+<div class="pane" data-pane="card">
+  <div class="row"><div>Плашки<small>Главная мысль дословно из вашей речи</small></div><button class="sw" data-bool="cards"></button></div>
+  <h3>Группа</h3><div class="chips" id="cgroups"></div>
+  <h3>Вид плашки</h3><div class="grid" id="cstyles"></div>
+  <h3>Размер</h3><div class="chips" id="csizes"></div>
+  <h3>Цвет плашки</h3><div class="chips" id="ccolors"></div>
+  <h3>Как часто</h3><div class="chips" id="cfreq"></div>
+</div>
+<div class="pane" data-pane="clean">
+  <h3>Чистка речи</h3>
+  <div class="row"><div>Паузы<small>Молчание между фразами</small></div><button class="sw" data-bool="pauses"></button></div>
+  <div class="row"><div>Запинки<small>«э-э», «ааа», «мм»</small></div><button class="sw" data-bool="fillers"></button></div>
+  <div class="row"><div>Лишние слова<small>«ну», «типа», «короче»</small></div><button class="sw" data-bool="filler_words"></button></div>
+  <h3>Звуки</h3><div class="chips" id="sfx"></div>
+  <h3>Площадка</h3><div class="chips" id="profiles"></div>
+</div>
+<div class="cta"><button id="save">Сохранить настройки</button></div>
+</div>
+
+<div class="view" data-view="jobs"><div class="page">
+  <h2>Мои ролики</h2>
+  <p class="note" style="margin:-6px 0 14px">Готовые файлы хранятся 48 часов. Открыть и скачать ролик можно в чате, кнопкой «Мои ролики».</p>
+  <div id="jobs"></div>
+</div></div>
+
+<div class="view" data-view="bonus"><div class="page">
+  <h2>Бонусы</h2>
+  <div class="big"><div style="color:var(--mut);font-size:13px;margin-bottom:8px">Ваша ссылка-приглашение</div>
+    <div class="link" id="reflink">Откройте панель из бота, чтобы увидеть ссылку</div>
+    <button class="ghost" id="copyref">Скопировать ссылку</button></div>
+  <div class="stat"><div><b id="invited">0</b><span>пришло по ссылке</span></div><div><b id="earned">0</b><span>монтажей получено</span></div></div>
+  <div class="row"><div>Другу<small id="bFriend"></small></div></div>
+  <div class="row"><div>Вам<small id="bYou"></small></div></div>
+  <div class="row"><div>Партнёрская программа <span class="soon">скоро</span><small>Процент деньгами с оплат приглашённых</small></div></div>
+</div></div>
+
+<div class="view" data-view="pay"><div class="page">
+  <h2>Баланс</h2>
+  <div class="big"><div style="color:var(--mut);font-size:13px;margin-bottom:10px">На балансе</div>
+    <div class="num"><span id="bal">0</span><small id="balW">монтажей</small></div></div>
+  <h3>Пакеты <span class="soon">оплата скоро</span></h3>
+  <div id="plans"></div>
+  <button class="ghost" disabled>Оплатить</button>
+  <p class="note">Оплата ещё не подключена. Цены предварительные. Монтаж списывается при запуске и возвращается, если ролик не получился.</p>
+</div></div>
+
+<div class="nav" id="nav"></div>
+
+<script>
+const D = {"styles": [{"id": "onest", "name": "Онест (по словам)", "group": "simple", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "wide", "name": "Широкий + тонкий", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 16}, {"id": "accent", "name": "Акцент", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 16}, {"id": "focus", "name": "Фокус (плашка)", "group": "plate", "mode": "karaoke", "kind": "", "upper": true, "max_words": 4, "max_chars": 18}, {"id": "sticker", "name": "Стикеры", "group": "plate", "mode": "karaoke", "kind": "", "upper": true, "max_words": 3, "max_chars": 16}, {"id": "glass", "name": "Стекло", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 26}, {"id": "gold", "name": "Золото", "group": "fx", "mode": "karaoke", "kind": "", "upper": true, "max_words": 3, "max_chars": 15}, {"id": "collage", "name": "Коллаж (полосы)", "group": "accent", "mode": "reveal", "kind": "collage", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "hook", "name": "Хук-подпись", "group": "accent", "mode": "reveal", "kind": "hook", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "neonwave", "name": "Неон волной", "group": "fx", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "stack", "name": "Стопка", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 3, "max_chars": 14}, {"id": "tri", "name": "Три уровня", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "tri2", "name": "Три уровня (широкий)", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 16}, {"id": "words", "name": "По словам (бледнеют)", "group": "simple", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "contour", "name": "Контур", "group": "accent", "mode": "reveal", "kind": "collage", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "kinetic", "name": "Кинетика (плашка)", "group": "plate", "mode": "reveal", "kind": "", "upper": true, "max_words": 4, "max_chars": 18}, {"id": "pulse", "name": "Пульс", "group": "accent", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "hookcap", "name": "Хук с курсором", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "clean", "name": "Чистый", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "box", "name": "Чёрная плашка", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "whitebox", "name": "Белая плашка", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "yellow", "name": "Жёлтый с обводкой", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "biz", "name": "Бизнес (обводка)", "group": "outline", "mode": "karaoke", "kind": "", "upper": true, "max_words": 3, "max_chars": 16}, {"id": "mini", "name": "Минимал", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 6, "max_chars": 30}, {"id": "capswide", "name": "Широкие заглавные", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "underline", "name": "Подчёркнутый", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 22}, {"id": "bar", "name": "Строка с полосой", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 26}, {"id": "one", "name": "Одно слово", "group": "simple", "mode": "reveal", "kind": "", "upper": false, "max_words": 1, "max_chars": 14}, {"id": "marker", "name": "Маркер", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "hand", "name": "От руки", "group": "hand", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "script", "name": "Курсив + тонкий", "group": "hand", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "serif", "name": "Журнал", "group": "hand", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "grad", "name": "Градиент", "group": "fx", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "d3", "name": "3D-тень", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "comic", "name": "Комикс", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "type", "name": "Печатная машинка", "group": "plate", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 22}, {"id": "pixel", "name": "Пиксель", "group": "fx", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 14}, {"id": "glitch", "name": "Глитч", "group": "fx", "mode": "reveal", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "slav", "name": "Русский стиль", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "soft", "name": "Мягкий округлый", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "duo", "name": "Два цвета", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "tall", "name": "Высокий узкий", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 22}, {"id": "amatic", "name": "Тонкий рукописный", "group": "hand", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 22}, {"id": "pacific", "name": "Ретро-курсив", "group": "hand", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 18}, {"id": "plain", "name": "Просто белый", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "bold", "name": "Жирный заглавный", "group": "simple", "mode": "karaoke", "kind": "", "upper": true, "max_words": 4, "max_chars": 20}, {"id": "karaoke", "name": "Караоке (цветное слово)", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "stroke", "name": "Белый с обводкой", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "hardsh", "name": "Белый с жёсткой тенью", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "lower", "name": "Строчные жирные", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "round", "name": "Округлый", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "thincaps", "name": "Тонкие заглавные", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 26}, {"id": "book", "name": "С засечками", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "monoplain", "name": "Моноширинный", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "movie", "name": "Киносубтитры", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 7, "max_chars": 34}, {"id": "twoline", "name": "Две строки", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 7, "max_chars": 34}, {"id": "dimbox", "name": "Затемнение под текстом", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 6, "max_chars": 30}], "groups": [{"id": "simple", "name": "Простые", "ids": ["plain", "karaoke", "clean", "words", "onest", "lower", "round", "bold", "tall", "capswide", "thincaps", "mini", "book", "monoplain", "twoline", "underline", "one"]}, {"id": "outline", "name": "С обводкой и тенью", "ids": ["stroke", "movie", "hardsh", "yellow", "biz", "comic", "d3", "slav"]}, {"id": "plate", "name": "Плашки и подложки", "ids": ["box", "whitebox", "dimbox", "bar", "glass", "soft", "sticker", "focus", "kinetic", "marker", "type"]}, {"id": "accent", "name": "Акцент на главном слове", "ids": ["tri", "tri2", "accent", "wide", "duo", "pulse", "hookcap", "collage", "contour", "hook", "stack"]}, {"id": "hand", "name": "Рукописные и курсив", "ids": ["hand", "amatic", "script", "serif", "pacific"]}, {"id": "fx", "name": "Эффекты", "ids": ["neonwave", "grad", "gold", "glitch", "pixel"]}], "frames": [{"id": "default", "name": "Как в стиле"}, {"id": "outline", "name": "Обводка"}, {"id": "thin", "name": "Тонкая"}, {"id": "none", "name": "Нет"}, {"id": "shadow", "name": "Тень"}, {"id": "hard", "name": "Жёсткая"}, {"id": "plate", "name": "Подложка"}, {"id": "glow", "name": "Свечение"}], "accents": [{"id": "", "name": "Как в стиле", "hex": null}, {"id": "orange", "name": "Оранжевый", "hex": "#ff7a1a"}, {"id": "lime", "name": "Лайм", "hex": "#b6ff3c"}, {"id": "aqua", "name": "Аква", "hex": "#3ce8ff"}, {"id": "crimson", "name": "Малиновый", "hex": "#ff2d6f"}, {"id": "yellow", "name": "Жёлтый", "hex": "#ffe600"}, {"id": "violet", "name": "Фиолетовый", "hex": "#a96bff"}, {"id": "green", "name": "Зелёный", "hex": "#3cff6b"}, {"id": "white", "name": "Белый", "hex": "#ffffff"}, {"id": "video", "name": "Цвет ролика", "hex": null}], "mains": [{"id": "", "name": "Как в стиле", "hex": null}, {"id": "white", "name": "Белый", "hex": "#ffffff"}, {"id": "cream", "name": "Кремовый", "hex": "#fff1cf"}, {"id": "yellow", "name": "Жёлтый", "hex": "#ffe600"}, {"id": "aqua", "name": "Голубой", "hex": "#bdf3ff"}, {"id": "pink", "name": "Розовый", "hex": "#ffd0e6"}, {"id": "mint", "name": "Мятный", "hex": "#c9ffd9"}, {"id": "gray", "name": "Светло-серый", "hex": "#d9dde3"}], "cardStyles": [{"id": "glass", "name": "Стекло"}, {"id": "frost", "name": "Матовое в цвет"}, {"id": "neon", "name": "Неоновая рамка"}, {"id": "clear", "name": "Прозрачная"}, {"id": "classic", "name": "Белая"}, {"id": "dark", "name": "Тёмная"}, {"id": "paper", "name": "Стикер"}, {"id": "pill", "name": "Капсула"}, {"id": "stripe", "name": "С полосой"}, {"id": "grad", "name": "Градиент"}, {"id": "news", "name": "Новостная строка"}, {"id": "solid", "name": "Цветная"}, {"id": "marker", "name": "Маркер"}, {"id": "chalk", "name": "Мел"}, {"id": "line", "name": "Только текст"}, {"id": "tag", "name": "Ярлык"}, {"id": "soft", "name": "Мягкая прозрачная"}, {"id": "ghost", "name": "Тонкая рамка"}, {"id": "hush", "name": "Тихая тёмная"}, {"id": "lite", "name": "Светлая дымка"}, {"id": "under", "name": "С подчёркиванием"}, {"id": "dot", "name": "С точкой"}, {"id": "liquid", "name": "Жидкое стекло"}, {"id": "liquid_tint", "name": "Жидкое в цвет"}, {"id": "liquid_dark", "name": "Жидкое дымчатое"}, {"id": "liquid_pill", "name": "Жидкая капсула"}, {"id": "liquid_rim", "name": "Жидкое с ободком"}, {"id": "liquid_mini", "name": "Жидкое без иконки"}], "cardGroups": [{"id": "liquid", "name": "Жидкое стекло", "ids": ["liquid", "liquid_tint", "liquid_dark", "liquid_pill", "liquid_rim", "liquid_mini"]}, {"id": "calm", "name": "Спокойные, прозрачные", "ids": ["soft", "ghost", "hush", "lite", "under", "dot"]}, {"id": "glass", "name": "Стекло", "ids": ["glass", "frost", "neon", "clear"]}, {"id": "flat", "name": "Плоские", "ids": ["classic", "dark", "paper", "pill"]}, {"id": "color", "name": "С цветом", "ids": ["stripe", "grad", "solid", "news"]}, {"id": "draw", "name": "Рисованные и минимальные", "ids": ["marker", "chalk", "line", "tag"]}], "cardSizes": [{"id": "compact", "name": "Компактная", "zoom": 0.76}, {"id": "medium", "name": "Средняя", "zoom": 0.88}, {"id": "wide", "name": "Широкая", "zoom": 1.0}], "cardColors": [{"id": "video", "name": "цвет ролика"}, {"id": "accent", "name": "как акцент субтитров"}, {"id": "type", "name": "разный по типу карточки"}], "cardHtml": {"glass": ["<div class='st-glass'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-glass'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-glass'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "frost": ["<div class='st-frost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-frost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-frost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "neon": ["<div class='st-neon'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-neon'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-neon'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "clear": ["<div class='st-clear'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-clear'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-clear'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "classic": ["<div class='st-classic'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-classic'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-classic'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "dark": ["<div class='st-dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "paper": ["<div class='st-paper'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-paper'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-paper'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "pill": ["<div class='st-pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "stripe": ["<div class='st-stripe'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-stripe'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-stripe'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "grad": ["<div class='st-grad'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-grad'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-grad'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "news": ["<div class='st-news'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-news'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-news'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "solid": ["<div class='st-solid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-solid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-solid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "marker": ["<div class='st-marker'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-marker'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-marker'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "chalk": ["<div class='st-chalk'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-chalk'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-chalk'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "line": ["<div class='st-line'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-line'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-line'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "tag": ["<div class='st-tag'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-tag'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-tag'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "soft": ["<div class='st-soft'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-soft'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-soft'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "ghost": ["<div class='st-ghost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-ghost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-ghost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "hush": ["<div class='st-hush'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-hush'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-hush'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "lite": ["<div class='st-lite'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-lite'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-lite'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "under": ["<div class='st-under'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-under'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-under'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "dot": ["<div class='st-dot'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-dot'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-dot'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid": ["<div class='st-liquid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_tint": ["<div class='st-liquid_tint'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_tint'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_tint'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_dark": ["<div class='st-liquid_dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_pill": ["<div class='st-liquid_pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_rim": ["<div class='st-liquid_rim'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_rim'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_rim'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_mini": ["<div class='st-liquid_mini'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_mini'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_mini'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"]}, "presets": [{"name": "Три уровня + жидкое стекло", "style": "tri", "accent": "video", "card": "liquid"}, {"name": "Акцент + жидкое в цвет", "style": "accent", "accent": "video", "card": "liquid_tint"}, {"name": "Широкий + мягкая прозрачная", "style": "wide", "accent": "video", "card": "soft"}, {"name": "Коллаж + жидкое с ободком", "style": "collage", "accent": "video", "card": "liquid_rim"}, {"name": "Пульс лайм + тонкая рамка", "style": "pulse", "accent": "lime", "card": "ghost"}, {"name": "Кинетика малиновая + жидкая капсула", "style": "kinetic", "accent": "crimson", "card": "liquid_pill"}, {"name": "Хук с курсором оранжевый + тихая тёмная", "style": "hookcap", "accent": "orange", "card": "hush"}, {"name": "Три уровня широкий аква + жидкое дымчатое", "style": "tri2", "accent": "aqua", "card": "liquid_dark"}, {"name": "Караоке жёлтое + светлая дымка", "style": "karaoke", "accent": "yellow", "card": "lite"}, {"name": "Высокий узкий + с подчёркиванием", "style": "tall", "accent": "video", "card": "under"}], "size": {"min": 50, "max": 160, "step": 5}, "stop": ["а", "без", "более", "больше", "будет", "будто", "бы", "был", "была", "были", "было", "быть", "в", "вам", "вас", "вдруг", "ведь", "во", "вот", "впрочем", "все", "всегда", "всего", "всех", "всю", "вы", "где", "да", "даже", "два", "для", "до", "другой", "его", "ее", "ей", "ему", "если", "есть", "еще", "ж", "же", "за", "зачем", "здесь", "и", "из", "или", "им", "иногда", "их", "к", "как", "какая", "какой", "когда", "конечно", "кто", "куда", "ли", "лучше", "между", "меня", "мне", "много", "может", "можно", "мой", "моя", "мы", "на", "над", "надо", "наконец", "нас", "не", "него", "нее", "ней", "нельзя", "нет", "ни", "нибудь", "никогда", "ним", "них", "ничего", "но", "ну", "о", "об", "один", "он", "она", "они", "опять", "от", "перед", "по", "под", "после", "потом", "потому", "почти", "при", "про", "раз", "разве", "с", "сам", "свою", "себе", "себя", "сейчас", "со", "совсем", "так", "такой", "там", "тебя", "тем", "теперь", "то", "тогда", "того", "тоже", "только", "том", "тот", "три", "тут", "ты", "у", "уж", "уже", "хорошо", "хоть", "чего", "чем", "через", "что", "чтоб", "чтобы", "чуть", "эти", "это", "этого", "этой", "этом", "этот", "эту", "я"], "sfx": ["normal", "quiet", "off"], "profiles": ["reels", "tiktok", "shorts", "universal"]};
+const tg = window.Telegram && Telegram.WebApp && Telegram.WebApp.initData !== undefined ? Telegram.WebApp : null;
+const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const DEF = {style:'focus',profile:'reels',sfx:'normal',pauses:true,fillers:true,filler_words:false,cards:true,captions:true,
+  auto:false,cap_frame:'default',cap_color:'dark',cap_accent:'',cap_main:'',cap_size:80,cap_words:0,card_style:'liquid',
+  cards_freq:'often',card_size:'compact',card_color:'video'};
+let P = {...DEF};
+try{ const m = location.hash.match(/p=([^&]+)/); if(m){ const j = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); for(const k in DEF) if(k in j) P[k]=j[k]; } }catch(e){}
+const bgUrl = new URLSearchParams(location.search).get('bg');
+if(bgUrl && /^https:\/\//.test(bgUrl)){ $('#bg').classList.add('photo'); $('#bg').style.backgroundImage = `url("${bgUrl.replace(/"/g,'')}")`; $('#person').style.display='none'; }
+
+const WORDS = [['Первые',.25,.62],['три',.62,.9],['секунды',.9,1.4],['решают',1.4,1.85],['всё.',1.85,2.3],
+  ['Не',2.75,2.95],['начинайте',2.95,3.5],['с',3.5,3.62],['приветствия.',3.62,4.4]].map(a=>({w:a[0],s:a[1],e:a[2]}));
+const LOOP = 4.9, STOP = new Set(D.stop), ST = Object.fromEntries(D.styles.map(s=>[s.id,s]));
+const clean = w => w.trim().replace(/[^\wа-яёА-ЯЁ\-]+$/,'');
+function phrases(words, maxW, maxC){ const out=[]; let cur=[];
+  words.forEach((w,i)=>{ cur.push(w); const ends=/[.!?…]$/.test(w.w), nx=words[i+1];
+    const gap = nx ? (nx.s-w.e)>0.5 : true, nlen = nx?clean(nx.w).length:0;
+    const long = cur.reduce((a,x)=>a+clean(x.w).length+1,0)+nlen > maxC;
+    if(cur.length>=maxW||ends||gap||long){ out.push(cur); cur=[]; } });
+  if(cur.length) out.push(cur); return out; }
+function tiers(ph){ let best=-1,bi=0; ph.forEach((w,i)=>{ const c=clean(w.w).toLowerCase(); const sc=STOP.has(c)?0:c.length+(/\d/.test(c)?4:0); if(sc>best){best=sc;bi=i;} });
+  return ph.map((w,i)=> i===bi?1 : (STOP.has(clean(w.w).toLowerCase())||clean(w.w).length<=2)?3:2); }
+function stateHtml(st, ph, t, ai){ const ws=ph.map(w=>clean(w.w));
+  if(st.kind==='hook'){ let rest=''; for(let i=1;i<=ai;i++) rest+=`<span>${ws[i]}</span>`; return `<div class="cap"><div class="big">${ws[0]}</div><div class="small">${rest}</div></div>`; }
+  if(st.kind==='collage'){ const k=t.indexOf(1)>=0?t.indexOf(1):ph.length-1; let small=''; for(let i=0;i<=Math.min(ai,k-1);i++) if(i!==k) small+=`<span>${ws[i]}</span>`;
+    const big = ai>=k ? `<div class="big${ai===k?' on':''}">${ws[k]}</div>` : ''; return `<div class="cap"><div class="small">${small}</div>${big}</div>`; }
+  let h=''; ws.forEach((w,i)=>{ if(st.mode==='reveal'&&i>ai) return; const c=['w','t'+t[i]];
+    if(st.mode==='karaoke'&&i===ai) c.push('on'); if(st.id==='onest'&&i<ai-1) c.push('old'); if(st.id==='wide'&&i===ai&&t[i]===1) c.push('on');
+    if(i===ai) c.push('cur'); else if(i<ai) c.push('past');
+    const tx = st.upper ? w.toUpperCase() : (st.id==='wide'&&t[i]===3 ? w.toLowerCase() : w); h+=`<span class="${c.join(' ')}">${tx}</span>`; });
+  return `<div class="cap">${h}</div>`; }
+function timeline(st, maxWords){ const out=[]; const phs=phrases(WORDS, maxWords||st.max_words, st.max_chars);
+  phs.forEach((ph,pi)=>{ const t=tiers(ph), nxt = phs[pi+1]?phs[pi+1][0].s:1e9, pend=Math.min(ph[ph.length-1].e+0.2,nxt);
+    ph.forEach((w,ai)=>{ const end = ph[ai+1]?ph[ai+1].s:pend, b=Math.max(end,w.s+0.12), last=ai===ph.length-1, html=stateHtml(st,ph,t,ai);
+      const rev = st.mode==='reveal' && !st.kind, line = !rev && ai===0, cut = (last && b-w.s>=0.5) ? b-0.15 : b;
+      out.push({a:w.s,b:cut,html,line,zone:pi%2}); if(cut<b) out.push({a:cut,b,html,exit:true,zone:pi%2}); }); });
+  return out; }
+const TL = {}; const tlOf = (id, mw) => TL[id+':'+(mw||0)] || (TL[id+':'+(mw||0)] = timeline(ST[id], mw));
+const stateAt = (tl, t) => tl.findIndex(s => t>=s.a && t<s.b);
+
+// ---------- главное превью ----------
+const stage=$('#stage'), wrap=$('#wrap'), capin=$('#capin'), capbox=$('#capbox');
+function fitStage(){ const h=Math.max(260, Math.min(window.innerHeight*0.43, 420)), w=h*9/16;   /* превью не закрывает настройки */ wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
+function accentHex(){ const a=D.accents.find(x=>x.id===P.cap_accent); return a&&a.hex ? a.hex : (P.cap_accent==='video' ? '#ff7a1a' : null); }
+const isRev = st => st.mode==='reveal' && !st.kind;
+function anim(el, s){ el.classList.remove('linein','lineout'); if(s.exit){ el.classList.add('lineout'); } else if(s.line){ void el.offsetWidth; el.classList.add('linein'); } }
+function applyLook(){ const st=ST[P.style]||ST.focus; capin.className='capin s-'+st.id+(isRev(st)?' rev':'')+(P.cap_frame!=='default'?' fr-'+P.cap_frame:'');
+  const a=accentHex(), m=(D.mains.find(x=>x.id===P.cap_main)||{}).hex; capin.style.setProperty('--a', a||''); if(!a) capin.style.removeProperty('--a');
+  if(m) capin.style.setProperty('--m', m); else capin.style.removeProperty('--m');
+  const cc = P.card_color==='accent' ? (a||'#ff7a1a') : '#ff7a1a'; stage.style.setProperty('--acc', cc);
+  $('#cardzoom').className='cardzoom'+(P.card_style.startsWith('liquid')?' liquidfx':''); $('#cardzoom').innerHTML=D.cardHtml[P.card_style][0];
+  $('#cardzoom').style.transform=`scale(${(D.cardSizes.find(x=>x.id===P.card_size)||{zoom:.76}).zoom})`; last=-2; }
+let last=-2;
+function drawMain(t){ const st=ST[P.style]||ST.focus, tl=tlOf(st.id, P.cap_words), i = P.captions ? stateAt(tl,t) : -1;
+  $('#cardbox').classList.toggle('on', P.cards && t>0.5 && t<3.6);
+  if(i===last) return; last=i; if(i<0){ capin.innerHTML=''; return; }
+  const s=tl[i]; if(!s.exit){ capin.innerHTML=s.html; capin.style.zoom=P.cap_size/100;
+  const maxW=(1080-220)*0.86, w=capin.scrollWidth*(P.cap_size/100); if(w>maxW) capin.style.zoom=(P.cap_size/100)*maxW/w*0.98;
+  capbox.style.top = (s.zone? 1180 : 1290)+'px'; }
+  anim(capin, s); }
+
+// ---------- плитки стилей с анимацией ----------
+const minis=[]; const io = new IntersectionObserver(es=>es.forEach(e=>{ e.target._vis=e.isIntersecting; }),{rootMargin:'120px'});
+function drawMinis(t){ for(const m of minis){ if(m.el._vis===false) continue; const i=stateAt(m.tl,t); if(i===m.last) continue; m.last=i; if(i<0){ m.in.innerHTML=''; continue; } const s=m.tl[i]; if(!s.exit){ m.in.style.zoom=1; m.in.innerHTML=s.html; const w=m.in.scrollWidth; if(w>800) m.in.style.zoom=800/w; } anim(m.in, s); } }
+function styleTiles(){ const g=D.groups.find(x=>x.id===curGroup)||D.groups[0], box=$('#styles'); box.innerHTML=''; minis.length=0;
+  g.ids.forEach(id=>{ const st=ST[id], b=document.createElement('button'); b.className='tile'+(P.style===id?' on':'');
+    b.innerHTML=`<span class="mini"><span class="ministage"><span class="capin s-${id}${isRev(st)?' rev':''}"></span></span></span><span class="nm">${st.name}</span>`;
+    b.onclick=()=>{ P.style=id; P.auto=false; refresh(); }; box.appendChild(b);
+    const stg=$('.ministage',b); stg.style.transform=`translateY(-50%) scale(${(box.clientWidth/2-6)/900})`;
+    const m={el:b,in:$('.capin',b),tl:tlOf(id,0),last:-2}; minis.push(m); io.observe(b); }); }
+function cardTiles(){ const g=D.cardGroups.find(x=>x.id===curCGroup)||D.cardGroups[0], box=$('#cstyles'); box.innerHTML='';
+  g.ids.forEach((id,n)=>{ const b=document.createElement('button'); b.className='tile cardtile'+(P.card_style===id?' on':''); const nm=D.cardStyles.find(x=>x.id===id).name;
+    b.innerHTML=`<span class="mini"><span class="ministage" style="--acc:#ff7a1a">${D.cardHtml[id][n%3]}</span></span><span class="nm">${nm}</span>`;
+    b.onclick=()=>{ P.card_style=id; P.auto=false; refresh(); }; box.appendChild(b);
+    $('.ministage',b).style.transform=`translateY(-50%) scale(${(box.clientWidth/2-6)/980})`; }); }
+
+// ---------- элементы управления ----------
+const TABS=[['auto','✨ Классно'],['sub','Субтитры'],['col','Цвет'],['card','Плашки'],['clean','Речь и звук']];
+let curTab='sub', curGroup=(ST[P.style]||{}).group||D.groups[0].id, curCGroup=(D.cardGroups.find(g=>g.ids.includes(P.card_style))||D.cardGroups[0]).id;
+function chips(sel, items, cur, on, label){ const box=$(sel); box.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.className='chip'+(it.id===cur?' on':'');
+  b.innerHTML=(label?label(it):it.name); b.onclick=()=>on(it.id); box.appendChild(b); }); }
+const SFX={normal:'Обычные',quiet:'Тихие',off:'Выключены'}, PROF={reels:'Instagram Reels',tiktok:'TikTok',shorts:'YouTube Shorts',universal:'Универсально'};
+function refresh(){
+  $('#tabs').innerHTML=''; TABS.forEach(([id,nm])=>{ const b=document.createElement('button'); b.className='tab'+(id===curTab?' on':''); b.textContent=nm; b.onclick=()=>{curTab=id;refresh();}; $('#tabs').appendChild(b); });
+  $$('.pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===curTab));
+  $$('[data-bool]').forEach(b=>{ b.classList.toggle('on',!!P[b.dataset.bool]); b.onclick=()=>{ P[b.dataset.bool]=!P[b.dataset.bool]; refresh(); }; });
+  $('#magic').classList.toggle('on',P.auto);
+  chips('#presets', D.presets.map((p,i)=>({id:i,name:p.name})), -1, i=>{ const p=D.presets[i]; P.style=p.style; P.cap_accent=p.accent; P.cap_main=p.main||''; P.cap_frame='default'; P.card_style=p.card; P.card_color=p.accent==='video'?'video':'accent'; P.auto=false; curGroup=ST[p.style].group; curTab='sub'; refresh(); });
+  chips('#groups', D.groups.map(g=>({id:g.id,name:`${g.name} · ${g.ids.length}`})), curGroup, id=>{curGroup=id;refresh();});
+  chips('#frames', D.frames, P.cap_frame, id=>{P.cap_frame=id;refresh();});
+  chips('#words', [0,2,3,4,5].map(n=>({id:n,name:n||'авто'})), P.cap_words, id=>{P.cap_words=id;refresh();});
+  const dot=it=>`<i class="dot" style="background:${it.hex||(it.id==='video'?'linear-gradient(135deg,#ff7a1a,#3ce8ff)':'transparent')}"></i>${it.name}`;
+  chips('#accents', D.accents, P.cap_accent, id=>{P.cap_accent=id;refresh();}, dot);
+  chips('#mains', D.mains, P.cap_main, id=>{P.cap_main=id;refresh();}, dot);
+  chips('#cgroups', D.cardGroups.map(g=>({id:g.id,name:`${g.name} · ${g.ids.length}`})), curCGroup, id=>{curCGroup=id;refresh();});
+  chips('#csizes', D.cardSizes, P.card_size, id=>{P.card_size=id;refresh();});
+  chips('#ccolors', D.cardColors.map(c=>({id:c.id,name:c.name[0].toUpperCase()+c.name.slice(1)})), P.card_color, id=>{P.card_color=id;refresh();});
+  chips('#cfreq', [{id:'rare',name:'Редко, до 3'},{id:'often',name:'Часто, до 8'}], P.cards_freq, id=>{P.cards_freq=id;refresh();});
+  chips('#sfx', D.sfx.map(id=>({id,name:SFX[id]})), P.sfx, id=>{P.sfx=id;refresh();});
+  chips('#profiles', D.profiles.map(id=>({id,name:PROF[id]})), P.profile, id=>{P.profile=id;refresh();});
+  $('#sizeV').textContent=P.cap_size+'%';
+  $('#hint').textContent = P.auto ? 'Оформление подберу сам при монтаже' : (ST[P.style]||ST.focus).name;
+  if(curTab==='sub') styleTiles(); if(curTab==='card') cardTiles(); applyLook(); if(typeof draw==='function'&&typeof t0!=='undefined') draw(); }
+$$('[data-size]').forEach(b=>b.onclick=()=>{ P.cap_size=Math.max(D.size.min,Math.min(D.size.max,P.cap_size+D.size.step*(+b.dataset.size))); refresh(); });
+$('#magic').onclick=()=>{ P.auto=!P.auto; refresh(); };
+$('#btnSafe').onclick=e=>{ $('#safe').classList.toggle('on'); e.target.classList.toggle('on'); };
+$('#save').onclick=()=>{ const data=JSON.stringify({v:1,prefs:P}); if(tg && tg.sendData){ tg.sendData(data); } else { $('#save').textContent='Открыто не в Telegram: сохранить некуда'; } };
+// ---------- разделы: Ролики, Бонусы, Баланс (данные приходят от бота в адресе, после #) ----------
+let U = {};
+try{ const m = location.hash.match(/u=([^&]+)/); if(m) U = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); }catch(e){}
+const plural=(n,a,b,c)=>{ n=Math.abs(n)%100; if(n>=11&&n<=14) return c; const k=n%10; return k===1?a:(k>=2&&k<=4?b:c); };
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fillPages(){
+  const bal=+U.balance||0; $('#bal').textContent=bal; $('#balW').textContent=plural(bal,'монтаж','монтажа','монтажей');
+  $('#plans').innerHTML=(U.packages||[]).map((p,i)=>`<div class="plan${p.best?' best':''}"><div><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${esc(p.note||'')}</small></div><div class="pr">${esc(p.price)}</div></div>`).join('') || '<div class="empty">Пакеты появятся здесь</div>';
+  if(U.ref){ $('#reflink').textContent=U.ref; }
+  $('#invited').textContent=+U.invited||0; $('#earned').textContent=+U.earned||0;
+  $('#bFriend').textContent=U.friend_bonus?`+${+U.friend_bonus} ${plural(+U.friend_bonus,'монтаж','монтажа','монтажей')} сверх бесплатного`:'';
+  $('#bYou').textContent=U.you_bonus?`+${+U.you_bonus} за каждого друга и ${+U.percent||0}% от его покупок`:'';
+  const ST_NAME={done:'готов',failed:'ошибка',queued:'в очереди',running:'монтируется'};
+  $('#jobs').innerHTML=(U.jobs||[]).map(j=>`<div class="job"><div>${esc(j.when)}<small>${esc(j.info||'')}</small></div><span class="badge ${esc(j.status)}">${ST_NAME[j.status]||esc(j.status)}</span></div>`).join('') || '<div class="empty">Роликов пока нет.<br>Пришлите видео в чат, и оно появится здесь.</div>';
+}
+$('#copyref').onclick=async e=>{ if(!U.ref) return; try{ await navigator.clipboard.writeText(U.ref); e.target.textContent='Скопировано'; }catch(_){ e.target.textContent='Выделите ссылку и скопируйте'; } };
+const NAV=[['edit','🎬','Монтаж'],['jobs','🗂','Ролики'],['bonus','🎁','Бонусы'],['pay','💳','Баланс']]; let curView='edit';
+function nav(){ $('#nav').innerHTML=''; NAV.forEach(([id,ic,nm])=>{ const b=document.createElement('button'); b.className=id===curView?'on':''; b.innerHTML=`<b>${ic}</b>${nm}`;
+  b.onclick=()=>{ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); refresh(); } }; $('#nav').appendChild(b); }); }
+fillPages(); nav();
+if(tg){ tg.ready(); tg.expand(); }
+window.addEventListener('resize',()=>{fitStage();refresh();});
+const t0=performance.now(); function draw(){ const t=((performance.now()-t0)/1000)%LOOP; drawMain(t); drawMinis(t); }
+fitStage(); refresh();
+setInterval(draw, 40); draw();   /* таймер, а не кадры браузера: превью живёт и в фоновой вкладке */
+window.__state = () => ({prefs:P, view:curView, user:U, tab:curTab, tiles:$$('#styles .tile').length, cap:capin.innerText});
+</script>
+</body>
+</html>
