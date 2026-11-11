@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>ЧикЧик: настройки монтажа</title>
+<title>ЧикЧик: монтаж</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 @font-face{font-family:'Unb';src:url('fonts/Unbounded[wght].ttf');font-weight:100 900;font-display:swap}
@@ -29,24 +29,26 @@
 @font-face{font-family:'Neucha';src:url('fonts/Neucha.ttf');font-weight:100 900;font-display:swap}
 @font-face{font-family:'Fira';src:url('fonts/FiraSans-Black.ttf');font-weight:100 900;font-display:swap}
 @font-face{font-family:'Forum';src:url('fonts/Forum-Regular.ttf');font-weight:100 900;font-display:swap}
-:root{--bg:#070707;--panel:#151413;--line:#2b2927;--txt:#f4f2ef;--mut:#8c8782;--acc:#ff7a1a;--ok:#35d07f;--spot:radial-gradient(ellipse 75% 85% at 50% 46%,#3b3733 0,#24211f 52%,#141312 100%)}
+:root{--bg:#0a0a09;--p1:#141312;--p2:#1c1a19;--line:#2a2725;--txt:#f6f3ef;--mut:#8d8882;--acc:#ff6a1f;--accbg:#2b160c;--ok:#35d07f;
+  --spot:radial-gradient(ellipse 80% 90% at 50% 42%,#34302d 0,#1e1c1a 55%,#121110 100%)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--txt);font-family:Onest,system-ui,sans-serif;font-size:15px;overscroll-behavior:none}
-body{padding-bottom:150px}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-.top{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 14px 8px}
-.stagewrap{position:relative;margin:0 auto;border-radius:22px;overflow:hidden;background:#141312;box-shadow:0 0 0 1px #2b2927,0 14px 44px rgba(0,0,0,.7)}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family:'Manr','Onest',system-ui,sans-serif;font-size:15px;overscroll-behavior:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+svg{display:block}
+.app{max-width:480px;margin:0 auto;min-height:100%;position:relative}
+/* верхняя навигация */
+.topnav{display:flex;border-bottom:1px solid var(--line)}
+.topnav button{flex:1;padding:9px 4px 8px;color:var(--mut);font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:4px}
+.topnav button.on{color:var(--txt)}
+.topnav .cnt{font-size:17px;font-weight:800;line-height:20px;color:var(--txt)}
+.view{display:none}.view.on{display:block}
+/* главный экран */
+.hero{display:grid;grid-template-columns:72px 1fr 72px;align-items:end;gap:4px;padding:10px 6px 8px}
+.stagewrap{position:relative;margin:0 auto;border-radius:20px;overflow:hidden;background:var(--spot);box-shadow:0 0 0 1px var(--line),0 16px 44px rgba(0,0,0,.7)}
 .stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden}
-.bgimg{position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 30%,#6b6661 0,#3a3633 45%,#171615 100%)}
-.bgimg.photo{background-size:cover;background-position:center}
-.person{position:absolute;left:50%;top:560px;width:560px;height:660px;margin-left:-280px;border-radius:50% 50% 46% 46%;background:linear-gradient(180deg,#c9ab95,#9a7a66)}
-.person::after{content:'';position:absolute;left:-210px;top:600px;width:980px;height:900px;border-radius:44% 44% 0 0;background:linear-gradient(180deg,#2c2a28,#191817)}
-.safe{position:absolute;left:80px;right:140px;top:270px;bottom:420px;border:4px dashed rgba(255,255,255,.55);border-radius:18px;display:none}
+.stage .tag{position:absolute;left:40px;top:40px;padding:14px 26px;border-radius:999px;background:rgba(0,0,0,.45);font:700 34px 'Manr';color:#d9d5d0}
+.safe{position:absolute;left:80px;right:140px;top:270px;bottom:420px;border:4px dashed rgba(255,255,255,.4);border-radius:18px;display:none}
 .safe.on{display:block}
-.safe::before{content:'безопасная зона';position:absolute;left:14px;top:10px;font:600 30px Onest;color:rgba(255,255,255,.8)}
-.ui{position:absolute;left:0;right:0;bottom:0;height:420px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.55));display:none}
-.safe.on~.ui{display:block}
-.ui::after{content:'@ник · подпись ролика · кнопки';position:absolute;left:80px;bottom:120px;font:500 32px Onest;color:rgba(255,255,255,.7)}
 .capbox{position:absolute;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
 .capin{display:inline-block;transform-origin:center}
 .rev .cur{animation:wordin .17s ease-out}
@@ -55,73 +57,117 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes linein{from{translate:0 30px;opacity:.2}}
 .lineout{animation:lineout .15s ease-in forwards}
 @keyframes lineout{to{translate:0 -24px;opacity:.15}}
-.cardbox{position:absolute;left:0;right:0;top:300px;display:flex;justify-content:center;opacity:0;transition:opacity .22s;pointer-events:none}
-.cardbox.on{opacity:1}
+.cardbox{position:absolute;left:0;right:0;top:330px;display:flex;justify-content:center;opacity:0;translate:0 26px;transition:opacity .25s,translate .25s;pointer-events:none}
+.cardbox.on{opacity:1;translate:0 0}
 .cardzoom{transform-origin:top center}
 .liquidfx .card{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.hint{display:flex;justify-content:space-between;align-items:center;margin-top:8px;color:var(--mut);font-size:12.5px}
-.hint button{padding:5px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px}
-.hint button.on{border-color:var(--acc);color:var(--acc)}
-.tabs{display:flex;gap:6px;padding:4px 14px 10px;overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{flex:none;padding:9px 15px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-weight:600;white-space:nowrap}
-.tab.on{background:var(--txt);border-color:var(--txt);color:#111}
-.pane{display:none;padding:0 14px}
-.pane.on{display:block}
-h3{margin:18px 0 8px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:8px}
-.row small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.side{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;font-weight:700;line-height:1.2;text-align:center;color:var(--txt)}
+.side .ring{width:44px;height:44px;border-radius:50%;border:1.5px solid #4a4541;display:grid;place-items:center;transition:.15s}
+.side.on .ring{border-color:var(--acc);background:var(--accbg)}
+.side small{color:var(--mut);font-weight:600;font-size:11px}
+.orline{width:1px;height:26px;background:#4a4541;margin:2px 0}
+.roundtabs{display:grid;grid-template-columns:repeat(4,1fr);padding:8px 10px 4px}
+.rt{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;font-weight:700}
+.rt .ring{position:relative;width:46px;height:46px;border-radius:50%;border:1.5px solid #4a4541;display:grid;place-items:center}
+.rt .ring i{position:absolute;right:-1px;top:-1px;width:10px;height:10px;border-radius:50%;background:var(--txt);display:none}
+.rt.live .ring i{display:block}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:12px 12px 0}
+.opt{position:relative;text-align:left;border-radius:22px;background:linear-gradient(180deg,#1b1513,#141110);border:1px solid #3a2a22;padding:9px 60px 10px 14px;min-height:54px;user-select:none;-webkit-user-select:none}
+.opt small{display:block;color:var(--mut);font-size:11.5px;font-weight:600}
+.opt b{display:block;font-size:15px;font-weight:800;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opt .ic{position:absolute;right:6px;top:50%;margin-top:-20px;width:40px;height:40px;border-radius:50%;background:#e9e4de;color:#141110;display:grid;place-items:center}
+.opt .dots{position:absolute;right:50px;top:50%;translate:0 -50%;display:flex;flex-direction:column;gap:3px}
+.opt .dots i{width:5px;height:5px;border-radius:50%;background:#5a524c}.opt .dots i.on{background:var(--acc)}
+.autotext{display:none;margin:14px 14px 0;padding:16px;border-radius:18px;background:var(--p1);border:1px solid var(--line);color:#d9d5d0;line-height:1.45;font-size:14px}
+.auto .autotext{display:block}.auto .manual{display:none}
+.hintbar{margin:12px 12px 0;padding:11px 14px;border-radius:14px;background:var(--p1);border:1px solid var(--line);color:var(--mut);font-size:12.5px;line-height:1.4}
+.hintbar b{color:var(--txt)}
+.dock{position:sticky;bottom:0;z-index:20;margin-top:14px;padding:12px 12px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 34%)}
+.save{width:100%;padding:15px;border-radius:999px;background:var(--acc);color:#140a05;font-weight:800;font-size:16px;box-shadow:0 8px 26px rgba(255,106,31,.35)}
+.save.done{background:var(--ok)}
+/* шторка */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;max-width:480px;margin:0 auto;height:62%;background:#131211;border-radius:22px 22px 0 0;border-top:1px solid var(--line);
+  transform:translateY(105%);transition:transform .24s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.sheet.on{transform:none}
+.sheet .grab{width:38px;height:4px;border-radius:4px;background:#5a524c;margin:9px auto 4px}
+.shead{display:flex;align-items:center;gap:10px;padding:6px 14px 10px}
+.shead h2{margin:0;font-size:20px;font-weight:800;flex:1;display:flex;align-items:center;gap:8px}
+.back{display:none;width:34px;height:34px;border-radius:50%;background:var(--p2);place-items:center}
+.sheet.deep .back{display:grid}
+.okbtn{width:38px;height:38px;border-radius:50%;background:var(--acc);color:#140a05;display:grid;place-items:center}
 .sw{flex:none;width:46px;height:28px;border-radius:999px;background:#3a3633;position:relative;transition:background .15s}
 .sw::after{content:'';position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s}
-.sw.on{background:var(--ok)}.sw.on::after{transform:translateX(18px)}
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{padding:8px 12px;border-radius:12px;background:var(--panel);border:1.5px solid var(--line);font-weight:600;font-size:14px;color:#d9d5d0}
-.chip.on{border-color:var(--acc);color:var(--acc)}
-.dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:6px;border:1px solid rgba(255,255,255,.35)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.tile{position:relative;border-radius:18px;overflow:hidden;background:#141312;border:1.5px solid #2b2927;text-align:left;padding:0;transition:border-color .15s}
-.tile.on{border-color:var(--acc);box-shadow:inset 3px 0 0 var(--acc),inset -3px 0 0 var(--acc)}
-.tile{display:block;width:100%}.tile .mini{display:block;position:relative;height:122px;overflow:hidden;background:var(--spot)}
+.sw.on{background:#e9e4de}.sw.on::after{transform:translateX(18px);background:#141110}
+.sbody{flex:1;overflow-y:auto;padding:0 14px 26px;overscroll-behavior:contain}
+.pane{display:none}.pane.on{display:block}
+h3{margin:16px 0 8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#c9c4be;font-weight:800}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pick{text-align:left;padding:11px 12px;border-radius:14px;background:var(--p2);border:1.5px solid var(--line);font-weight:800;font-size:14px}
+.pick small{display:block;color:var(--mut);font-weight:600;font-size:11.5px;margin-top:2px}
+.pick.on{border-color:var(--acc);background:var(--accbg)}
+.stepbox{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:999px;background:var(--p2);border:1px solid var(--line)}
+.stepbox button{width:30px;height:30px;border-radius:50%;background:#2b2826;font-weight:800;font-size:18px}
+.stepbox span{font-size:11px;color:var(--mut);display:block;text-align:center}.stepbox b{display:block;text-align:center}
+.frames{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fr{padding:8px 6px 9px;border-radius:14px;background:var(--p2);border:1.5px solid var(--line);font-size:12.5px;font-weight:800;text-align:left}
+.fr.on{border-color:var(--acc);background:var(--accbg)}
+.fr .aa{display:grid;place-items:center;height:30px;border-radius:9px;background:#8f959c;margin-bottom:7px;font:800 15px 'Manr';color:#fff;overflow:hidden}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{position:relative;display:block;width:100%;border-radius:18px;overflow:hidden;background:var(--p1);border:1.5px solid var(--line);text-align:left;transition:border-color .15s}
+.tile.on{border-color:var(--acc)}
+.tile .mini{display:block;position:relative;height:138px;overflow:hidden;background:var(--spot)}
+.tile.cardtile .mini{height:118px}
 .tile .ministage{position:absolute;left:50%;top:50%;width:1080px;margin-left:-540px;display:flex;justify-content:center;transform-origin:center;pointer-events:none}
-.tile .nm{display:block;padding:9px 12px 10px;background:#141312;border-top:1px solid #23211f;font-size:13px;font-weight:600;color:#d9d5d0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tile.cardtile .mini{height:104px}
-.stepper{display:flex;align-items:center;gap:12px}
-.stepper button{width:38px;height:38px;border-radius:12px;background:#2b2927;font-size:22px;font-weight:700}
-.stepper b{min-width:54px;text-align:center}
-.cta{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 14px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,var(--bg) 30%)}
-.cta button{width:100%;padding:15px;border-radius:16px;background:var(--acc);color:#111;font-weight:800;font-size:16px}
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;background:#0d0c0c;border-top:1px solid var(--line);
-  padding:6px 6px calc(8px + env(safe-area-inset-bottom))}
-.nav button{flex:1;padding:7px 2px 5px;border-radius:12px;color:var(--mut);font-size:11.5px;font-weight:600;line-height:1.5}
-.nav button b{display:block;font-size:19px;font-weight:400}
-.nav button.on{color:var(--acc)}
-.view{display:none}.view.on{display:block}
-.cta{bottom:58px !important}
-.page{padding:18px 14px}
-.page h2{margin:4px 0 14px;font-size:24px;font-weight:800;letter-spacing:-.01em}
-.big{background:var(--spot);border:1px solid var(--line);border-radius:20px;padding:22px 18px;margin-bottom:12px}
-.big .num{font:800 54px/1 Onest;letter-spacing:-.02em}.big .num small{font-size:16px;font-weight:600;color:var(--mut);margin-left:8px}
-.plan{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;
-  padding:14px 16px;margin-bottom:8px}
-.plan.best{border-color:var(--acc)}
-.plan b{font-size:16px}.plan small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
-.plan .pr{font-weight:800;font-size:17px;white-space:nowrap}
-.soon{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:#2b2927;color:var(--mut);font-size:11px;font-weight:700;vertical-align:2px}
-.ghost{width:100%;padding:14px;border-radius:16px;border:1.5px solid var(--line);font-weight:700;margin-top:6px}
-.ghost[disabled]{opacity:.55}
-.link{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:13px 14px;font-size:13.5px;word-break:break-all;color:#d9d5d0}
-.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-.stat div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px}
-.stat b{display:block;font-size:24px;font-weight:800}.stat span{color:var(--mut);font-size:12.5px}
-.job{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  padding:13px 14px;margin-bottom:8px}
+.tile .nm{display:block;padding:9px 12px 3px;font-size:14px;font-weight:800}
+.tile .ds{display:block;padding:0 12px 11px;font-size:12px;color:var(--mut);font-weight:600;line-height:1.3;min-height:16px}
+.tile.on .nm,.tile.on .ds{background:var(--accbg)}
+.tile .chk{position:absolute;right:10px;bottom:36px;width:20px;height:20px;border-radius:50%;background:var(--acc);color:#140a05;display:none;place-items:center}
+.tile.on .chk{display:grid}
+.cardpop{animation:cardpop .35s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes cardpop{from{opacity:0;scale:.86;translate:0 40px}}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px}
+.swt{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#c9c4be}
+.swt .c{width:52px;height:52px;border-radius:50%;background:#1d1b1a;border:1.5px solid var(--line);display:grid;place-items:center;font:800 17px 'Manr'}
+.swt.on{color:var(--txt)}.swt.on .c{outline:2px solid var(--txt);outline-offset:3px}
+.note{color:var(--mut);font-size:12.5px;margin:10px 2px 0;line-height:1.4}
+/* всплывающий список вариантов */
+.pop{position:fixed;z-index:80;min-width:230px;max-width:300px;background:#1c1a19;border:1px solid var(--line);border-radius:18px;padding:10px;box-shadow:0 18px 50px rgba(0,0,0,.7);display:none}
+.pop.on{display:block}
+.pop h4{margin:4px 8px 8px;font-size:12px;color:var(--mut);font-weight:700}
+.pop button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:10px;border-radius:12px;font-weight:800;font-size:14px}
+.pop button small{display:block;color:var(--mut);font-weight:600;font-size:12px}
+.pop button.on{background:#262321}
+.pop .rd{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid #6a625c}.pop .on .rd{border-color:var(--acc);background:radial-gradient(var(--acc) 0 45%,transparent 50%)}
+/* страницы */
+.page{padding:18px 14px 90px}
+.page h1{margin:2px 0 4px;font-size:22px;font-weight:800}
+.box{background:var(--p1);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:12px}
+.box h4{margin:0 0 8px;font-size:16px;font-weight:800}
+.linkrow{display:flex;align-items:center;gap:8px;background:var(--p2);border-radius:999px;padding:5px 5px 5px 16px}
+.linkrow span{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#d9d5d0}
+.pill{padding:11px 18px;border-radius:999px;background:var(--acc);color:#140a05;font-weight:800;font-size:14px;white-space:nowrap}
+.pill.light{background:#e9e4de}
+.stat{display:grid;grid-template-columns:1fr 1fr;background:var(--p2);border-radius:14px}
+.stat div{padding:14px;text-align:center}.stat div+div{border-left:1px solid var(--line)}
+.stat b{display:block;font-size:22px;font-weight:800}.stat div+div b{color:var(--acc)}.stat span{color:var(--mut);font-size:12.5px}
+.kv{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;color:#d9d5d0}.kv b{color:var(--txt)}
+.job{display:flex;justify-content:space-between;align-items:center;background:var(--p1);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-top:8px}
 .job small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
 .badge{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#2b2927;color:#d9d5d0}
 .badge.done{background:rgba(53,208,127,.16);color:#57e39a}.badge.failed{background:rgba(255,80,80,.16);color:#ff8a8a}
-.empty{color:var(--mut);text-align:center;padding:40px 10px;line-height:1.5}
-.note{color:var(--mut);font-size:12.5px;margin:6px 2px 0;line-height:1.4}
-.magic{width:100%;padding:14px;border-radius:16px;background:linear-gradient(120deg,#ff7a1a,#ff2d6f 60%,#a96bff);color:#fff;font-weight:800;margin-bottom:8px}
-.magic.on{outline:3px solid #fff}
+.empty{color:var(--mut);padding:26px 4px;line-height:1.5}
+.plan{position:relative;display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--p1);border:1.5px solid var(--line);border-radius:18px;padding:16px 14px;margin-top:10px}
+.plan.on{border-color:var(--acc);background:var(--accbg)}
+.plan .rd{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid #6a625c}.plan.on .rd{border-color:var(--acc);background:radial-gradient(var(--acc) 0 45%,transparent 50%)}
+.plan b{font-size:17px;font-weight:800}.plan small{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.plan .pr{margin-left:auto;text-align:right;font-weight:800;font-size:18px;white-space:nowrap}.plan.on .pr{color:var(--acc)}
+.plan .pr small{font-weight:600}
+.plan .flag{position:absolute;left:14px;top:-10px;padding:2px 9px;border-radius:999px;background:#e9e4de;color:#141110;font-size:10.5px;font-weight:800;letter-spacing:.04em}
+.fab{position:fixed;right:max(14px,calc(50% - 226px));bottom:calc(16px + env(safe-area-inset-bottom));z-index:30;width:60px;height:60px;border-radius:50%;background:var(--acc);color:#140a05;display:none;place-items:center;box-shadow:0 10px 30px rgba(255,106,31,.4)}
+.fab.on{display:grid}
 /* ---- стили субтитров из каталога (те же, что в рендере) ---- */
 .s-onest .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 22px;font-family:Onest;font-weight:800;font-size:96px;
            color:var(--m,#fff);line-height:1.08;text-shadow:0 4px 22px rgba(0,0,0,.45)}
@@ -440,87 +486,89 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 </style>
 </head>
 <body>
-<div class="view on" data-view="edit">
-<div class="top">
-  <div class="stagewrap" id="wrap">
-    <div class="stage" id="stage">
-      <div class="bgimg" id="bg"></div><div class="person" id="person"></div>
+<div class="app">
+<div class="topnav" id="topnav"></div>
+
+<div class="view on" data-view="edit" id="edit">
+  <div class="hero">
+    <button class="side" id="fmtBtn"><span class="ring" id="fmtIc"></span><span>Формат<br><small id="fmtV"></small></span></button>
+    <div class="stagewrap" id="wrap"><div class="stage" id="stage">
+      <div class="tag" id="tag">Пример</div>
       <div class="cardbox" id="cardbox"><div class="cardzoom" id="cardzoom"></div></div>
       <div class="capbox" id="capbox"><div class="capin" id="capin"></div></div>
-      <div class="safe" id="safe"></div><div class="ui"></div>
-    </div>
+      <div class="safe" id="safe"></div>
+    </div></div>
+    <div class="side" id="autoCol"><button class="side" id="magic"><span class="ring" id="magicIc"></span><span>Сделать<br>классно</span></button>
+      <span class="orline"></span><small>или</small><span class="orline"></span><span>Настройки</span></div>
   </div>
-  <div class="hint"><span id="hint">Превью: так будут появляться слова</span><button id="btnSafe">Зоны Instagram</button></div>
-</div>
-<div class="tabs" id="tabs"></div>
-
-<div class="pane" data-pane="auto">
-  <h3>Сделать классно</h3>
-  <button class="magic" id="magic">✨ Подобрать всё за меня</button>
-  <p class="note">Подберу согласованный набор: стиль подписи, цвет и плашку. Ниже наборы, из которых я выбираю, можно взять любой вручную.</p>
-  <h3>Готовые наборы</h3><div class="chips" id="presets"></div>
-</div>
-<div class="pane" data-pane="sub">
-  <div class="row"><div>Субтитры<small>Слова на экране по ходу речи</small></div><button class="sw" data-bool="captions"></button></div>
-  <h3>Группа стилей</h3><div class="chips" id="groups"></div>
-  <h3>Стиль</h3><div class="grid" id="styles"></div>
-  <h3>Обрамление</h3><div class="chips" id="frames"></div>
-  <h3>Размер и строки</h3>
-  <div class="row"><div>Размер<small>от размера стиля</small></div><div class="stepper"><button data-size="-1">−</button><b id="sizeV"></b><button data-size="1">+</button></div></div>
-  <div class="row"><div>Слов в строке</div><div class="chips" id="words"></div></div>
-</div>
-<div class="pane" data-pane="col">
-  <h3>Цвет главного слова</h3><div class="chips" id="accents"></div>
-  <h3>Цвет остального текста</h3><div class="chips" id="mains"></div>
-  <p class="note">«Цвет ролика» подбирается из вашего видео при монтаже, в превью он показан оранжевым.</p>
-</div>
-<div class="pane" data-pane="card">
-  <div class="row"><div>Плашки<small>Главная мысль дословно из вашей речи</small></div><button class="sw" data-bool="cards"></button></div>
-  <h3>Группа</h3><div class="chips" id="cgroups"></div>
-  <h3>Вид плашки</h3><div class="grid" id="cstyles"></div>
-  <h3>Размер</h3><div class="chips" id="csizes"></div>
-  <h3>Цвет плашки</h3><div class="chips" id="ccolors"></div>
-  <h3>Как часто</h3><div class="chips" id="cfreq"></div>
-</div>
-<div class="pane" data-pane="clean">
-  <h3>Чистка речи</h3>
-  <div class="row"><div>Паузы<small>Молчание между фразами</small></div><button class="sw" data-bool="pauses"></button></div>
-  <div class="row"><div>Запинки<small>«э-э», «ааа», «мм»</small></div><button class="sw" data-bool="fillers"></button></div>
-  <div class="row"><div>Лишние слова<small>«ну», «типа», «короче»</small></div><button class="sw" data-bool="filler_words"></button></div>
-  <h3>Звуки</h3><div class="chips" id="sfx"></div>
-  <h3>Площадка</h3><div class="chips" id="profiles"></div>
-</div>
-<div class="cta"><button id="save">Сохранить настройки</button></div>
+  <div class="autotext">Всё настрою сам: стиль подписи, цвет и плашки подберу под ваше видео и расставлю так, чтобы они не закрывали лицо и не уходили за края Reels. Вам остаётся сохранить и нажать «Старт монтажа» в чате.</div>
+  <div class="manual">
+    <div class="roundtabs" id="rtabs"></div>
+    <div class="tiles" id="tiles"></div>
+  </div>
+  <div class="hintbar"><b>Нажмите</b> на плитку — следующее значение. <b>Удерживайте</b> — все варианты. Монтаж запускается кнопкой «Старт монтажа» в чате.</div>
+  <div class="dock"><button class="save" id="save">Сохранить настройки</button></div>
 </div>
 
 <div class="view" data-view="jobs"><div class="page">
-  <h2>Мои ролики</h2>
-  <p class="note" style="margin:-6px 0 14px">Готовые файлы хранятся 48 часов. Открыть и скачать ролик можно в чате, кнопкой «Мои ролики».</p>
-  <div id="jobs"></div>
+  <h1>Ролики</h1><div class="note" style="margin:0">Файл хранится 48 часов. Скачать ролик можно в чате, кнопкой «Мои ролики».</div>
+  <h3>История</h3><div id="jobs"></div>
 </div></div>
 
 <div class="view" data-view="bonus"><div class="page">
-  <h2>Бонусы</h2>
-  <div class="big"><div style="color:var(--mut);font-size:13px;margin-bottom:8px">Ваша ссылка-приглашение</div>
-    <div class="link" id="reflink">Откройте панель из бота, чтобы увидеть ссылку</div>
-    <button class="ghost" id="copyref">Скопировать ссылку</button></div>
-  <div class="stat"><div><b id="invited">0</b><span>пришло по ссылке</span></div><div><b id="earned">0</b><span>монтажей получено</span></div></div>
-  <div class="row"><div>Другу<small id="bFriend"></small></div></div>
-  <div class="row"><div>Вам<small id="bYou"></small></div></div>
-  <div class="row"><div>Партнёрская программа <span class="soon">скоро</span><small>Процент деньгами с оплат приглашённых</small></div></div>
+  <h1>Бонусы</h1>
+  <div class="box"><h4>Ваша ссылка</h4><div class="note" style="margin:0 0 12px" id="bFriend"></div>
+    <div class="linkrow"><span id="reflink">Откройте приложение из бота</span><button class="pill" id="copyref">Копировать</button></div></div>
+  <div class="box"><h4>Приглашённые</h4><div class="stat"><div><b id="invited">0</b><span>пришли</span></div><div><b id="earned">+0</b><span>получено</span></div></div>
+    <div class="note" id="bYou"></div></div>
+  <div class="box"><h4>Партнёрская программа</h4><div class="note" style="margin:0">Процент с оплат приглашённых. Появится после подключения оплаты.</div></div>
 </div></div>
 
 <div class="view" data-view="pay"><div class="page">
-  <h2>Баланс</h2>
-  <div class="big"><div style="color:var(--mut);font-size:13px;margin-bottom:10px">На балансе</div>
-    <div class="num"><span id="bal">0</span><small id="balW">монтажей</small></div></div>
-  <h3>Пакеты <span class="soon">оплата скоро</span></h3>
-  <div id="plans"></div>
-  <button class="ghost" disabled>Оплатить</button>
-  <p class="note">Оплата ещё не подключена. Цены предварительные. Монтаж списывается при запуске и возвращается, если ролик не получился.</p>
+  <h1>Баланс</h1><div class="note" style="margin:0"><b style="color:var(--txt);font-size:17px" id="bal">0</b> <span id="balW">монтажей</span> на балансе, без срока</div>
+  <h3>Пакеты</h3><div id="plans"></div>
+  <div class="dock" style="padding-left:0;padding-right:0"><button class="save" id="payBtn" style="opacity:.5">Оплата скоро будет подключена</button></div>
+  <div class="note">Цены предварительные. Монтаж списывается при запуске и возвращается, если ролик не получился.</div>
 </div></div>
 
-<div class="nav" id="nav"></div>
+<button class="fab" id="fab" aria-label="Монтаж"></button>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet">
+  <div class="grab"></div>
+  <div class="shead"><button class="back" id="sBack" aria-label="Назад"></button><h2 id="sTitle"></h2><button class="sw" id="sSw"></button><button class="okbtn" id="sOk" aria-label="Готово"></button></div>
+  <div class="sbody" id="sbody">
+    <div class="pane" data-pane="sub">
+      <div class="trio"><div class="stepbox"><button data-size="-1">−</button><div><span>Размер</span><b id="sizeV"></b></div><button data-size="1">+</button></div>
+        <button class="pick" id="wordsBtn"><small>Слов в строке</small><span id="wordsV"></span></button>
+        <button class="pick" id="safeBtn"><small>Зоны Reels</small><span id="safeV">скрыты</span></button></div>
+      <h3>Обрамление</h3><div class="frames" id="frames"></div>
+      <div class="duo" style="margin-top:8px" id="capcolors"></div>
+      <h3>Стиль субтитров</h3><div class="grid" id="sgroups"></div>
+    </div>
+    <div class="pane" data-pane="subg"><div class="grid" id="styles"></div></div>
+    <div class="pane" data-pane="card">
+      <h3>Как часто</h3><div class="duo" id="cfreq"></div>
+      <h3>Размер</h3><div class="trio" id="csizes"></div>
+      <h3>Цвет плашки</h3><div class="trio" id="ccolors"></div>
+      <h3>Стиль инфографики</h3><div class="grid" id="cgroups"></div>
+      <div class="note">Текст плашки пишет нейросеть по смыслу вашей речи: короткий довод или хук, без выдуманных фактов.</div>
+    </div>
+    <div class="pane" data-pane="cardg"><div class="grid" id="cstyles"></div></div>
+    <div class="pane" data-pane="col">
+      <h3>Цвет главного слова</h3><div class="swatches" id="accents"></div>
+      <h3>Цвет остального текста</h3><div class="swatches" id="mains"></div>
+      <div class="note">«Цвет ролика» подбирается из вашего видео при монтаже, в примере он показан оранжевым.</div>
+    </div>
+    <div class="pane" data-pane="snd">
+      <h3>Звуки появления</h3><div class="trio" id="sfx"></div>
+      <h3>Площадка</h3><div class="duo" id="profiles"></div>
+      <div class="note">Площадка задаёт безопасные зоны: подписи и плашки не попадут под кнопки и описание.</div>
+    </div>
+  </div>
+</div>
+<div class="pop" id="pop"></div>
 
 <script>
 const D = {"styles": [{"id": "onest", "name": "Онест (по словам)", "group": "simple", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "wide", "name": "Широкий + тонкий", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 16}, {"id": "accent", "name": "Акцент", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 16}, {"id": "focus", "name": "Фокус (плашка)", "group": "plate", "mode": "karaoke", "kind": "", "upper": true, "max_words": 4, "max_chars": 18}, {"id": "sticker", "name": "Стикеры", "group": "plate", "mode": "karaoke", "kind": "", "upper": true, "max_words": 3, "max_chars": 16}, {"id": "glass", "name": "Стекло", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 26}, {"id": "gold", "name": "Золото", "group": "fx", "mode": "karaoke", "kind": "", "upper": true, "max_words": 3, "max_chars": 15}, {"id": "collage", "name": "Коллаж (полосы)", "group": "accent", "mode": "reveal", "kind": "collage", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "hook", "name": "Хук-подпись", "group": "accent", "mode": "reveal", "kind": "hook", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "neonwave", "name": "Неон волной", "group": "fx", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "stack", "name": "Стопка", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 3, "max_chars": 14}, {"id": "tri", "name": "Три уровня", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "tri2", "name": "Три уровня (широкий)", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 16}, {"id": "words", "name": "По словам (бледнеют)", "group": "simple", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "contour", "name": "Контур", "group": "accent", "mode": "reveal", "kind": "collage", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "kinetic", "name": "Кинетика (плашка)", "group": "plate", "mode": "reveal", "kind": "", "upper": true, "max_words": 4, "max_chars": 18}, {"id": "pulse", "name": "Пульс", "group": "accent", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "hookcap", "name": "Хук с курсором", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "clean", "name": "Чистый", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "box", "name": "Чёрная плашка", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "whitebox", "name": "Белая плашка", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "yellow", "name": "Жёлтый с обводкой", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "biz", "name": "Бизнес (обводка)", "group": "outline", "mode": "karaoke", "kind": "", "upper": true, "max_words": 3, "max_chars": 16}, {"id": "mini", "name": "Минимал", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 6, "max_chars": 30}, {"id": "capswide", "name": "Широкие заглавные", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "underline", "name": "Подчёркнутый", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 22}, {"id": "bar", "name": "Строка с полосой", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 26}, {"id": "one", "name": "Одно слово", "group": "simple", "mode": "reveal", "kind": "", "upper": false, "max_words": 1, "max_chars": 14}, {"id": "marker", "name": "Маркер", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "hand", "name": "От руки", "group": "hand", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "script", "name": "Курсив + тонкий", "group": "hand", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "serif", "name": "Журнал", "group": "hand", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "grad", "name": "Градиент", "group": "fx", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "d3", "name": "3D-тень", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "comic", "name": "Комикс", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "type", "name": "Печатная машинка", "group": "plate", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 22}, {"id": "pixel", "name": "Пиксель", "group": "fx", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 14}, {"id": "glitch", "name": "Глитч", "group": "fx", "mode": "reveal", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "slav", "name": "Русский стиль", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 16}, {"id": "soft", "name": "Мягкий округлый", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 20}, {"id": "duo", "name": "Два цвета", "group": "accent", "mode": "reveal", "kind": "", "upper": false, "max_words": 4, "max_chars": 18}, {"id": "tall", "name": "Высокий узкий", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 22}, {"id": "amatic", "name": "Тонкий рукописный", "group": "hand", "mode": "karaoke", "kind": "", "upper": false, "max_words": 4, "max_chars": 22}, {"id": "pacific", "name": "Ретро-курсив", "group": "hand", "mode": "karaoke", "kind": "", "upper": false, "max_words": 3, "max_chars": 18}, {"id": "plain", "name": "Просто белый", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "bold", "name": "Жирный заглавный", "group": "simple", "mode": "karaoke", "kind": "", "upper": true, "max_words": 4, "max_chars": 20}, {"id": "karaoke", "name": "Караоке (цветное слово)", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "stroke", "name": "Белый с обводкой", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "hardsh", "name": "Белый с жёсткой тенью", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "lower", "name": "Строчные жирные", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "round", "name": "Округлый", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "thincaps", "name": "Тонкие заглавные", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 26}, {"id": "book", "name": "С засечками", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "monoplain", "name": "Моноширинный", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 5, "max_chars": 24}, {"id": "movie", "name": "Киносубтитры", "group": "outline", "mode": "karaoke", "kind": "", "upper": false, "max_words": 7, "max_chars": 34}, {"id": "twoline", "name": "Две строки", "group": "simple", "mode": "karaoke", "kind": "", "upper": false, "max_words": 7, "max_chars": 34}, {"id": "dimbox", "name": "Затемнение под текстом", "group": "plate", "mode": "karaoke", "kind": "", "upper": false, "max_words": 6, "max_chars": 30}], "groups": [{"id": "simple", "name": "Простые", "ids": ["plain", "karaoke", "clean", "words", "onest", "lower", "round", "bold", "tall", "capswide", "thincaps", "mini", "book", "monoplain", "twoline", "underline", "one"]}, {"id": "outline", "name": "С обводкой и тенью", "ids": ["stroke", "movie", "hardsh", "yellow", "biz", "comic", "d3", "slav"]}, {"id": "plate", "name": "Плашки и подложки", "ids": ["box", "whitebox", "dimbox", "bar", "glass", "soft", "sticker", "focus", "kinetic", "marker", "type"]}, {"id": "accent", "name": "Акцент на главном слове", "ids": ["tri", "tri2", "accent", "wide", "duo", "pulse", "hookcap", "collage", "contour", "hook", "stack"]}, {"id": "hand", "name": "Рукописные и курсив", "ids": ["hand", "amatic", "script", "serif", "pacific"]}, {"id": "fx", "name": "Эффекты", "ids": ["neonwave", "grad", "gold", "glitch", "pixel"]}], "frames": [{"id": "default", "name": "Как в стиле"}, {"id": "outline", "name": "Обводка"}, {"id": "thin", "name": "Тонкая"}, {"id": "none", "name": "Нет"}, {"id": "shadow", "name": "Тень"}, {"id": "hard", "name": "Жёсткая"}, {"id": "plate", "name": "Подложка"}, {"id": "glow", "name": "Свечение"}], "accents": [{"id": "", "name": "Как в стиле", "hex": null}, {"id": "orange", "name": "Оранжевый", "hex": "#ff7a1a"}, {"id": "lime", "name": "Лайм", "hex": "#b6ff3c"}, {"id": "aqua", "name": "Аква", "hex": "#3ce8ff"}, {"id": "crimson", "name": "Малиновый", "hex": "#ff2d6f"}, {"id": "yellow", "name": "Жёлтый", "hex": "#ffe600"}, {"id": "violet", "name": "Фиолетовый", "hex": "#a96bff"}, {"id": "green", "name": "Зелёный", "hex": "#3cff6b"}, {"id": "white", "name": "Белый", "hex": "#ffffff"}, {"id": "video", "name": "Цвет ролика", "hex": null}], "mains": [{"id": "", "name": "Как в стиле", "hex": null}, {"id": "white", "name": "Белый", "hex": "#ffffff"}, {"id": "cream", "name": "Кремовый", "hex": "#fff1cf"}, {"id": "yellow", "name": "Жёлтый", "hex": "#ffe600"}, {"id": "aqua", "name": "Голубой", "hex": "#bdf3ff"}, {"id": "pink", "name": "Розовый", "hex": "#ffd0e6"}, {"id": "mint", "name": "Мятный", "hex": "#c9ffd9"}, {"id": "gray", "name": "Светло-серый", "hex": "#d9dde3"}], "cardStyles": [{"id": "glass", "name": "Стекло"}, {"id": "frost", "name": "Матовое в цвет"}, {"id": "neon", "name": "Неоновая рамка"}, {"id": "clear", "name": "Прозрачная"}, {"id": "classic", "name": "Белая"}, {"id": "dark", "name": "Тёмная"}, {"id": "paper", "name": "Стикер"}, {"id": "pill", "name": "Капсула"}, {"id": "stripe", "name": "С полосой"}, {"id": "grad", "name": "Градиент"}, {"id": "news", "name": "Новостная строка"}, {"id": "solid", "name": "Цветная"}, {"id": "marker", "name": "Маркер"}, {"id": "chalk", "name": "Мел"}, {"id": "line", "name": "Только текст"}, {"id": "tag", "name": "Ярлык"}, {"id": "soft", "name": "Мягкая прозрачная"}, {"id": "ghost", "name": "Тонкая рамка"}, {"id": "hush", "name": "Тихая тёмная"}, {"id": "lite", "name": "Светлая дымка"}, {"id": "under", "name": "С подчёркиванием"}, {"id": "dot", "name": "С точкой"}, {"id": "liquid", "name": "Жидкое стекло"}, {"id": "liquid_tint", "name": "Жидкое в цвет"}, {"id": "liquid_dark", "name": "Жидкое дымчатое"}, {"id": "liquid_pill", "name": "Жидкая капсула"}, {"id": "liquid_rim", "name": "Жидкое с ободком"}, {"id": "liquid_mini", "name": "Жидкое без иконки"}], "cardGroups": [{"id": "liquid", "name": "Жидкое стекло", "ids": ["liquid", "liquid_tint", "liquid_dark", "liquid_pill", "liquid_rim", "liquid_mini"]}, {"id": "calm", "name": "Спокойные, прозрачные", "ids": ["soft", "ghost", "hush", "lite", "under", "dot"]}, {"id": "glass", "name": "Стекло", "ids": ["glass", "frost", "neon", "clear"]}, {"id": "flat", "name": "Плоские", "ids": ["classic", "dark", "paper", "pill"]}, {"id": "color", "name": "С цветом", "ids": ["stripe", "grad", "solid", "news"]}, {"id": "draw", "name": "Рисованные и минимальные", "ids": ["marker", "chalk", "line", "tag"]}], "cardSizes": [{"id": "compact", "name": "Компактная", "zoom": 0.76}, {"id": "medium", "name": "Средняя", "zoom": 0.88}, {"id": "wide", "name": "Широкая", "zoom": 1.0}], "cardColors": [{"id": "video", "name": "цвет ролика"}, {"id": "accent", "name": "как акцент субтитров"}, {"id": "type", "name": "разный по типу карточки"}], "cardHtml": {"glass": ["<div class='st-glass'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-glass'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-glass'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "frost": ["<div class='st-frost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-frost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-frost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "neon": ["<div class='st-neon'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-neon'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-neon'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "clear": ["<div class='st-clear'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-clear'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-clear'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "classic": ["<div class='st-classic'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-classic'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-classic'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "dark": ["<div class='st-dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "paper": ["<div class='st-paper'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-paper'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-paper'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "pill": ["<div class='st-pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "stripe": ["<div class='st-stripe'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-stripe'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-stripe'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "grad": ["<div class='st-grad'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-grad'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-grad'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "news": ["<div class='st-news'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-news'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-news'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "solid": ["<div class='st-solid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-solid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-solid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "marker": ["<div class='st-marker'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-marker'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-marker'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "chalk": ["<div class='st-chalk'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-chalk'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-chalk'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "line": ["<div class='st-line'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-line'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-line'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "tag": ["<div class='st-tag'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-tag'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-tag'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "soft": ["<div class='st-soft'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-soft'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-soft'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "ghost": ["<div class='st-ghost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-ghost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-ghost'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "hush": ["<div class='st-hush'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-hush'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-hush'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "lite": ["<div class='st-lite'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-lite'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-lite'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "under": ["<div class='st-under'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-under'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-under'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "dot": ["<div class='st-dot'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-dot'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-dot'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid": ["<div class='st-liquid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_tint": ["<div class='st-liquid_tint'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_tint'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_tint'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_dark": ["<div class='st-liquid_dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_dark'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_pill": ["<div class='st-liquid_pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_pill'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_rim": ["<div class='st-liquid_rim'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_rim'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_rim'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"], "liquid_mini": ["<div class='st-liquid_mini'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>“</div><div><div class='lab'>Ключевая мысль</div><div class='tx'>Первые <span class='hl'>три секунды</span> решают всё</div></div></div></div>", "<div class='st-liquid_mini'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>?</div><div><div class='lab'>Вопрос</div><div class='tx'>Почему ролик <span class='hl'>не досматривают</span>?</div></div></div></div>", "<div class='st-liquid_mini'><div class='card' style='--c:var(--acc);position:relative'><div class='ic'>№</div><div><div class='lab'>Цифра</div><div class='tx big'>12 500+</div></div></div></div>"]}, "presets": [{"name": "Три уровня + жидкое стекло", "style": "tri", "accent": "video", "card": "liquid"}, {"name": "Акцент + жидкое в цвет", "style": "accent", "accent": "video", "card": "liquid_tint"}, {"name": "Широкий + мягкая прозрачная", "style": "wide", "accent": "video", "card": "soft"}, {"name": "Коллаж + жидкое с ободком", "style": "collage", "accent": "video", "card": "liquid_rim"}, {"name": "Пульс лайм + тонкая рамка", "style": "pulse", "accent": "lime", "card": "ghost"}, {"name": "Кинетика малиновая + жидкая капсула", "style": "kinetic", "accent": "crimson", "card": "liquid_pill"}, {"name": "Хук с курсором оранжевый + тихая тёмная", "style": "hookcap", "accent": "orange", "card": "hush"}, {"name": "Три уровня широкий аква + жидкое дымчатое", "style": "tri2", "accent": "aqua", "card": "liquid_dark"}, {"name": "Караоке жёлтое + светлая дымка", "style": "karaoke", "accent": "yellow", "card": "lite"}, {"name": "Высокий узкий + с подчёркиванием", "style": "tall", "accent": "video", "card": "under"}], "size": {"min": 50, "max": 160, "step": 5}, "stop": ["а", "без", "более", "больше", "будет", "будто", "бы", "был", "была", "были", "было", "быть", "в", "вам", "вас", "вдруг", "ведь", "во", "вот", "впрочем", "все", "всегда", "всего", "всех", "всю", "вы", "где", "да", "даже", "два", "для", "до", "другой", "его", "ее", "ей", "ему", "если", "есть", "еще", "ж", "же", "за", "зачем", "здесь", "и", "из", "или", "им", "иногда", "их", "к", "как", "какая", "какой", "когда", "конечно", "кто", "куда", "ли", "лучше", "между", "меня", "мне", "много", "может", "можно", "мой", "моя", "мы", "на", "над", "надо", "наконец", "нас", "не", "него", "нее", "ней", "нельзя", "нет", "ни", "нибудь", "никогда", "ним", "них", "ничего", "но", "ну", "о", "об", "один", "он", "она", "они", "опять", "от", "перед", "по", "под", "после", "потом", "потому", "почти", "при", "про", "раз", "разве", "с", "сам", "свою", "себе", "себя", "сейчас", "со", "совсем", "так", "такой", "там", "тебя", "тем", "теперь", "то", "тогда", "того", "тоже", "только", "том", "тот", "три", "тут", "ты", "у", "уж", "уже", "хорошо", "хоть", "чего", "чем", "через", "что", "чтоб", "чтобы", "чуть", "эти", "это", "этого", "этой", "этом", "этот", "эту", "я"], "sfx": ["normal", "quiet", "off"], "profiles": ["reels", "tiktok", "shorts", "universal"]};
@@ -528,11 +576,21 @@ const tg = window.Telegram && Telegram.WebApp && Telegram.WebApp.initData !== un
 const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const DEF = {style:'focus',profile:'reels',sfx:'normal',pauses:true,fillers:true,filler_words:false,cards:true,captions:true,
   auto:false,cap_frame:'default',cap_color:'dark',cap_accent:'',cap_main:'',cap_size:80,cap_words:0,card_style:'liquid',
-  cards_freq:'often',card_size:'compact',card_color:'video'};
+  cards_freq:'often',card_size:'compact',card_color:'video',fmt:''};
 let P = {...DEF};
 try{ const m = location.hash.match(/p=([^&]+)/); if(m){ const j = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); for(const k in DEF) if(k in j) P[k]=j[k]; } }catch(e){}
-const bgUrl = new URLSearchParams(location.search).get('bg');
-if(bgUrl && /^https:\/\//.test(bgUrl)){ $('#bg').classList.add('photo'); $('#bg').style.backgroundImage = `url("${bgUrl.replace(/"/g,'')}")`; $('#person').style.display='none'; }
+const I = (d, w=20) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const IC = {
+  head:I('<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 6.5c1.2 1 1.2 3 0 4M19.5 4.5c2.4 2.2 2.4 5.800 0 8"/>'),
+  raw:I('<rect x="3.500" y="5" width="17" height="14" rx="3"/><path d="M10.500 9.500v5l4-2.500z" fill="currentColor"/>'),
+  magic:I('<path d="M12 4l1.800 4.700L18.500 10.500l-4.700 1.800L12 17l-1.800-4.700L5.500 10.500l4.700-1.800z" fill="#ff7ab0" stroke="#ff7ab0"/>'),
+  sub:I('<rect x="3.500" y="5.500" width="17" height="13" rx="2.500"/><path d="M7 11h3M13 11h4M7 14.500h6"/>'),
+  card:I('<path d="M6 19V11M12 19V5M18 19v-6"/>'), snd:I('<path d="M4 10v4h3l5 4V6L7 10zM16 9c1.400 1.700 1.400 4.300 0 6"/>'),
+  back:I('<path d="M14.500 5.500L8 12l6.500 6.500"/>'), ok:I('<path d="M5.500 12.500l4 4 9-9.500"/>',19), mic:I('<rect x="9" y="3.500" width="6" height="10" rx="3"/><path d="M6 11.500a6 6 0 0012 0M12 17.500v3"/>'),
+  phone:I('<rect x="7" y="3" width="10" height="18" rx="2.500"/><path d="M11 17.500h2"/>'), bell:I('<path d="M4 10v4h3l5 4V6L7 10z"/><path d="M16 9c1.400 1.700 1.400 4.300 0 6M18.500 6.500c2.800 3 2.800 8 0 11"/>'),
+  gift:I('<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M4 13h16M12 9v11M12 9c-4-.5-5-5-2-5 1.600 0 2 2.500 2 5zm0 0c4-.5 5-5 2-5-1.600 0-2 2.500-2 5z"/>',22),
+  play:I('<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M10.500 9.500v5l4-2.500z" fill="currentColor"/>',22), wallet:I('<rect x="3.500" y="6" width="17" height="13" rx="3"/><path d="M15 12.500h2"/>',22),
+  cut:I('<circle cx="7" cy="7" r="2.600"/><circle cx="7" cy="17" r="2.600"/><path d="M9.200 8.500L20 17M9.200 15.500L20 7"/>',26)};
 
 const WORDS = [['Первые',.25,.62],['три',.62,.9],['секунды',.9,1.4],['решают',1.4,1.85],['всё.',1.85,2.3],
   ['Не',2.75,2.95],['начинайте',2.95,3.5],['с',3.5,3.62],['приветствия.',3.62,4.4]].map(a=>({w:a[0],s:a[1],e:a[2]}));
@@ -564,17 +622,17 @@ function timeline(st, maxWords){ const out=[]; const phs=phrases(WORDS, maxWords
 const TL = {}; const tlOf = (id, mw) => TL[id+':'+(mw||0)] || (TL[id+':'+(mw||0)] = timeline(ST[id], mw));
 const stateAt = (tl, t) => tl.findIndex(s => t>=s.a && t<s.b);
 
-// ---------- главное превью ----------
+// ---------- главное превью (тёмная подложка, без человечка) ----------
 const stage=$('#stage'), wrap=$('#wrap'), capin=$('#capin'), capbox=$('#capbox');
-function fitStage(){ const h=Math.max(260, Math.min(window.innerHeight*0.43, 420)), w=h*9/16;   /* превью не закрывает настройки */ wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
+function fitStage(){ const h=Math.max(250, Math.min(window.innerHeight*0.44, 430)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
 function accentHex(){ const a=D.accents.find(x=>x.id===P.cap_accent); return a&&a.hex ? a.hex : (P.cap_accent==='video' ? '#ff7a1a' : null); }
 const isRev = st => st.mode==='reveal' && !st.kind;
 function anim(el, s){ el.classList.remove('linein','lineout'); if(s.exit){ el.classList.add('lineout'); } else if(s.line){ void el.offsetWidth; el.classList.add('linein'); } }
 function applyLook(){ const st=ST[P.style]||ST.focus; capin.className='capin s-'+st.id+(isRev(st)?' rev':'')+(P.cap_frame!=='default'?' fr-'+P.cap_frame:'');
-  const a=accentHex(), m=(D.mains.find(x=>x.id===P.cap_main)||{}).hex; capin.style.setProperty('--a', a||''); if(!a) capin.style.removeProperty('--a');
+  const a=accentHex(), m=(D.mains.find(x=>x.id===P.cap_main)||{}).hex; if(a) capin.style.setProperty('--a', a); else capin.style.removeProperty('--a');
   if(m) capin.style.setProperty('--m', m); else capin.style.removeProperty('--m');
-  const cc = P.card_color==='accent' ? (a||'#ff7a1a') : '#ff7a1a'; stage.style.setProperty('--acc', cc);
-  $('#cardzoom').className='cardzoom'+(P.card_style.startsWith('liquid')?' liquidfx':''); $('#cardzoom').innerHTML=D.cardHtml[P.card_style][0];
+  stage.style.setProperty('--acc', P.card_color==='accent' ? (a||'#ff7a1a') : '#ff7a1a');
+  $('#cardzoom').className='cardzoom'+(P.card_style.startsWith('liquid')?' liquidfx':''); $('#cardzoom').innerHTML=(D.cardHtml[P.card_style]||D.cardHtml.glass)[0];
   $('#cardzoom').style.transform=`scale(${(D.cardSizes.find(x=>x.id===P.card_size)||{zoom:.76}).zoom})`; last=-2; }
 let last=-2;
 function drawMain(t){ const st=ST[P.style]||ST.focus, tl=tlOf(st.id, P.cap_words), i = P.captions ? stateAt(tl,t) : -1;
@@ -582,81 +640,131 @@ function drawMain(t){ const st=ST[P.style]||ST.focus, tl=tlOf(st.id, P.cap_words
   if(i===last) return; last=i; if(i<0){ capin.innerHTML=''; return; }
   const s=tl[i]; if(!s.exit){ capin.innerHTML=s.html; capin.style.zoom=P.cap_size/100;
   const maxW=(1080-220)*0.86, w=capin.scrollWidth*(P.cap_size/100); if(w>maxW) capin.style.zoom=(P.cap_size/100)*maxW/w*0.98;
-  capbox.style.top = (s.zone? 1180 : 1290)+'px'; }
+  capbox.style.top = (s.zone? 1080 : 1200)+'px'; }
   anim(capin, s); }
 
-// ---------- плитки стилей с анимацией ----------
+// ---------- плитки с живым примером ----------
 const minis=[]; const io = new IntersectionObserver(es=>es.forEach(e=>{ e.target._vis=e.isIntersecting; }),{rootMargin:'120px'});
-function drawMinis(t){ for(const m of minis){ if(m.el._vis===false) continue; const i=stateAt(m.tl,t); if(i===m.last) continue; m.last=i; if(i<0){ m.in.innerHTML=''; continue; } const s=m.tl[i]; if(!s.exit){ m.in.style.zoom=1; m.in.innerHTML=s.html; const w=m.in.scrollWidth; if(w>800) m.in.style.zoom=800/w; } anim(m.in, s); } }
-function styleTiles(){ const g=D.groups.find(x=>x.id===curGroup)||D.groups[0], box=$('#styles'); box.innerHTML=''; minis.length=0;
-  g.ids.forEach(id=>{ const st=ST[id], b=document.createElement('button'); b.className='tile'+(P.style===id?' on':'');
-    b.innerHTML=`<span class="mini"><span class="ministage"><span class="capin s-${id}${isRev(st)?' rev':''}"></span></span></span><span class="nm">${st.name}</span>`;
-    b.onclick=()=>{ P.style=id; P.auto=false; refresh(); }; box.appendChild(b);
-    const stg=$('.ministage',b); stg.style.transform=`translateY(-50%) scale(${(box.clientWidth/2-6)/900})`;
-    const m={el:b,in:$('.capin',b),tl:tlOf(id,0),last:-2}; minis.push(m); io.observe(b); }); }
-function cardTiles(){ const g=D.cardGroups.find(x=>x.id===curCGroup)||D.cardGroups[0], box=$('#cstyles'); box.innerHTML='';
-  g.ids.forEach((id,n)=>{ const b=document.createElement('button'); b.className='tile cardtile'+(P.card_style===id?' on':''); const nm=D.cardStyles.find(x=>x.id===id).name;
-    b.innerHTML=`<span class="mini"><span class="ministage" style="--acc:#ff7a1a">${D.cardHtml[id][n%3]}</span></span><span class="nm">${nm}</span>`;
-    b.onclick=()=>{ P.card_style=id; P.auto=false; refresh(); }; box.appendChild(b);
-    $('.ministage',b).style.transform=`translateY(-50%) scale(${(box.clientWidth/2-6)/980})`; }); }
+function drawMinis(t){ for(const m of minis){ if(m.el._vis===false||!m.el.isConnected) continue; const i=stateAt(m.tl,t); if(i===m.last) continue; m.last=i; if(i<0){ m.in.innerHTML=''; continue; } const s=m.tl[i]; if(!s.exit){ m.in.style.zoom=1; m.in.innerHTML=s.html; const w=m.in.scrollWidth; if(w>800) m.in.style.zoom=800/w; } anim(m.in, s); } }
+const CHK=`<span class="chk">${I('<path d="M5.500 12.500l4 4 9-9.500"/>',13)}</span>`;
+function capTile(box, id, name, desc, on, click){ const st=ST[id], b=document.createElement('button'); b.className='tile'+(on?' on':'');
+  b.innerHTML=`<span class="mini"><span class="ministage"><span class="capin s-${id}${isRev(st)?' rev':''}"></span></span></span><span class="nm">${name}</span><span class="ds">${desc}</span>${CHK}`;
+  b.onclick=click; box.appendChild(b); $('.ministage',b).style.transform=`translateY(-50%) scale(${Math.max(box.clientWidth/2-6,120)/900})`;
+  minis.push({el:b,in:$('.capin',b),tl:tlOf(id,0),last:-2}); io.observe(b); }
+const cardLive=[];
+function cardTile(box, id, name, desc, on, click, n){ const b=document.createElement('button'); b.className='tile cardtile'+(on?' on':'');
+  b.innerHTML=`<span class="mini"><span class="ministage" style="--acc:#ff7a1a"></span></span><span class="nm">${name}</span><span class="ds">${desc}</span>${CHK}`;
+  b.onclick=click; box.appendChild(b); const ms=$('.ministage',b); ms.style.transform=`translateY(-50%) scale(${Math.max(box.clientWidth/2-6,120)/980})`;
+  ms.innerHTML=`<span class="cardpop" style="display:block">${D.cardHtml[id][n%3]}</span>`; cardLive.push({el:b,ms,id,n}); }
+setInterval(()=>{ for(const c of cardLive){ if(!c.el.isConnected) continue; c.n++; c.ms.innerHTML=`<span class="cardpop" style="display:block">${D.cardHtml[c.id][c.n%3]}</span>`; } }, 2600);
+const plural=(n,a,b,c)=>{ n=Math.abs(n)%100; if(n>=11&&n<=14) return c; const k=n%10; return k===1?a:(k>=2&&k<=4?b:c); };
+const stylesWord=n=>n+' '+plural(n,'стиль','стиля','стилей');
 
-// ---------- элементы управления ----------
-const TABS=[['auto','✨ Классно'],['sub','Субтитры'],['col','Цвет'],['card','Плашки'],['clean','Речь и звук']];
-let curTab='sub', curGroup=(ST[P.style]||{}).group||D.groups[0].id, curCGroup=(D.cardGroups.find(g=>g.ids.includes(P.card_style))||D.cardGroups[0]).id;
-function chips(sel, items, cur, on, label){ const box=$(sel); box.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.className='chip'+(it.id===cur?' on':'');
-  b.innerHTML=(label?label(it):it.name); b.onclick=()=>on(it.id); box.appendChild(b); }); }
-const SFX={normal:'Обычные',quiet:'Тихие',off:'Выключены'}, PROF={reels:'Instagram Reels',tiktok:'TikTok',shorts:'YouTube Shorts',universal:'Универсально'};
-function refresh(){
-  $('#tabs').innerHTML=''; TABS.forEach(([id,nm])=>{ const b=document.createElement('button'); b.className='tab'+(id===curTab?' on':''); b.textContent=nm; b.onclick=()=>{curTab=id;refresh();}; $('#tabs').appendChild(b); });
-  $$('.pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===curTab));
-  $$('[data-bool]').forEach(b=>{ b.classList.toggle('on',!!P[b.dataset.bool]); b.onclick=()=>{ P[b.dataset.bool]=!P[b.dataset.bool]; refresh(); }; });
-  $('#magic').classList.toggle('on',P.auto);
-  chips('#presets', D.presets.map((p,i)=>({id:i,name:p.name})), -1, i=>{ const p=D.presets[i]; P.style=p.style; P.cap_accent=p.accent; P.cap_main=p.main||''; P.cap_frame='default'; P.card_style=p.card; P.card_color=p.accent==='video'?'video':'accent'; P.auto=false; curGroup=ST[p.style].group; curTab='sub'; refresh(); });
-  chips('#groups', D.groups.map(g=>({id:g.id,name:`${g.name} · ${g.ids.length}`})), curGroup, id=>{curGroup=id;refresh();});
-  chips('#frames', D.frames, P.cap_frame, id=>{P.cap_frame=id;refresh();});
-  chips('#words', [0,2,3,4,5].map(n=>({id:n,name:n||'авто'})), P.cap_words, id=>{P.cap_words=id;refresh();});
-  const dot=it=>`<i class="dot" style="background:${it.hex||(it.id==='video'?'linear-gradient(135deg,#ff7a1a,#3ce8ff)':'transparent')}"></i>${it.name}`;
-  chips('#accents', D.accents, P.cap_accent, id=>{P.cap_accent=id;refresh();}, dot);
-  chips('#mains', D.mains, P.cap_main, id=>{P.cap_main=id;refresh();}, dot);
-  chips('#cgroups', D.cardGroups.map(g=>({id:g.id,name:`${g.name} · ${g.ids.length}`})), curCGroup, id=>{curCGroup=id;refresh();});
-  chips('#csizes', D.cardSizes, P.card_size, id=>{P.card_size=id;refresh();});
-  chips('#ccolors', D.cardColors.map(c=>({id:c.id,name:c.name[0].toUpperCase()+c.name.slice(1)})), P.card_color, id=>{P.card_color=id;refresh();});
-  chips('#cfreq', [{id:'rare',name:'Редко, до 3'},{id:'often',name:'Часто, до 8'}], P.cards_freq, id=>{P.cards_freq=id;refresh();});
-  chips('#sfx', D.sfx.map(id=>({id,name:SFX[id]})), P.sfx, id=>{P.sfx=id;refresh();});
-  chips('#profiles', D.profiles.map(id=>({id,name:PROF[id]})), P.profile, id=>{P.profile=id;refresh();});
-  $('#sizeV').textContent=P.cap_size+'%';
-  $('#hint').textContent = P.auto ? 'Оформление подберу сам при монтаже' : (ST[P.style]||ST.focus).name;
-  if(curTab==='sub') styleTiles(); if(curTab==='card') cardTiles(); applyLook(); if(typeof draw==='function'&&typeof t0!=='undefined') draw(); }
-$$('[data-size]').forEach(b=>b.onclick=()=>{ P.cap_size=Math.max(D.size.min,Math.min(D.size.max,P.cap_size+D.size.step*(+b.dataset.size))); refresh(); });
-$('#magic').onclick=()=>{ P.auto=!P.auto; refresh(); };
-$('#btnSafe').onclick=e=>{ $('#safe').classList.toggle('on'); e.target.classList.toggle('on'); };
-$('#save').onclick=()=>{ const data=JSON.stringify({v:1,prefs:P}); if(tg && tg.sendData){ tg.sendData(data); } else { $('#save').textContent='Открыто не в Telegram: сохранить некуда'; } };
+// ---------- шторка ----------
+const SHEETS={sub:{title:'Субтитры',key:'captions'},card:{title:'Инфографика',key:'cards'},col:{title:'Цвет текста'},snd:{title:'Звук и площадка'}};
+let sheet=null, deep=null, curGroup=null, curCGroup=null;
+function openSheet(id){ sheet=id; deep=null; $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); renderSheet(); $('#sbody').scrollTop=0; }
+function closeSheet(){ sheet=null; deep=null; $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); render(); }
+function picks(sel, items, cur, on){ const box=$(sel); box.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.className='pick'+(it.id===cur?' on':'');
+  b.innerHTML=it.name+(it.d?`<small>${it.d}</small>`:''); b.onclick=()=>{ on(it.id); renderSheet(); }; box.appendChild(b); }); }
+function swatches(sel, items, cur, on){ const box=$(sel); box.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.className='swt'+(it.id===cur?' on':'');
+  const col = it.hex || (it.id==='video' ? '#ff7a1a' : '#f6f3ef'); b.innerHTML=`<span class="c" style="color:${col}">Аа</span>${it.name}`; b.onclick=()=>{ on(it.id); renderSheet(); }; box.appendChild(b); }); }
+const SFX={normal:['Стандарт','под голосом'],quiet:['Тихо','еле слышно'],off:['Выкл','без звуков']}, PROF={reels:'Instagram Reels',tiktok:'TikTok',shorts:'YouTube Shorts',universal:'Универсально'};
+const WORDS_OPT=[0,2,3,4,5];
+function renderSheet(){ if(!sheet) return; const S=SHEETS[sheet], pane=deep?sheet+'g':sheet;
+  $('#sheet').classList.toggle('deep',!!deep); $$('#sheet .pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===pane));
+  $('#sSw').style.display = S.key && !deep ? '' : 'none'; if(S.key) $('#sSw').classList.toggle('on',!!P[S.key]);
+  minis.length=0; cardLive.length=0;
+  if(sheet==='sub' && !deep){ $('#sTitle').textContent=S.title; $('#sizeV').textContent=P.cap_size+' %'; $('#wordsV').textContent=P.cap_words||'авто'; $('#safeV').textContent=$('#safe').classList.contains('on')?'показаны':'скрыты';
+    const fb=$('#frames'); fb.innerHTML=''; D.frames.forEach(f=>{ const b=document.createElement('button'); b.className='fr'+(f.id===P.cap_frame?' on':'');
+      b.innerHTML=`<span class="aa"><span class="${f.id!=='default'?'fr-'+f.id:''}"><span class="cap" style="font:800 15px 'Manr';color:#fff">Аа</span></span></span>${f.name}`; b.onclick=()=>{P.cap_frame=f.id;P.auto=false;renderSheet();applyLook();}; fb.appendChild(b); });
+    picks('#capcolors',[{id:'dark',name:'Тёмный',d:'обрамление чёрным'},{id:'video',name:'Цвет ролика',d:'подберу из кадра'}],P.cap_color,id=>{P.cap_color=id;});
+    const gb=$('#sgroups'); gb.innerHTML=''; D.groups.forEach(g=>{ const has=g.ids.includes(P.style); capTile(gb, has?P.style:g.ids[0], g.name, stylesWord(g.ids.length)+(has?' · выбран «'+ST[P.style].name+'»':''), has, ()=>{ curGroup=g.id; deep=true; renderSheet(); $('#sbody').scrollTop=0; }); }); }
+  if(sheet==='sub' && deep){ const g=D.groups.find(x=>x.id===curGroup)||D.groups[0]; $('#sTitle').textContent=g.name; const box=$('#styles'); box.innerHTML='';
+    g.ids.forEach(id=>capTile(box,id,ST[id].name,'',P.style===id,()=>{ P.style=id; P.auto=false; renderSheet(); applyLook(); })); }
+  if(sheet==='card' && !deep){ $('#sTitle').textContent=S.title;
+    picks('#cfreq',[{id:'rare',name:'Редко',d:'к месту, до 3 на ролик'},{id:'often',name:'Часто',d:'по максимуму, до 8'}],P.cards_freq,id=>{P.cards_freq=id;});
+    picks('#csizes',D.cardSizes,P.card_size,id=>{P.card_size=id;applyLook();});
+    picks('#ccolors',D.cardColors.map(c=>({id:c.id,name:c.name[0].toUpperCase()+c.name.slice(1)})),P.card_color,id=>{P.card_color=id;applyLook();});
+    const gb=$('#cgroups'); gb.innerHTML=''; D.cardGroups.forEach((g,n)=>{ const has=g.ids.includes(P.card_style), cur=has?P.card_style:g.ids[0];
+      cardTile(gb, cur, g.name, stylesWord(g.ids.length)+(has?' · выбран':''), has, ()=>{ curCGroup=g.id; deep=true; renderSheet(); $('#sbody').scrollTop=0; }, n); }); }
+  if(sheet==='card' && deep){ const g=D.cardGroups.find(x=>x.id===curCGroup)||D.cardGroups[0]; $('#sTitle').textContent=g.name; const box=$('#cstyles'); box.innerHTML='';
+    g.ids.forEach((id,n)=>cardTile(box,id,D.cardStyles.find(x=>x.id===id).name,'',P.card_style===id,()=>{ P.card_style=id; P.auto=false; renderSheet(); applyLook(); },n)); }
+  if(sheet==='col'){ $('#sTitle').textContent=S.title; swatches('#accents',D.accents.map(a=>({...a,name:a.name||'Как в стиле'})),P.cap_accent,id=>{P.cap_accent=id;P.auto=false;applyLook();});
+    swatches('#mains',D.mains.map(a=>({...a,name:a.name||'Как в стиле'})),P.cap_main,id=>{P.cap_main=id;P.auto=false;applyLook();}); }
+  if(sheet==='snd'){ $('#sTitle').textContent=S.title; picks('#sfx',D.sfx.map(id=>({id,name:SFX[id][0],d:SFX[id][1]})),P.sfx,id=>{P.sfx=id;});
+    picks('#profiles',D.profiles.map(id=>({id,name:PROF[id]})),P.profile,id=>{P.profile=id;}); }
+}
+$('#sBack').innerHTML=IC.back; $('#sOk').innerHTML=IC.ok;
+$('#sBack').onclick=()=>{ deep=null; renderSheet(); $('#sbody').scrollTop=0; };
+$('#sOk').onclick=closeSheet; $('#scrim').onclick=closeSheet;
+$('#sSw').onclick=()=>{ const k=SHEETS[sheet].key; if(k){ P[k]=!P[k]; renderSheet(); } };
+$$('[data-size]').forEach(b=>b.onclick=()=>{ P.cap_size=Math.max(D.size.min,Math.min(D.size.max,P.cap_size+D.size.step*(+b.dataset.size))); renderSheet(); });
+$('#wordsBtn').onclick=()=>{ P.cap_words=WORDS_OPT[(WORDS_OPT.indexOf(P.cap_words)+1)%WORDS_OPT.length]; renderSheet(); };
+$('#safeBtn').onclick=()=>{ $('#safe').classList.toggle('on'); renderSheet(); };
+
+// ---------- плитки главного экрана: нажатие = следующее значение, удержание = все варианты ----------
+const fillLevel=()=>P.filler_words?2:(P.fillers?1:0);
+const OPTS=[
+  {id:'fill',name:'Слова-паразиты',ic:'mic',vals:[['Не трогать',''],['«э-э», «м-м»','только звуки-запинки'],['+ «ну», «вот»','и лишние слова']],get:fillLevel,set:v=>{P.fillers=v>0;P.filler_words=v>1;},off:()=>P.fmt==='raw'},
+  {id:'sfx',name:'Звуки',ic:'bell',vals:[['Стандарт','под голосом'],['Тихо','еле слышно'],['Выкл','без звуков']],get:()=>['normal','quiet','off'].indexOf(P.sfx),set:v=>{P.sfx=['normal','quiet','off'][v];}},
+  {id:'freq',name:'Плашек в ролике',ic:'card',vals:[['Часто','до 8 на ролик'],['Редко','до 3 на ролик']],get:()=>P.cards_freq==='rare'?1:0,set:v=>{P.cards_freq=v?'rare':'often';}},
+  {id:'prof',name:'Площадка',ic:'phone',vals:D.profiles.map(id=>[PROF[id],'']),get:()=>D.profiles.indexOf(P.profile),set:v=>{P.profile=D.profiles[v];}}];
+const FMT=[['head','Говорящая голова','Режу паузы и оговорки, как обычно'],['raw','Без формата','Ничего не вырезаю: ролик идёт как снят']];
+function popup(anchor, title, items, cur, on){ const p=$('#pop'); p.innerHTML=`<h4>${title}</h4>`; items.forEach((it,i)=>{ const b=document.createElement('button'); b.className=i===cur?'on':'';
+  b.innerHTML=`<span class="rd"></span><span>${it[0]}${it[1]?`<small>${it[1]}</small>`:''}</span>`; b.onclick=e=>{ e.stopPropagation(); on(i); hidePop(); render(); }; p.appendChild(b); });
+  p.classList.add('on'); const r=anchor.getBoundingClientRect(), w=p.offsetWidth, h=p.offsetHeight;
+  p.style.left=Math.max(8,Math.min(window.innerWidth-w-8,r.left))+'px'; p.style.top=Math.max(8,r.top-h-8)+'px'; $('#scrim').classList.add('on'); }
+function hidePop(){ $('#pop').classList.remove('on'); if(!sheet) $('#scrim').classList.remove('on'); }
+function press(el, tap, hold){ let tm=null, held=false; const down=()=>{ held=false; tm=setTimeout(()=>{ held=true; hold(); },480); }, up=e=>{ clearTimeout(tm); if(!held && e.type!=='pointerleave') tap(); };
+  el.addEventListener('pointerdown',down); el.addEventListener('pointerup',up); el.addEventListener('pointerleave',()=>clearTimeout(tm)); el.addEventListener('contextmenu',e=>e.preventDefault()); }
+function render(){
+  $('#edit').classList.toggle('auto',P.auto); $('#magic').classList.toggle('on',P.auto);
+  const f=FMT.find(x=>x[0]===P.fmt); $('#fmtIc').innerHTML=IC[P.fmt==='raw'?'raw':'head']; $('#fmtV').textContent=f?(P.fmt==='raw'?'Без резки':'Голова'):'не выбран'; $('#fmtBtn').classList.toggle('on',!!f);
+  $('#tag').textContent = P.fmt==='raw' ? 'Пример · без резки' : 'Пример';
+  const rt=$('#rtabs'); rt.innerHTML=''; [['sub','Субтитры',P.captions],['card','Инфографика',P.cards],['col','Цвет',false],['snd','Звук',P.sfx!=='off']].forEach(([id,nm,live])=>{ const b=document.createElement('button'); b.className='rt'+(live?' live':'');
+    const a=accentHex()||'#ff2d6f'; b.innerHTML=`<span class="ring"${id==='col'?` style="background:${a};border-color:${a};color:#140a05;font:800 14px Manr"`:''}>${id==='col'?'Аа':IC[id]}<i></i></span>${nm}`; b.onclick=()=>openSheet(id); rt.appendChild(b); });
+  const tb=$('#tiles'); tb.innerHTML=''; OPTS.forEach(o=>{ const v=Math.max(0,o.get()), dis=o.off&&o.off(), b=document.createElement('button'); b.className='opt'; if(dis) b.style.opacity=.45;
+    b.innerHTML=`<small>${o.name}</small><b>${dis?'Без резки':o.vals[v][0]}</b><span class="dots">${o.vals.map((_,i)=>`<i class="${i===v?'on':''}"></i>`).join('')}</span><span class="ic">${IC[o.ic]}</span>`;
+    if(!dis) press(b, ()=>{ o.set((v+1)%o.vals.length); render(); }, ()=>popup(b,o.name,o.vals,v,i=>o.set(i))); tb.appendChild(b); });
+  applyLook(); }
+$('#magicIc').innerHTML=IC.magic; $('#magic').onclick=()=>{ P.auto=!P.auto; render(); };
+$('#fmtBtn').onclick=()=>popup($('#fmtBtn'),'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; if(P.fmt==='head') P.pauses=true; });
+$('#scrim').addEventListener('click',hidePop);
+$('#save').onclick=()=>{ const data=JSON.stringify({v:2,prefs:P}); if(tg && tg.sendData){ tg.sendData(data); } else { $('#save').textContent='Открыто не в Telegram: сохранить некуда'; } };
+
 // ---------- разделы: Ролики, Бонусы, Баланс (данные приходят от бота в адресе, после #) ----------
 let U = {};
 try{ const m = location.hash.match(/u=([^&]+)/); if(m) U = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); }catch(e){}
-const plural=(n,a,b,c)=>{ n=Math.abs(n)%100; if(n>=11&&n<=14) return c; const k=n%10; return k===1?a:(k>=2&&k<=4?b:c); };
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let curPlan=0;
 function fillPages(){
   const bal=+U.balance||0; $('#bal').textContent=bal; $('#balW').textContent=plural(bal,'монтаж','монтажа','монтажей');
-  $('#plans').innerHTML=(U.packages||[]).map((p,i)=>`<div class="plan${p.best?' best':''}"><div><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${esc(p.note||'')}</small></div><div class="pr">${esc(p.price)}</div></div>`).join('') || '<div class="empty">Пакеты появятся здесь</div>';
-  if(U.ref){ $('#reflink').textContent=U.ref; }
-  $('#invited').textContent=+U.invited||0; $('#earned').textContent=+U.earned||0;
-  $('#bFriend').textContent=U.friend_bonus?`+${+U.friend_bonus} ${plural(+U.friend_bonus,'монтаж','монтажа','монтажей')} сверх бесплатного`:'';
-  $('#bYou').textContent=U.you_bonus?`+${+U.you_bonus} за каждого друга и ${+U.percent||0}% от его покупок`:'';
-  const ST_NAME={done:'готов',failed:'ошибка',queued:'в очереди',running:'монтируется'};
-  $('#jobs').innerHTML=(U.jobs||[]).map(j=>`<div class="job"><div>${esc(j.when)}<small>${esc(j.info||'')}</small></div><span class="badge ${esc(j.status)}">${ST_NAME[j.status]||esc(j.status)}</span></div>`).join('') || '<div class="empty">Роликов пока нет.<br>Пришлите видео в чат, и оно появится здесь.</div>';
+  const pk=U.packages||[]; if(pk.length && !fillPages.init){ fillPages.init=1; curPlan=Math.max(0,pk.findIndex(p=>p.best)); }
+  $('#plans').innerHTML=pk.map((p,i)=>`<button class="plan${i===curPlan?' on':''}" data-plan="${i}">${p.best?'<span class="flag">ВЫГОДНЕЕ ВСЕГО</span>':''}<span class="rd"></span><span><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${esc(p.note||'не сгорают')}</small></span><span class="pr">${esc(p.price)}</span></button>`).join('') || '<div class="empty">Пакеты появятся здесь.</div>';
+  $$('[data-plan]').forEach(b=>b.onclick=()=>{ curPlan=+b.dataset.plan; fillPages(); });
+  if(U.ref){ $('#reflink').textContent=U.ref.replace(/^https?:\/\//,''); }
+  $('#invited').textContent=+U.invited||0; $('#earned').textContent='+'+(+U.earned||0);
+  $('#bFriend').innerHTML=U.friend_bonus?`Друг получит <b style="color:var(--txt)">+${+U.friend_bonus} ${plural(+U.friend_bonus,'монтаж','монтажа','монтажей')}</b> в подарок, вы — бонус за каждого пришедшего.`:'';
+  $('#bYou').textContent=U.you_bonus?`Вам +${+U.you_bonus} за каждого друга и ${+U.percent||0}% от монтажей, которые он купит.`:'';
+  const SN={done:'готов',failed:'ошибка',queued:'в очереди',running:'монтируется'};
+  $('#jobs').innerHTML=(U.jobs||[]).map(j=>`<div class="job"><div>${esc(j.when)}<small>${esc(j.info||'')}</small></div><span class="badge ${esc(j.status)}">${SN[j.status]||esc(j.status)}</span></div>`).join('') || '<div class="empty">Пока пусто. Пришлите видео в чат с ботом, и ролик появится здесь.</div>';
 }
-$('#copyref').onclick=async e=>{ if(!U.ref) return; try{ await navigator.clipboard.writeText(U.ref); e.target.textContent='Скопировано'; }catch(_){ e.target.textContent='Выделите ссылку и скопируйте'; } };
-const NAV=[['edit','🎬','Монтаж'],['jobs','🗂','Ролики'],['bonus','🎁','Бонусы'],['pay','💳','Баланс']]; let curView='edit';
-function nav(){ $('#nav').innerHTML=''; NAV.forEach(([id,ic,nm])=>{ const b=document.createElement('button'); b.className=id===curView?'on':''; b.innerHTML=`<b>${ic}</b>${nm}`;
-  b.onclick=()=>{ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); refresh(); } }; $('#nav').appendChild(b); }); }
+$('#copyref').onclick=async e=>{ if(!U.ref) return; try{ await navigator.clipboard.writeText(U.ref); e.target.textContent='Скопировано'; }catch(_){ e.target.textContent='Не вышло'; } };
+const NAV=[['bonus','gift','Бонусы'],['jobs','play','Ролики'],['pay','wallet','Баланс']]; let curView='edit';
+function go(id){ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); render(); } }
+function nav(){ $('#topnav').innerHTML=''; NAV.forEach(([id,ic,nm])=>{ const b=document.createElement('button'); b.className=id===curView?'on':'';
+  b.innerHTML=(id==='pay'?`<span class="cnt">${+U.balance||0}</span>`:IC[ic])+nm; b.onclick=()=>go(id===curView?'edit':id); $('#topnav').appendChild(b); });
+  $('#fab').classList.toggle('on',curView!=='edit'); }
+$('#fab').innerHTML=IC.cut; $('#fab').onclick=()=>go('edit');
 fillPages(); nav();
-if(tg){ tg.ready(); tg.expand(); }
-window.addEventListener('resize',()=>{fitStage();refresh();});
+if(tg){ tg.ready(); tg.expand(); try{ tg.setHeaderColor('#0a0a09'); tg.setBackgroundColor('#0a0a09'); }catch(e){} }
+window.addEventListener('resize',()=>{fitStage();render();});
 const t0=performance.now(); function draw(){ const t=((performance.now()-t0)/1000)%LOOP; drawMain(t); drawMinis(t); }
-fitStage(); refresh();
+fitStage(); render();
 setInterval(draw, 40); draw();   /* таймер, а не кадры браузера: превью живёт и в фоновой вкладке */
-window.__state = () => ({prefs:P, view:curView, user:U, tab:curTab, tiles:$$('#styles .tile').length, cap:capin.innerText});
+window.__state = () => ({prefs:P, view:curView, user:U, sheet, deep, tiles:$$('#styles .tile').length, cap:capin.innerText});
+window.__open = openSheet;
 </script>
 </body>
 </html>
