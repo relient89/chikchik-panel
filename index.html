@@ -91,9 +91,23 @@ svg{display:block}
 .row .rv.acc{background:var(--acc);color:var(--onacc)}
 .row .chev{flex:none;color:var(--mut)}
 .row .dotlive{flex:none;width:8px;height:8px;border-radius:50%;background:var(--acc)}
+.quad{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px 16px 0}
+.qb{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;font-weight:700;min-width:0}
+.qb .ring{position:relative;width:60px;height:60px;border-radius:50%;display:grid;place-items:center}
+.qb .ring i{position:absolute;right:3px;top:3px;width:11px;height:11px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 2px #14161b;display:none}
+.qb.live .ring i{display:block}
+.qb.need .ring{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-a2),inset 0 1px 0 rgba(255,255,255,.38)}
+.qb small{color:var(--mut);font-weight:500;font-size:10.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tiles2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:16px 16px 0}
+.t2{text-align:left;border-radius:20px;padding:10px 12px 11px;min-height:62px;user-select:none;-webkit-user-select:none}
+.t2 small{display:flex;align-items:center;gap:6px;color:var(--mut);font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden}
+.t2 small svg{flex:none;opacity:.8}
+.t2 b{display:block;font-size:15px;font-weight:800;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t2.onv b{color:var(--acc)}
 .hintbar{margin:12px 30px 0;color:var(--mut);font-size:12px;line-height:1.45}
 .hintbar b{color:#dfe2e8}
-.dock{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom));z-index:20;max-width:480px;margin:0 auto;padding:0 16px;pointer-events:none}
+.dock{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom));z-index:20;max-width:480px;margin:0 auto;padding:0 16px;pointer-events:none;display:grid;grid-template-columns:1fr 1.5fr;gap:8px}
+.save2{pointer-events:auto;padding:15px 8px;border-radius:999px;font-weight:700;font-size:15px}
 .save{pointer-events:auto;width:100%;padding:15px;border-radius:999px;background:var(--acc);color:var(--onacc);font-weight:800;font-size:16px;box-shadow:0 10px 30px var(--acc-a2),inset 0 1px 0 rgba(255,255,255,.6)}
 .tabbar{position:fixed;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));z-index:30;max-width:448px;margin:0 auto;width:calc(100% - 32px);display:grid;grid-template-columns:repeat(4,1fr);padding:6px;border-radius:999px}
 .tabbar button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px 6px;border-radius:999px;color:var(--mut);font-size:11px;font-weight:700}
@@ -553,14 +567,13 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
       <div class="safe" id="safe"></div>
     </div><button class="plus glass" id="plusBtn"><i>+</i>Добавить ролик</button></div></div>
   <div class="seg glass" id="modeSeg"><button data-auto="1">Подбери сам</button><button data-auto="0">Настрою сам</button></div>
-  <div class="autotext glass">Оформление беру на себя: под ваш ролик подберу подписи, цвета и плашки так, чтобы они сочетались между собой, не ложились на лицо и не уезжали под кнопки площадки. Сохраните и запустите монтаж в чате.</div>
+  <div class="autotext glass">Оформление беру на себя: под ваш ролик подберу субтитры, цвета и плашки так, чтобы они сочетались между собой, не ложились на лицо и не уезжали под кнопки площадки. Пришлите видео в чат и нажмите «Смонтировать».</div>
   <div class="manual">
-    <div class="group glass" id="rowsMain"></div>
-    <div class="gtitle">Речь, камера и звук</div>
-    <div class="group glass" id="rowsOpts"></div>
-    <div class="hintbar"><b>Тап</b> по строке меняет значение на следующее, <b>долгое нажатие</b> показывает все варианты.</div>
+    <div class="quad" id="quad"></div>
+    <div class="tiles2" id="rowsOpts"></div>
+    <div class="hintbar"><b>Тап</b> по плитке меняет значение на следующее, <b>долгое нажатие</b> показывает все варианты.</div>
   </div>
-  <div class="dock"><button class="save" id="save">Применить</button></div>
+  <div class="dock"><button class="save2 glass" id="save">Сохранить</button><button class="save" id="goBtn">Смонтировать</button></div>
 </div>
 
 <div class="view" data-view="jobs"><div class="page">
@@ -660,7 +673,7 @@ const IC = {
   play:I('<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M10.500 9.500v5l4-2.500z" fill="currentColor"/>',22), wallet:I('<rect x="3.500" y="6" width="17" height="13" rx="3"/><path d="M15 12.500h2"/>',22),
   cam:I('<rect x="3.500" y="7" width="12" height="10" rx="2.500"/><path d="M15.500 10.500l5-2.500v8l-5-2.500z"/>'),
   spd:I('<path d="M4.500 16a8 8 0 1115 0"/><path d="M12 16l3.500-5"/>'), dn:I('<path d="M4 12h2M8 8v8M12 5v14M16 9v6M20 11v2"/>'),
-  cut:I('<circle cx="7" cy="7" r="2.600"/><circle cx="7" cy="17" r="2.600"/><path d="M9.200 8.500L20 17M9.200 15.500L20 7"/>',26)};
+  cut:I('<path d="M2.200 5.200L12.900 11.200L11.900 12.900Z" fill="currentColor"/><path d="M2.200 18.800L12.900 12.800L11.900 11.100Z" fill="currentColor"/><path d="M12.400 12L17.300 8.700M12.400 12L17.300 15.300"/><circle cx="19.300" cy="7.300" r="2.400"/><circle cx="19.300" cy="16.700" r="2.400"/><path d="M5 9.400L9.300 12L5 14.600Z" fill="currentColor" stroke="none"/>',26)};
 
 const WORDS = [['Первые',.25,.62],['три',.62,.9],['секунды',.9,1.4],['решают',1.4,1.85],['всё.',1.85,2.3],
   ['Не',2.75,2.95],['начинайте',2.95,3.5],['с',3.5,3.62],['приветствия.',3.62,4.4]].map(a=>({w:a[0],s:a[1],e:a[2]}));
@@ -776,11 +789,11 @@ $('#safeBtn').onclick=()=>{ $('#safe').classList.toggle('on'); renderSheet(); };
 // ---------- плитки главного экрана: нажатие = следующее значение, удержание = все варианты ----------
 const fillLevel=()=>P.filler_words?2:(P.fillers?1:0);
 const OPTS=[
-  {id:'fill',name:'Запинки и слова-паразиты',ic:'mic',vals:[['Не трогать','оставляю как есть'],['«э-э», «м-м»','вырезаю только запинки'],['+ «ну», «вот»','запинки и слова-паразиты']],get:fillLevel,set:v=>{P.fillers=v>0;P.filler_words=v>1;},off:()=>P.fmt==='raw'},
+  {id:'fill',name:'Слова-паразиты',ic:'mic',vals:[['Не трогать','оставляю как есть'],['«э-э», «м-м»','вырезаю только запинки'],['+ «ну», «вот»','запинки и слова-паразиты']],get:fillLevel,set:v=>{P.fillers=v>0;P.filler_words=v>1;},off:()=>P.fmt==='raw'},
   {id:'cam',name:'Движение камеры',ic:'cam',vals:[['Выкл','кадр остаётся как снят'],['Плавный наезд','кадр медленно приближается'],['Смена планов','то ближе, то дальше по фразам']],get:()=>['off','zoom','punch'].indexOf(P.camera),set:v=>{P.camera=['off','zoom','punch'][v];}},
   {id:'spd',name:'Ускорение ролика',ic:'spd',vals:[['×1','скорость как записано'],['×1.05',''],['×1.1',''],['×1.15','']],get:()=>[100,105,110,115].indexOf(P.speed),set:v=>{P.speed=[100,105,110,115][v];}},
   {id:'dn',name:'Шумоподавление',ic:'dn',vals:[['Выкл','звук остаётся как записан'],['Вкл','приглушаю шум комнаты и улицы']],get:()=>P.denoise?1:0,set:v=>{P.denoise=!!v;}},
-  {id:'sfx',name:'Звук появления плашек',ic:'bell',vals:[['Обычный','короткий звук под голосом'],['Тихий','едва слышен'],['Выкл','плашки появляются беззвучно']],get:()=>['normal','quiet','off'].indexOf(P.sfx),set:v=>{P.sfx=['normal','quiet','off'][v];}},
+  {id:'sfx',name:'Звук плашек',ic:'bell',vals:[['Обычный','короткий звук под голосом'],['Тихий','едва слышен'],['Выкл','плашки появляются беззвучно']],get:()=>['normal','quiet','off'].indexOf(P.sfx),set:v=>{P.sfx=['normal','quiet','off'][v];}},
   {id:'freq',name:'Сколько плашек',ic:'card',vals:[['Побольше','до 8 на ролик'],['Только главное','до 3 на ролик']],get:()=>P.cards_freq==='rare'?1:0,set:v=>{P.cards_freq=v?'rare':'often';}},
   {id:'prof',name:'Площадка',ic:'phone',vals:D.profiles.map(id=>[PROF[id],'']),get:()=>D.profiles.indexOf(P.profile),set:v=>{P.profile=D.profiles[v];}}];
 const FMT=[['head','Чистая речь','Вырезаю паузы между фразами'],['raw','Как снято','Ничего не вырезаю, только оформляю']];
@@ -797,17 +810,16 @@ function rowEl(icon, title, sub, value, opts){ const b=document.createElement('b
 function render(){
   $('#edit').classList.toggle('auto',P.auto); $$('#modeSeg button').forEach(b=>b.classList.toggle('on',(b.dataset.auto==='1')===!!P.auto));
   const f=FMT.find(x=>x[0]===P.fmt); $('#tag').textContent = P.fmt==='raw' ? 'Пример · без резки' : 'Пример';
-  const st=ST[P.style]||ST.focus, a=accentHex()||'#c6ff4a', cs=(D.cardStyles.find(x=>x.id===P.card_style)||{}).name||'';
-  const main=$('#rowsMain'); main.innerHTML='';
-  const fr=rowEl(IC[P.fmt==='raw'?'raw':'head'],'Формат',f?f[2]:'Выберите, вырезать ли паузы',f?f[1]:'Выбрать',{acc:!f}); fr.id='fmtBtn'; main.appendChild(fr);
-  fr.onclick=()=>popup(fr,'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; });
-  [['sub',IC.sub,'Субтитры',P.captions?'стиль: '+st.name+', размер '+P.cap_size+'%':'выключены'],['card',IC.card,'Плашки',P.cards?'стиль: '+cs:'выключены'],
-   ['col',`<span style="font:800 13px Manr;color:${a}">Аа</span>`,'Цвет текста','главное слово и остальные слова']].forEach(([id,ic,nm,sub])=>{
-     const r=rowEl(ic,nm,sub,'',{chev:1}); r.onclick=()=>openSheet(id); main.appendChild(r); });
-  const po=OPTS.find(o=>o.id==='prof'), pv=Math.max(0,po.get()), pr=rowEl(IC.phone,'Площадка','поля под её кнопки',po.vals[pv][0]);
-  press(pr, ()=>{ po.set((pv+1)%po.vals.length); render(); }, ()=>popup(pr,'Где выйдет ролик',po.vals,pv,i=>po.set(i))); main.appendChild(pr);
-  const tb=$('#rowsOpts'); tb.innerHTML=''; OPTS.filter(o=>o.id!=='prof'&&o.id!=='freq').forEach(o=>{ const v=Math.max(0,o.get()), dis=o.off&&o.off();
-    const b=rowEl(IC[o.ic],o.name,dis?'в формате «Как снято» ничего не вырезается':o.vals[v][1],dis?'выкл':o.vals[v][0]); if(dis) b.style.opacity=.45;
+  const st=ST[P.style]||ST.focus, a=accentHex()||'var(--acc)', cs=(D.cardStyles.find(x=>x.id===P.card_style)||{}).name||'';
+  const q=$('#quad'); q.innerHTML='';
+  [['fmt',IC[P.fmt==='raw'?'raw':'head'],'Формат',f?f[1]:'выбрать',!!f,!f],['sub',IC.sub,'Субтитры',P.captions?st.name:'выкл',P.captions,false],
+   ['card',IC.card,'Плашки',P.cards?cs:'выкл',P.cards,false],['col',`<span style="font:800 16px Manr;color:${a}">Аа</span>`,'Цвет текста','слова и акцент',false,false]].forEach(([id,ic,nm,sub,live,need])=>{
+     const b=document.createElement('button'); b.className='qb'+(live?' live':'')+(need?' need':''); b.innerHTML=`<span class="ring glass">${ic}<i></i></span>${nm}<small>${sub}</small>`;
+     if(id==='fmt'){ b.id='fmtBtn'; b.onclick=()=>popup(b,'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; }); }
+     else b.onclick=()=>openSheet(id); q.appendChild(b); });
+  const tb=$('#rowsOpts'); tb.innerHTML=''; OPTS.filter(o=>o.id!=='freq').forEach(o=>{ const v=Math.max(0,o.get()), dis=o.off&&o.off(), b=document.createElement('button');
+    b.className='t2 glass'+(v>0&&!dis&&o.id!=='prof'&&o.id!=='sfx'?' onv':''); if(dis) b.style.opacity=.45;
+    b.innerHTML=`<small>${IC[o.ic].replace(/width="\d+" height="\d+"/,'width="15" height="15"')}${o.name}</small><b>${dis?'не вырезаю':o.vals[v][0]}</b>`;
     if(!dis) press(b, ()=>{ o.set((v+1)%o.vals.length); render(); }, ()=>popup(b,o.name,o.vals,v,i=>o.set(i))); tb.appendChild(b); });
   applyLook(); }
 $$('#modeSeg button').forEach(b=>b.onclick=()=>{ P.auto=b.dataset.auto==='1'; render(); });
@@ -816,13 +828,16 @@ $('#plusBtn').onclick=()=>toast('Пока ролик отправляется б
 $('#logo').innerHTML=IC.cut;
 $('#scrim').addEventListener('click',hidePop);
 function prefsCode(forBot){ let out=D.codecSign; for(const [k,vals] of D.codec){ let i=vals.indexOf(P[k]); if(i<0) i=0; if(forBot && k==='fmt' && !fmtTouched && !gotFmt) i=0; const A=D.alphabet; out += D.codeWide.includes(k) ? A[Math.floor(i/64)]+A[i%64] : A[Math.min(i,63)]; } return out; }
-$('#save').onclick=()=>{ const data=JSON.stringify({v:2,prefs:P});
-  if(!tg){ $('#save').textContent='Открыто не в Telegram: сохранить некуда'; return; }
+/* Сохранить: только настройки. Смонтировать: настройки и запуск ролика, который ждёт в чате. */
+function sendPrefs(go, btn){ const data=JSON.stringify({v:2,prefs:P,go:!!go});
+  if(!tg){ btn.textContent='Открыто не в Telegram'; return; }
+  if(go && !P.fmt){ toast('Сначала выберите формат: вырезать паузы или оставить ролик как снят.'); return; }
   /* кнопка в клавиатуре бота: данные уходят боту напрямую. Кнопка у скрепки: через ссылку с коротким кодом */
   if(tg.initData==='' && tg.sendData){ tg.sendData(data); return; }
-  const bot=U.bot || D.bot || ((U.ref||'').match(/t\.me\/([A-Za-z0-9_]+)/)||[])[1]; if(!bot){ $('#save').textContent='Не знаю адрес бота: откройте из чата'; return; }
+  const bot=U.bot || D.bot || ((U.ref||'').match(/t\.me\/([A-Za-z0-9_]+)/)||[])[1]; if(!bot){ btn.textContent='Откройте из чата бота'; return; }
   if(cloud){ try{ cloud.setItem('prefs', prefsCode()); }catch(e){} }
-  $('#save').textContent='Применяю…'; tg.openTelegramLink(`https://t.me/${bot}?start=s_${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); };
+  btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; tg.openTelegramLink(`https://t.me/${bot}?start=${go?'g':'s'}_${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
+$('#save').onclick=()=>sendPrefs(false,$('#save')); $('#goBtn').onclick=()=>sendPrefs(true,$('#goBtn'));
 window.__code = prefsCode;
 
 // ---------- разделы: Ролики, Бонусы, Баланс (данные приходят от бота в адресе, после #) ----------
