@@ -117,15 +117,15 @@ svg{display:block}
 /* шторка */
 .scrim{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s}
 .scrim.on{opacity:1;pointer-events:auto}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;max-width:480px;margin:0 auto;height:66%;background:rgba(24,26,32,.78);-webkit-backdrop-filter:blur(30px) saturate(170%);backdrop-filter:blur(30px) saturate(170%);
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:60;max-width:480px;margin:0 auto;height:100%;border-radius:0 !important;background:rgba(14,15,19,.94);-webkit-backdrop-filter:blur(30px) saturate(170%);backdrop-filter:blur(30px) saturate(170%);
   border-radius:30px 30px 0 0;border:1px solid var(--rim);border-bottom:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.3);
   transform:translateY(105%);transition:transform .26s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
 .sheet.on{transform:none}
-.sheet .grab{width:38px;height:5px;border-radius:5px;background:rgba(255,255,255,.3);margin:9px auto 4px}
+.sheet .grab{display:none}
+.sheet .shead{padding-top:calc(12px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px))}
 .shead{display:flex;align-items:center;gap:10px;padding:6px 16px 10px}
 .shead h2{margin:0;font-size:20px;font-weight:800;flex:1;letter-spacing:-.01em}
-.back{display:none;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);place-items:center}
-.sheet.deep .back{display:grid}
+.back{display:flex;align-items:center;gap:4px;height:36px;padding:0 12px 0 6px;border-radius:999px;background:rgba(255,255,255,.12);font-weight:700;font-size:14px}
 .okbtn{padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.92);color:#111318;font-weight:800;font-size:14px}
 .sw{flex:none;width:50px;height:30px;border-radius:999px;background:rgba(255,255,255,.18);position:relative;transition:background .15s}
 .sw::after{content:'';position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
@@ -663,6 +663,30 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .pro .baseline{height:3px;background:rgba(255,255,255,.35);border-radius:3px;margin-top:-1px}
 .st-v_light .pro .bar{background:rgba(20,22,26,.18)}.st-v_light .pro .bl{color:rgba(20,22,26,.6)}.st-v_light .pro .bv{color:#15161a}
 .st-v_light .pro .bc.last .bv{color:#15161a}
+/* ---- стили как в приложении V CUT (раскадровка их превью, 96 кадров по 40 мс) ---- */
+/* Классика: плоская тёмно-бирюзовая плашка, мятные столбцы, последний и значок роста в цвет акцента */
+.st-v_classic .pro{background:#173033}
+.st-v_classic .pro .bar{background:#5fd3b2}.st-v_classic .pro .bc.last .bar{background:var(--c)}
+.st-v_classic .pro .trend{background:var(--c);color:#111}.st-v_classic .pro .trend i{background:#111;color:var(--c)}
+/* Стекло: прозрачные столбцы, последний белый, значок роста с зелёным кружком */
+.st-v_glass .pro .bar{background:rgba(255,255,255,.28)}.st-v_glass .pro .bc.last .bar{background:#fff}
+.st-v_glass .pro .bc.last .bv{color:#fff}
+.st-v_ink .pro .bar{background:rgba(255,255,255,.22)}.st-v_ink .pro .bc.last .bar{background:#fff}.st-v_ink .pro .bc.last .bv{color:#fff}
+/* Иней: матовое стекло, залитое градиентом от цвета акцента к малиновому */
+.st-v_frost .pro{background:linear-gradient(130deg,color-mix(in srgb,var(--c) 78%,#000 0%),#d6336c);opacity:.96}
+.st-v_frost .pro .bar{background:rgba(255,255,255,.34)}.st-v_frost .pro .bc.last .bar{background:#fff}.st-v_frost .pro .bc.last .bv{color:#fff}
+.st-v_frost .pro .trend{background:rgba(255,255,255,.22)}
+/* От руки: оси, штрихованные столбцы с обводкой, проценты в красном овале */
+.st-v_marker .pro .chart{border-left:4px solid #fff;padding-left:16px;border-radius:0 0 0 14px}
+.st-v_marker .pro .baseline{height:4px;background:#fff;border-radius:4px;transform:rotate(-.6deg)}
+.st-v_marker .pro .bar{background:repeating-linear-gradient(-45deg,rgba(255,122,69,.9) 0 6px,transparent 6px 14px);border:4px solid #fff;
+     border-radius:6px 9px 3px 4px}
+.st-v_marker .pro .bc.last .bar{background:repeating-linear-gradient(-45deg,var(--c) 0 6px,transparent 6px 14px)}
+.st-v_marker .pro .trend{background:none;padding:6px 26px;border:4px solid #ff4d4d;border-radius:50%;transform:rotate(-3deg)}
+.st-v_marker .pro .trend i{display:none}
+.st-v_light .pro .bc.last .bar{background:var(--c)}
+.st-v_marker .pro .bv,.st-v_marker .pro .bl{color:#fff;font-size:34px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.st-v_marker .pro .trend{color:#fff;font-size:44px}
 .stamp{position:absolute;right:26px;top:-24px;transform:rotate(8deg);border:6px solid #ff4d6d;color:#ff4d6d;padding:4px 20px;
        font-weight:800;font-size:44px;border-radius:12px;background:rgba(16,18,32,.9)}
 
@@ -872,7 +896,7 @@ function swatches(sel, items, cur, on){ const box=$(sel); box.innerHTML=''; item
 const SFX={normal:['Стандарт','под голосом'],quiet:['Тихо','еле слышно'],off:['Выкл','без звуков']}, PROF={reels:'Instagram Reels',tiktok:'TikTok',shorts:'YouTube Shorts',universal:'Универсально'};
 const WORDS_OPT=[0,2,3,4,5];
 function renderSheet(){ if(!sheet) return; const S=SHEETS[sheet], pane=deep?sheet+'g':sheet;
-  $('#sheet').classList.toggle('deep',!!deep); $$('#sheet .pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===pane));
+  $('#sheet').classList.toggle('deep',!!deep); $('#sBackT').textContent = deep ? 'Назад' : 'Меню'; $$('#sheet .pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===pane));
   $('#sSw').style.display = S.key && !deep ? '' : 'none'; if(S.key) $('#sSw').classList.toggle('on',!!P[S.key]);
   minis.length=0; cardLive.length=0;
   if(sheet==='sub' && !deep){ $('#sTitle').textContent=S.title; $('#sizeV').textContent=P.cap_size+' %'; $('#wordsV').textContent=P.cap_words||'авто'; $('#safeV').textContent=$('#safe').classList.contains('on')?'показывать':'не показывать';
@@ -900,8 +924,8 @@ function renderSheet(){ if(!sheet) return; const S=SHEETS[sheet], pane=deep?shee
   if(sheet==='snd'){ $('#sTitle').textContent=S.title; picks('#sfx',D.sfx.map(id=>({id,name:SFX[id][0],d:SFX[id][1]})),P.sfx,id=>{P.sfx=id;});
     picks('#profiles',D.profiles.map(id=>({id,name:PROF[id]})),P.profile,id=>{P.profile=id;}); }
 }
-$('#sBack').innerHTML=IC.back;
-$('#sBack').onclick=()=>{ deep=null; renderSheet(); $('#sbody').scrollTop=0; };
+$('#sBack').innerHTML=IC.back+'<span id="sBackT">Меню</span>';
+$('#sBack').onclick=()=>{ if(deep){ deep=null; renderSheet(); $('#sbody').scrollTop=0; } else closeSheet(); };
 $('#sOk').onclick=closeSheet; $('#scrim').onclick=closeSheet;
 $('#sSw').onclick=()=>{ const k=SHEETS[sheet].key; if(k){ P[k]=!P[k]; renderSheet(); } };
 $$('[data-size]').forEach(b=>b.onclick=()=>{ P.cap_size=Math.max(D.size.min,Math.min(D.size.max,P.cap_size+D.size.step*(+b.dataset.size))); renderSheet(); });
