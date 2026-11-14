@@ -55,7 +55,7 @@ svg{display:block}
 .hdr small{color:var(--mut);font-size:12px}
 .hdr .pillbal{margin-left:auto;padding:8px 14px;border-radius:999px;font-weight:700;font-size:13px;display:flex;gap:6px;align-items:center}
 .view{display:none}.view.on{display:block}
-.hero2{padding:8px 16px 6px;position:sticky;top:0;z-index:6;background:linear-gradient(var(--bg,#0b0d12) 82%,transparent)}
+.hero2{padding:8px 16px 4px;position:relative}
 .side{position:absolute;bottom:64px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:6px;width:78px;
   font-size:12px;font-weight:700;line-height:1.15;text-align:center;color:#fff}
 .side.l{left:6px}.side.r{right:6px;display:none}.auto .side.r{display:flex}
@@ -68,6 +68,10 @@ svg{display:block}
 .insbox h4::after{content:'›';margin-left:8px;transition:.2s;color:var(--mut)}.insbox.open h4::after{transform:rotate(90deg)}
 .insbody{display:none}.insbox.open .insbody{display:block;margin-top:6px}
 .insbox{padding:12px 14px}
+.hooktxt{display:block;width:calc(100% - 32px);box-sizing:border-box;margin:8px 16px 0;padding:12px 14px;border-radius:16px;
+  border:1px solid var(--acc);background:rgba(0,0,0,.25);color:#fff;font-family:inherit;font-size:15px}
+.insadd{width:100%;margin-top:8px;padding:11px;border-radius:14px;border:1px dashed rgba(255,255,255,.35);background:rgba(255,255,255,.05);
+  color:#fff;font-family:inherit;font-weight:700;font-size:14px}
 .insbox h4 small{color:var(--mut);font-weight:500}
 .insmodes{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
 .insmodes button{padding:9px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;
@@ -941,12 +945,14 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
   <div class="manual">
     <div class="quad" id="quad"></div>
     <div class="tiles2" id="rowsOpts"></div>
+    <input class="hooktxt" id="hookTxt" maxlength="60" placeholder="Ваш заголовок, 3–6 слов" style="display:none">
     <div class="hintbar"><b>Тап</b> по плитке меняет значение на следующее, <b>долгое нажатие</b> показывает все варианты.</div>
   </div>
   <div class="insbox glass" id="insbox"><h4 id="insHead">🎞 Вставки <small id="insN"></small></h4><div class="insbody">
     <div class="insmodes" id="insModes"></div>
-    <textarea id="wish" placeholder="Сценарий или пожелания: что, где и как вставить"></textarea>
-    <div class="note">Как добавить видео для вставки: в чате под роликом нажмите «🎞 Добавить вставку» и пришлите видео, до 3 штук. Загрузка прямо сюда появится после переезда на наш сервер.</div></div></div>
+    <button class="insadd" id="insAdd">＋ Добавить видео для вставки</button>
+    <textarea id="wish" placeholder="Сценарий или пожелания: что, где и как вставить" style="margin-top:8px"></textarea>
+    <div class="note">«Добавить» откроет чат: пришлите туда видео, они станут вставками (до 3).</div></div></div>
   <div class="dock"><button class="save2 glass" id="save">Сохранить</button><button class="save" id="goBtn">Смонтировать</button></div>
 </div>
 
@@ -1085,7 +1091,7 @@ const stateAt = (tl, t) => tl.findIndex(s => t>=s.a && t<s.b);
 
 // ---------- главное превью (тёмная подложка, без человечка) ----------
 const stage=$('#stage'), wrap=$('#wrap'), capin=$('#capin'), capbox=$('#capbox');
-function fitStage(){ const h=Math.max(190, Math.min(window.innerHeight*(P.auto?0.34:0.30), 380)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
+function fitStage(){ const h=Math.max(190, Math.min(window.innerHeight*(P.auto?0.36:0.27), 380)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
 function accentHex(){ const a=D.accents.find(x=>x.id===P.cap_accent); return a&&a.hex ? a.hex : (P.cap_accent==='video' ? '#ff7a1a' : null); }
 const isRev = st => st.mode==='reveal' && !st.kind;
 function anim(el, s){ el.classList.remove('linein','lineout'); if(s.exit){ el.classList.add('lineout'); } else if(s.line){ void el.offsetWidth; el.classList.add('linein'); } }
@@ -1176,10 +1182,11 @@ $('#wordsBtn').onclick=()=>{ P.cap_words=WORDS_OPT[(WORDS_OPT.indexOf(P.cap_word
 $$('.acch').forEach(b=>b.onclick=()=>{ $('#'+b.dataset.acc).classList.toggle('open'); });
 
 // ---------- плитки главного экрана: нажатие = следующее значение, удержание = все варианты ----------
-const fillLevel=()=>P.filler_words?2:(P.fillers?1:0);
+let hookOwn=false;
+function showHookTxt(){ const el=$('#hookTxt'); if(!el) return; el.style.display=hookOwn&&P.hook?'block':'none'; if(hookOwn&&P.hook) setTimeout(()=>el.focus(),50); }
 const OPTS=[
-  {id:'fill',name:'Слова-паразиты',ic:'mic',vals:[['Не трогать','оставляю как есть'],['«э-э», «м-м»','вырезаю только запинки'],['+ «ну», «вот»','запинки и слова-паразиты']],get:fillLevel,set:v=>{P.fillers=v>0;P.filler_words=v>1;},off:()=>P.fmt==='raw'},
-  {id:'hook',name:'Заголовок в начале',ic:'cam',vals:[['Выкл','ролик начинается без заголовка'],['Вкл','умный заголовок по смыслу ролика в первые секунды']],get:()=>P.hook?1:0,set:v=>{P.hook=!!v;}},
+  {id:'fill',name:'Запинки «э-э», «м-м»',ic:'mic',vals:[['Оставить','ничего не вырезаю'],['Вырезать','убираю «э-э», «м-м» и подобные звуки']],get:()=>P.fillers?1:0,set:v=>{P.fillers=!!v;P.filler_words=false;},off:()=>P.fmt==='raw'},
+  {id:'hook',name:'Заголовок в начале',ic:'cam',vals:[['Выкл','ролик начинается без заголовка'],['Придумаю сам','заголовок по смыслу ролика'],['Свой текст','напишете заголовок сами']],get:()=>P.hook?(hookOwn?2:1):0,set:v=>{P.hook=v>0;hookOwn=v===2;showHookTxt();}},
   {id:'cam',name:'Движение камеры',ic:'cam',vals:[['Выкл','кадр остаётся как снят'],['Плавный наезд','кадр медленно приближается'],['Смена планов','то ближе, то дальше по фразам']],get:()=>['off','zoom','punch'].indexOf(P.camera),set:v=>{P.camera=['off','zoom','punch'][v];}},
   {id:'spd',name:'Ускорение ролика',ic:'spd',vals:[['×1','скорость как записано'],['×1.1','почти незаметно'],['×1.25','бодрее'],['×1.5','быстро'],['×1.75','очень быстро'],['×2','вдвое быстрее, речь труднее разобрать']],get:()=>[100,110,125,150,175,200].indexOf(P.speed),set:v=>{P.speed=[100,110,125,150,175,200][v];}},
   {id:'dn',name:'Шумоподавление',ic:'dn',vals:[['Выкл','звук остаётся как записан'],['Вкл','приглушаю шум комнаты и улицы']],get:()=>P.denoise?1:0,set:v=>{P.denoise=!!v;}},
@@ -1233,7 +1240,8 @@ function prefsCode(forBot){ let out=D.codecSign; for(const [k,vals] of D.codec){
 /* Сохранить: только настройки. Смонтировать: настройки и запуск ролика, который ждёт в чате. */
 let goArmed=0;
 $('#fontBtn').onclick=()=>{ P.use_font=!P.use_font; renderSheet(); };
-function sendPrefs(go, btn){ const wish=($('#wish').value||'').trim(); const data=JSON.stringify({v:2,prefs:P,go:!!go,wishes:wish});
+function sendPrefs(go, btn, action){ const ht=($('#hookTxt').value||'').trim();
+  const wish=((hookOwn&&P.hook&&ht?'Заголовок: '+ht+'\n':'')+($('#wish').value||'')).trim(); const data=JSON.stringify({v:2,prefs:P,go:!!go,wishes:wish,action:action||''});
   if(go && Q.get('d')==='0'){ toast('Сначала пришлите видео в чат с ботом. Когда оно загрузится, нажмите на карточке «Настроить и смонтировать».'); return; }
   if(go && Date.now()-goArmed>4000){ goArmed=Date.now(); btn.textContent='Нажмите ещё раз: спишется 1 монтаж'; setTimeout(()=>{ if(Date.now()-goArmed>=3900) btn.textContent='Смонтировать'; },4000); return; }
   if(!tg){ btn.textContent='Открыто не в Telegram'; return; }
@@ -1244,8 +1252,8 @@ function sendPrefs(go, btn){ const wish=($('#wish').value||'').trim(); const dat
   if(cloud){ try{ cloud.setItem('prefs', prefsCode()); }catch(e){} }
   /* открыто с карточки ролика: пожелание напрямую не передать — копируем, чтобы человек вставил его в чат */
   if(wish){ try{ navigator.clipboard.writeText(wish); }catch(e){} toast('Пожелание скопировано: вставьте его в чат одним сообщением.'); }
-  btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; tg.openTelegramLink(`https://t.me/${bot}?start=${go?'g':'s'}_${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
-$('#save').onclick=()=>sendPrefs(false,$('#save')); $('#goBtn').onclick=()=>sendPrefs(true,$('#goBtn'));
+  btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; tg.openTelegramLink(`https://t.me/${bot}?start=${action==='ins'?'i':(go?'g':'s')}_${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
+$('#save').onclick=()=>sendPrefs(false,$('#save')); $('#insAdd').onclick=()=>sendPrefs(false,$('#insAdd'),'ins'); $('#goBtn').onclick=()=>sendPrefs(true,$('#goBtn'));
 window.__code = prefsCode;
 
 // ---------- разделы: Ролики, Бонусы, Баланс (данные приходят от бота в адресе, после #) ----------
