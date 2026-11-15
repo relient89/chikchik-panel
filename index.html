@@ -67,13 +67,13 @@ svg{display:block}
 .insbox h4{margin:0;font-size:15px;color:#fff;display:flex;justify-content:space-between;cursor:pointer}
 .insbox h4::after{content:'›';margin-left:8px;transition:.2s;color:var(--mut)}.insbox.open h4::after{transform:rotate(90deg)}
 .insbody{display:none}.insbox.open .insbody{display:block;margin-top:6px}
-.insbox{padding:12px 14px}
+.insbox{padding:10px 14px;margin-top:8px}
 .hooktxt{display:block;width:calc(100% - 32px);box-sizing:border-box;margin:8px 16px 0;padding:12px 14px;border-radius:16px;
   border:1px solid var(--acc);background:rgba(0,0,0,.25);color:#fff;font-family:inherit;font-size:15px}
-.insadd{width:100%;margin-top:8px;padding:11px;border-radius:14px;border:1px dashed rgba(255,255,255,.35);background:rgba(255,255,255,.05);
+.insadd{width:100%;margin-top:6px;padding:9px;border-radius:14px;border:1px dashed rgba(255,255,255,.35);background:rgba(255,255,255,.05);
   color:#fff;font-family:inherit;font-weight:700;font-size:14px}
 .insbox h4 small{color:var(--mut);font-weight:500}
-.insmode{display:flex;align-items:center;gap:10px;width:100%;margin:10px 0 0;padding:10px 12px;border-radius:14px;border:1px solid var(--acc);
+.insmode{display:flex;align-items:center;gap:10px;width:100%;margin:8px 0 0;padding:8px 12px;border-radius:14px;border:1px solid var(--acc);
   background:var(--acc-a1);color:#fff;font-family:inherit;text-align:left}
 .insmode .mi{font-size:20px;flex:none}.insmode b{display:block;font-size:14px}.insmode small{display:block;font-size:12px;color:rgba(255,255,255,.7);margin-top:2px}
 .insmode .nx{margin-left:auto;font-size:12px;color:var(--mut);white-space:nowrap}
@@ -83,7 +83,7 @@ svg{display:block}
 .insmodes button small{display:block;font-weight:400;font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
 .insmodes button.on{border-color:var(--acc);background:var(--acc-a1)}
 .insbox textarea{width:100%;box-sizing:border-box;min-height:64px;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.2);color:#fff;font-family:inherit;font-size:14px;line-height:1.35;resize:vertical}
+  background:rgba(0,0,0,.2);color:#fff;font-family:inherit;font-size:14px;line-height:1.3;resize:vertical;min-height:44px;height:44px}
 .insbox .note{margin-top:8px}
 .stagewrap{position:relative;margin:0 auto;border-radius:28px;overflow:hidden;background:var(--spot);box-shadow:0 0 0 1px var(--rim),0 20px 50px rgba(0,0,0,.6)}
 .stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden}
@@ -107,7 +107,8 @@ svg{display:block}
 .seg{display:grid;grid-template-columns:1fr 1fr;margin:14px 16px 0;padding:4px;border-radius:999px}
 .seg button{padding:10px 8px;border-radius:999px;font-weight:700;font-size:14px;color:var(--mut);transition:.18s}
 .seg button.on{background:rgba(255,255,255,.92);color:#111318;box-shadow:0 4px 14px rgba(0,0,0,.3)}
-.autotext{display:none;margin:12px 16px 0;padding:16px;border-radius:22px;color:#dfe2e8;line-height:1.45;font-size:14px}
+.autotext{display:none;margin:8px 16px 0;padding:11px 14px;border-radius:18px;color:#dfe2e8;line-height:1.35;font-size:13px}
+#edit:has(.insbox.open) .autotext{display:none !important}
 .auto .autotext{display:block}.auto .manual{display:none}
 .afmt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
 .afmt button{padding:12px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;
@@ -958,9 +959,9 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
   </div>
   <div class="insbox glass" id="insbox"><h4 id="insHead">🎞 Вставки <small id="insN"></small></h4><div class="insbody">
     <button class="insmode" id="insMode"><span class="mi">🎞</span><span><b id="insModeN"></b><small id="insModeD"></small></span><span class="nx">сменить ›</span></button>
-    <button class="insadd" id="insAdd">＋ Добавить видео для вставки</button>
-    <textarea id="wish" placeholder="Сценарий или пожелания: что, где и как вставить" style="margin-top:8px"></textarea>
-    <div class="note">«Добавить» откроет чат: пришлите туда видео, они станут вставками (до 3).</div></div></div>
+    <button class="insadd" id="insAdd">＋ Добавить видео для вставки <small style="font-weight:500;opacity:.65">· откроется чат, до 3</small></button>
+    <textarea id="wish" placeholder="Пожелания: что, где и как вставить" style="margin-top:6px"></textarea>
+    </div></div>
   <div class="dock"><button class="save2 glass" id="save">Сохранить</button><button class="save" id="goBtn">Смонтировать</button></div>
 </div>
 
