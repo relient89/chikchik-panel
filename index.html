@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='3a5b10b8db';
+(function(){ var B='29c50a4668';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1124,7 +1124,7 @@ const IC = {
 
 
 // ===== Версия 2: настройки списком, как в iPhone =====
-const UI2 = Q.get('ui')==='2';
+const UI2 = Q.get('ui')!=='1';      // владелец 2026-11-15: вторая версия — основная; прежняя открывается с ?ui=1
 if(UI2){ document.body.classList.add('ui2'); const pb=document.getElementById('plusBtn'); if(pb && pb.lastChild) pb.lastChild.textContent='Добавить'; }   // узкое превью: кружок «+» не сжимается в овал
 const CHEVR='<span class="lch" aria-hidden="true">›</span>';
 function lrow(icon, title, sub, value, onClick, opt={}){
