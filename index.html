@@ -1340,7 +1340,7 @@ if(!('balance' in U)){ const bot=(Q.get('b')||D.bot||'').replace(/[^A-Za-z0-9_]/
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let curPlan=0;
 function fillPages(){
-  const bal=+U.balance||0; $('#bal').textContent=knowBalance?bal:''; $('#balW').textContent=knowBalance?plural(bal,'монтаж','монтажа','монтажей')+' на балансе, без срока':'Сколько монтажей осталось, покажет кнопка «Баланс» в чате';
+  const bal=+U.balance||0; $('#bal').textContent=knowBalance?(bal<0?'∞':bal):''; $('#balW').textContent=knowBalance?(bal<0?'Безлимит: монтируйте сколько угодно':plural(bal,'монтаж','монтажа','монтажей')+' на балансе, без срока'):'Сколько монтажей осталось, покажет кнопка «Баланс» в чате';
   const pk=U.packages||[]; if(pk.length && !fillPages.init){ fillPages.init=1; curPlan=Math.max(0,pk.findIndex(p=>p.best)); }
   $('#plans').innerHTML=pk.map((p,i)=>`<button class="plan glass${i===curPlan?' on':''}" data-plan="${i}">${p.best?'<span class="flag">ЛУЧШАЯ ЦЕНА ЗА МОНТАЖ</span>':''}<span class="rd"></span><span><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${esc(p.note||'не сгорают')}</small></span><span class="pr">${esc(p.price)}</span></button>`).join('') || '<div class="empty">Пакеты появятся здесь.</div>';
   $$('[data-plan]').forEach(b=>b.onclick=()=>{ curPlan=+b.dataset.plan; fillPages(); });
@@ -1357,7 +1357,7 @@ const NAV=[['edit','cut','Монтаж'],['jobs','play','Ролики'],['bonus'
 function go(id){ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); render(); } }
 function nav(){ const tb=$('#tabbar'); tb.innerHTML=''; NAV.forEach(([id,ic,nm])=>{ const b=document.createElement('button'); b.className=id===curView?'on':'';
   b.innerHTML=IC[ic].replace(/width="\d+" height="\d+"/,'width="22" height="22"')+nm; b.onclick=()=>go(id); tb.appendChild(b); });
-  const bal=+U.balance||0; $('#balPill').innerHTML = knowBalance ? `${IC.wallet.replace(/width="\d+" height="\d+"/,'width="16" height="16"')}${bal} ${plural(bal,'монтаж','монтажа','монтажей')}` : 'Баланс';
+  const bal=+U.balance||0; $('#balPill').innerHTML = knowBalance ? `${IC.wallet.replace(/width="\d+" height="\d+"/,'width="16" height="16"')}${bal<0?'Безлимит':bal+' '+plural(bal,'монтаж','монтажа','монтажей')}` : 'Баланс';
   $('.dock').style.display = curView==='edit' ? '' : 'none'; }
 $('#balPill').onclick=()=>go('pay');
 fillPages(); nav();
