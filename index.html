@@ -104,9 +104,13 @@ svg{display:block}
 .liquidfx .card{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .plus{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;align-items:center;gap:7px;padding:6px 12px 6px 7px;max-width:94%;border-radius:999px;font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .plus i{width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--onacc);display:grid;place-items:center;font-style:normal;font-size:20px;line-height:1;font-weight:700}
-.seg{display:grid;grid-template-columns:1fr 1fr;margin:14px 16px 0;padding:4px;border-radius:999px}
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;margin:10px 16px 0;padding:4px;border-radius:999px}
+.seg .segknob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:rgba(255,255,255,.92);
+  box-shadow:0 4px 14px rgba(0,0,0,.3);transition:transform .28s cubic-bezier(.3,.7,.2,1)}
+.seg.manualon .segknob{transform:translateX(100%)}
+.seg button{position:relative;z-index:1}
 .seg button{padding:10px 8px;border-radius:999px;font-weight:700;font-size:14px;color:var(--mut);transition:.18s}
-.seg button.on{background:rgba(255,255,255,.92);color:#111318;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.seg button.on{color:#111318}
 .autotext{display:none;margin:8px 16px 0;padding:11px 14px;border-radius:18px;color:#dfe2e8;line-height:1.35;font-size:13px}
 #edit:has(.insbox.open) .autotext{display:none !important}
 .auto .autotext{display:block}.auto .manual{display:none}
@@ -948,8 +952,8 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
       <div class="capbox" id="capbox"><div class="capin" id="capin"></div></div>
       <div class="safe" id="safe"></div>
     </div><button class="plus glass" id="plusBtn"><i>+</i>Добавить ролик</button></div>
-    <button class="side l" id="modeSide"><i>✦</i><span>Сделай красиво<small id="modeV"></small></span></button>
     <button class="side r" id="fmtSide"><i>🗣</i><span>Формат<small id="fmtSideV"></small></span></button></div>
+  <div class="seg glass" id="modeSeg"><i class="segknob"></i><button data-auto="1">Сделай красиво</button><button data-auto="0">Настрою сам</button></div>
   <div class="autotext glass">Цвет, заголовок, субтитры и плашки подберу под ваш ролик. Понравится стиль — следующие сделаю так же.</div>
   <div class="manual">
     <div class="quad" id="quad"></div>
@@ -1235,13 +1239,14 @@ function render(){
 const INSM=[['auto','Авто','поверх, где по смыслу'],['full','Весь экран','на всю зону кадра'],['split','Сплит','вставка сверху, вы снизу'],
   ['circle','Кружок','вставка на весь кадр, вы в кружке'],['prologue','Пролог','до начала ролика']];
 function renderAfmt(){
-  $('#modeSide').classList.toggle('on',!!P.auto); $('#modeV').textContent=P.auto?'вкл':'выкл: настрою сам';
+  $$('#modeSeg button').forEach(b=>b.classList.toggle('on',(b.dataset.auto==='1')===!!P.auto));
+  $('#modeSeg').classList.toggle('manualon',!P.auto);
   const f=FMT.find(x=>x[0]===P.fmt); $('#fmtSideV').textContent=f?f[1]:'не выбран';
   const k=+Q.get('k')||0, im=(INSM.find(x=>x[0]===P.ins_mode)||INSM[0])[1]; $('#insN').textContent=`${im} · ${k?k+' из 3':'нет видео'}`;
   const cur=INSM.find(x=>x[0]===P.ins_mode)||INSM[0]; $('#insModeN').textContent=cur[1]; $('#insModeD').textContent=cur[2]; }
 $('#insMode').onclick=()=>{ const i=INSM.findIndex(x=>x[0]===P.ins_mode); P.ins_mode=INSM[(i+1)%INSM.length][0]; renderAfmt(); };
 $('#insHead').onclick=()=>$('#insbox').classList.toggle('open');
-$('#modeSide').onclick=()=>{ P.auto=!P.auto; render(); };
+$$('#modeSeg button').forEach(b=>b.onclick=()=>{ P.auto=b.dataset.auto==='1'; render(); });
 $('#fmtSide').onclick=()=>popup($('#fmtSide'),'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; renderAfmt(); });
 let toastT=null; function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),4200); }
 $('#plusBtn').onclick=()=>toast('Пока ролик отправляется боту прямо в чат: закройте это окно и пришлите видео. Загрузка отсюда и просмотр на своём ролике появятся после переезда на наш сервер.');
