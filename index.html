@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>ЧикЧик</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+/* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
+   При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
+(function(){ var B='bff57ae728';
+  try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
+    var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
+</script>
 <style>
 @font-face{font-family:'Unb';src:url('fonts/Unbounded[wght].ttf');font-weight:100 900;font-display:swap}
 @font-face{font-family:'Mont';src:url('fonts/Montserrat[wght].ttf');font-weight:100 900;font-display:swap}
