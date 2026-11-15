@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='29c50a4668';
+(function(){ var B='2f39d2eb64';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -217,6 +217,12 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .tile.light .mini{background:linear-gradient(160deg,#a9aeb6,#6e737c)}
 .swrow{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none}.swrow::-webkit-scrollbar{display:none}
 .swrow .swt{flex:none;width:60px}
+.cgrp{margin-top:12px;padding:12px 12px 14px;border-radius:18px;border:1px solid var(--rim);background:rgba(0,0,0,.22)}
+.cgrp:first-child{margin-top:2px}
+.cgrp .swatches{gap:12px 2px}.cgrp .swt{font-size:11px;min-width:0;text-align:center}.cgrp .swt .c{width:44px;height:44px;font-size:15px}
+.cgh{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.cgt{flex:1;font-weight:800;font-size:15px}.cgt small{display:block;color:var(--mut);font-weight:500;font-size:12px;margin-top:1px}
+.cgx{flex:none;padding:5px 10px;border-radius:10px;background:rgba(0,0,0,.45);font:900 15px 'Manr';letter-spacing:.02em;text-shadow:0 1px 2px #000}
 .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px}
 .swt{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--mut)}
 .swt .c{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid var(--rim);display:grid;place-items:center;font:800 17px 'Manr'}
@@ -1049,8 +1055,8 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
   <div class="sbody" id="sbody">
     <div class="pane" data-pane="sub">
       <div class="acc" id="accColor"><button class="acch" data-acc="accColor"><span class="ri" id="colorDots"></span><span class="rt">Цвет субтитров<small id="colorSub"></small></span><span class="chev"></span></button>
-        <div class="accb"><h3>Главное слово</h3><div class="swatches" id="accents"></div>
-          <h3>Остальные слова</h3><div class="swatches" id="mains"></div>
+        <div class="accb"><div class="cgrp"><div class="cgh"><span class="cgt">Главное слово<small>выделяется в каждой фразе</small></span><span class="cgx" id="cgxA">СЛОВО</span></div><div class="swatches" id="accents"></div></div>
+          <div class="cgrp"><div class="cgh"><span class="cgt">Остальные слова<small>весь остальной текст</small></span><span class="cgx" id="cgxM">текст</span></div><div class="swatches" id="mains"></div></div>
           <div class="note">«Как в стиле» — цвета, задуманные автором стиля. Выберите цвет, и все стили ниже перекрасятся в него, включая плашки под словами и неон.</div></div></div>
       <div class="acc" id="accSize"><button class="acch" data-acc="accSize"><span class="ri">Аа</span><span class="rt">Размер субтитров<small id="sizeSub"></small></span><span class="chev"></span></button>
         <div class="accb"><div class="duo"><div class="stepbox"><button data-size="-1">−</button><div><span>Размер</span><b id="sizeV"></b></div><button data-size="1">+</button></div>
@@ -1302,6 +1308,7 @@ function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').
     picks('#capcolors',[{id:'dark',name:'Тёмная',d:'чёрная обводка и тень'},{id:'video',name:'В цвет ролика',d:'оттенок подберу из кадра'}],P.cap_color,id=>{P.cap_color=id;});
     const ah=accentHex(), mh=(D.mains.find(x=>x.id===P.cap_main)||{}).hex, an=(D.accents.find(x=>x.id===P.cap_accent)||{}).name||'как в стиле', mn=(D.mains.find(x=>x.id===P.cap_main)||{}).name||'как в стиле';
     $('#colorDots').innerHTML=`<span class="dots"><i style="background:${ah||'transparent'}"></i><i style="background:${mh||'#fff'}"></i></span>`;
+    $('#cgxA').style.color=ah||'var(--acc)'; $('#cgxM').style.color=mh||'#fff';
     $('#colorSub').textContent=`главное слово: ${an.toLowerCase()}, остальные: ${mn.toLowerCase()}`;
     $('#sizeSub').textContent=`${P.cap_size}% · слов за раз: ${P.cap_words||'авто'}`;
     const fn=Q.get('f'); $('#fontBtn').style.display=fn?'':'none';
