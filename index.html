@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='0cbaef810c';
+(function(){ var B='abb1f24991';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1264,8 +1264,8 @@ const stylesWord=n=>n+' '+plural(n,'стиль','стиля','стилей');
 const SHEETS={sub:{title:'Субтитры',key:'captions'},card:{title:'Плашки',key:'cards'},col:{title:'Цвет текста'},snd:{title:'Звук и площадка'},
   vid:{title:'Ролик'},snd2:{title:'Звук'},pic:{title:'Камера и скорость'},hk:{title:'Заголовок',key:'hook'},ins:{title:'Вставки'}};
 let sheet=null, deep=null, curGroup=null, curCGroup=null;
-function openSheet(id){ sheet=id; deep=null; $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); noKeep=true; renderSheet(); $('#sbody').scrollTop=0; }
-function closeSheet(){ restoreMoved(); sheet=null; deep=null; $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); render(); }
+function openSheet(id){ tgBack(true); sheet=id; deep=null; $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); noKeep=true; renderSheet(); $('#sbody').scrollTop=0; }
+function closeSheet(){ tgBack(false); restoreMoved(); sheet=null; deep=null; $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); render(); }
 function picks(sel, items, cur, on){ const box=$(sel); box.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.className='pick'+(it.id===cur?' on':'');
   b.innerHTML=it.name+(it.d?`<small>${it.d}</small>`:''); b.onclick=()=>{ on(it.id); renderSheet(); }; box.appendChild(b); }); }
 function swatches(sel, items, cur, on){ const box=$(sel); box.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.className='swt'+(it.id===cur?' on':'');
@@ -1314,6 +1314,26 @@ function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').
 $('#sBack').innerHTML=IC.back+'<span id="sBackT">Меню</span>';
 $('#sBack').onclick=()=>{ if(deep){ deep=null; noKeep=true; renderSheet(); $('#sbody').scrollTop=0; } else closeSheet(); };
 $('#sOk').onclick=closeSheet; $('#scrim').onclick=closeSheet;
+/* Назад, как в iPhone: свайп вправо по странице настроек (страница едет за пальцем) и кнопка «Назад» Telegram
+   в шапке (на Android — и системная кнопка «назад»). Владелец 2026-11-15. */
+function tgBack(on){ try{ if(tg && tg.BackButton && tg.isVersionAtLeast && tg.isVersionAtLeast('6.1')) on ? tg.BackButton.show() : tg.BackButton.hide(); }catch(e){} }
+try{ if(tg && tg.BackButton) tg.BackButton.onClick(()=>{ if(sheet) $('#sBack').click(); }); }catch(e){}
+(()=>{ const sh=$('#sheet'); let x0=0, y0=0, t0=0, dx=0, on=false, lock=null;
+  const hscroll=el=>{ for(;el&&el!==sh;el=el.parentElement){ const cs=getComputedStyle(el); if(/(auto|scroll)/.test(cs.overflowX) && el.scrollWidth>el.clientWidth+2) return true; } return false; };
+  sh.addEventListener('touchstart',e=>{ if(!sheet||e.touches.length!==1||hscroll(e.target)) return; const p=e.touches[0]; x0=p.clientX; y0=p.clientY; t0=Date.now(); dx=0; on=true; lock=null; },{passive:true});
+  sh.addEventListener('touchmove',e=>{ if(!on) return; const p=e.touches[0], ddx=p.clientX-x0, ddy=p.clientY-y0;
+    if(lock===null && (Math.abs(ddx)>10||Math.abs(ddy)>10)) lock = ddx>0 && Math.abs(ddx)>Math.abs(ddy)*1.2 ? 'x' : 'y';
+    if(lock!=='x') return; dx=Math.max(0,ddx); sh.style.transition='none'; sh.style.transform=`translateX(${dx}px)`; },{passive:true});
+  const end=()=>{ if(!on) return; on=false; if(lock!=='x'){ return; }
+    const fast = dx>40 && dx/Math.max(1,Date.now()-t0)>0.5, go = dx>sh.offsetWidth*0.33 || fast;
+    sh.style.transition='transform .2s cubic-bezier(.2,.8,.2,1)';
+    if(!go){ sh.style.transform='translateX(0)'; setTimeout(()=>{ sh.style.transition=''; sh.style.transform=''; },210); return; }
+    sh.style.transform='translateX(100%)';
+    setTimeout(()=>{ sh.style.transition='none';
+      if(deep){ deep=null; noKeep=true; renderSheet(); $('#sbody').scrollTop=0; sh.style.transform=''; }
+      else { closeSheet(); sh.style.transform=''; }
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ sh.style.transition=''; })); },200); };
+  sh.addEventListener('touchend',end); sh.addEventListener('touchcancel',end); })();
 $('#sSw').onclick=()=>{ const k=SHEETS[sheet].key; if(k){ P[k]=!P[k]; renderSheet(); } };
 $$('[data-size]').forEach(b=>b.onclick=()=>{ P.cap_size=Math.max(D.size.min,Math.min(D.size.max,P.cap_size+D.size.step*(+b.dataset.size))); renderSheet(); });
 $('#wordsBtn').onclick=()=>{ P.cap_words=WORDS_OPT[(WORDS_OPT.indexOf(P.cap_words)+1)%WORDS_OPT.length]; renderSheet(); };
