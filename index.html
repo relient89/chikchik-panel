@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='13c5c1f353';
+(function(){ var B='3a5b10b8db';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1434,7 +1434,7 @@ function sendPrefs(go, btn, action){ const ht=($('#hookTxt').value||'').trim();
   if(cloud){ try{ cloud.setItem('prefs', prefsCode()); }catch(e){} }
   /* открыто с карточки ролика: пожелание напрямую не передать — копируем, чтобы человек вставил его в чат */
   if(wish){ try{ navigator.clipboard.writeText(wish); }catch(e){} toast('Пожелание скопировано: вставьте его в чат одним сообщением.'); }
-  btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; /* открыто с карточки ролика (&j=): «Смонтировать» запускает именно этот ролик — каждый монтаж отдельная сессия */ const jid=/^[0-9a-f]{10}$/.test(Q.get('j')||'')?Q.get('j'):''; tg.openTelegramLink(`https://t.me/${bot}?start=${action==='ins'?'i_':(go?(jid?'j_'+jid:'g_'):'s_')}${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
+  btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; /* открыто с карточки ролика (&j=): «Смонтировать» запускает именно этот ролик — каждый монтаж отдельная сессия */ const jid=/^[0-9a-f]{10}$/.test(Q.get('j')||'')?Q.get('j'):''; tg.openTelegramLink(`https://t.me/${bot}?start=${action==='ins'?(jid?'n_'+jid:'i_'):(go?(jid?'j_'+jid:'g_'):'s_')}${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
 $('#save').onclick=()=>sendPrefs(false,$('#save')); $('#insAdd').onclick=()=>sendPrefs(false,$('#insAdd'),'ins'); $('#goBtn').onclick=()=>sendPrefs(true,$('#goBtn'));
 window.__code = prefsCode;
 
