@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='6da8059063';
+(function(){ var B='d9974372bf';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -111,7 +111,7 @@ svg{display:block}
 .cardzoom{transform-origin:top center}
 .liquidfx .card{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .plus{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;align-items:center;gap:7px;padding:6px 12px 6px 7px;max-width:94%;border-radius:999px;font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.plus i{width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--onacc);display:grid;place-items:center;font-style:normal;font-size:20px;line-height:1;font-weight:700}
+.plus i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--onacc);display:grid;place-items:center;font-style:normal;font-size:20px;line-height:1;font-weight:700}
 .seg{position:relative;display:grid;grid-template-columns:1fr 1fr;margin:10px 16px 0;padding:4px;border-radius:999px}
 .seg .segknob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:rgba(255,255,255,.92);
   box-shadow:0 4px 14px rgba(0,0,0,.3);transition:transform .28s cubic-bezier(.3,.7,.2,1)}
@@ -1125,7 +1125,7 @@ const IC = {
 
 // ===== Версия 2: настройки списком, как в iPhone =====
 const UI2 = Q.get('ui')==='2';
-if(UI2) document.body.classList.add('ui2');
+if(UI2){ document.body.classList.add('ui2'); const pb=document.getElementById('plusBtn'); if(pb && pb.lastChild) pb.lastChild.textContent='Добавить'; }   // узкое превью: кружок «+» не сжимается в овал
 const CHEVR='<span class="lch" aria-hidden="true">›</span>';
 function lrow(icon, title, sub, value, onClick, opt={}){
   const b=document.createElement('button'); b.className='lrow'+(opt.dis?' dis':'')+(opt.need?' need':''); b.type='button';
