@@ -243,6 +243,35 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .plan .pr{margin-left:auto;text-align:right;font-weight:800;font-size:18px;white-space:nowrap}
 .plan .flag{position:absolute;left:16px;top:-10px;padding:2px 10px;border-radius:999px;background:var(--acc);color:var(--onacc);font-size:10.5px;font-weight:800;letter-spacing:.04em}
 .paybtn{width:100%;margin-top:14px;padding:15px;border-radius:999px;font-weight:800;font-size:15px;color:var(--mut)}
+
+/* ===== Версия 2 (?ui=2): как «Настройки» iPhone. Правила ui-ux-pro-max: кнопки от 44 px, текст от 12 px,
+   нажатие видно сразу, иконки рисованные (без эмодзи), шаг отступов 8 px ===== */
+.ui2 #quad{display:none}
+.svgi{display:inline-grid;place-items:center}.svgi svg{width:22px;height:22px}#insHead .svgi{margin-right:6px;vertical-align:-5px}
+.ui2 .tiles2{display:block;margin:12px 16px 0}
+.ui2 .lgroup{border-radius:16px;overflow:hidden;margin-bottom:16px}
+.ui2 .lhead{margin:0 4px 6px;font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--mut)}
+.ui2 .lrow{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:8px 14px;border:0;background:transparent;
+  color:#fff;font-family:inherit;text-align:left;position:relative;transition:background .12s}
+.ui2 .lrow+.lrow::before{content:'';position:absolute;left:58px;right:0;top:0;height:1px;background:rgba(255,255,255,.08)}
+.ui2 .lrow:active{background:rgba(255,255,255,.08)}
+.ui2 .lic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:#111318;background:var(--acc)}
+.ui2 .lic svg{width:19px;height:19px}
+.ui2 .lt{flex:1;min-width:0;font-size:16px;font-weight:500;line-height:1.2}
+.ui2 .lt small{display:block;font-size:12.5px;font-weight:400;color:var(--mut);margin-top:2px}
+.ui2 .lv{font-size:15px;color:var(--mut);white-space:nowrap;max-width:46%;overflow:hidden;text-overflow:ellipsis}
+.ui2 .lch{color:rgba(255,255,255,.35);font-size:20px;line-height:1;margin-left:2px}
+.ui2 .sw{flex:none;width:51px;height:31px;border-radius:999px;background:rgba(255,255,255,.18);position:relative;transition:background .2s}
+.ui2 .sw::after{content:'';position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.35);transition:transform .22s cubic-bezier(.3,.7,.2,1)}
+.ui2 .sw.on{background:var(--acc)}.ui2 .sw.on::after{transform:translateX(20px)}
+.ui2 .lrow.dis{opacity:.45}
+.ui2 .seg button{min-height:44px;font-size:15px}
+.ui2 .tabbar button{font-size:12px}
+.ui2 #sBack,.ui2 #sOk{min-height:44px}
+.ui2 .plus{min-height:44px}
+.ui2 .hintbar{display:none}
+@media (prefers-reduced-motion: reduce){.ui2 *{transition:none !important;animation:none !important}}
 /* ---- стили субтитров из каталога (те же, что в рендере) ---- */
 .s-onest .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 22px;font-family:Onest;font-weight:800;font-size:96px;
            color:var(--m,#fff);line-height:1.08;text-shadow:0 4px 22px rgba(0,0,0,.45)}
@@ -952,7 +981,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
       <div class="capbox" id="capbox"><div class="capin" id="capin"></div></div>
       <div class="safe" id="safe"></div>
     </div><button class="plus glass" id="plusBtn"><i>+</i>Добавить ролик</button></div>
-    <button class="side r" id="fmtSide"><i>🗣</i><span>Формат<small id="fmtSideV"></small></span></button></div>
+    <button class="side r" id="fmtSide"><i class="svgi" id="fmtSideI"></i><span>Формат<small id="fmtSideV"></small></span></button></div>
   <div class="seg glass" id="modeSeg"><i class="segknob"></i><button data-auto="1">Сделай красиво</button><button data-auto="0">Настрою сам</button></div>
   <div class="autotext glass">Цвет, заголовок, субтитры и плашки подберу под ваш ролик. Понравится стиль — следующие сделаю так же.</div>
   <div class="manual">
@@ -961,8 +990,8 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
     <input class="hooktxt" id="hookTxt" maxlength="60" placeholder="Ваш заголовок, 3–6 слов" style="display:none">
     <div class="hintbar"><b>Тап</b> по плитке меняет значение на следующее, <b>долгое нажатие</b> показывает все варианты.</div>
   </div>
-  <div class="insbox glass" id="insbox"><h4 id="insHead">🎞 Вставки <small id="insN"></small></h4><div class="insbody">
-    <button class="insmode" id="insMode"><span class="mi">🎞</span><span><b id="insModeN"></b><small id="insModeD"></small></span><span class="nx">сменить ›</span></button>
+  <div class="insbox glass" id="insbox"><h4 id="insHead"><span class="svgi" id="insI"></span>Вставки <small id="insN"></small></h4><div class="insbody">
+    <button class="insmode" id="insMode"><span class="mi svgi" id="insModeI"></span><span><b id="insModeN"></b><small id="insModeD"></small></span><span class="nx">сменить ›</span></button>
     <button class="insadd" id="insAdd">＋ Добавить видео для вставки <small style="font-weight:500;opacity:.65">· откроется чат, до 3</small></button>
     <textarea id="wish" placeholder="Пожелания: что, где и как вставить" style="margin-top:6px"></textarea>
     </div></div>
@@ -1072,6 +1101,35 @@ const IC = {
   spd:I('<path d="M4.500 16a8 8 0 1115 0"/><path d="M12 16l3.500-5"/>'), dn:I('<path d="M4 12h2M8 8v8M12 5v14M16 9v6M20 11v2"/>'),
   cut:`<svg width="26" height="26" viewBox="0 0 24 24"><path d="M2.2 5.2L12.9 11.2L11.9 12.9Z" fill="currentColor"/><path d="M2.2 18.8L12.9 12.8L11.9 11.1Z" fill="currentColor"/><path d="M12.4 12L17.3 8.7M12.4 12L17.3 15.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="19.3" cy="7.3" r="2.4" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="19.3" cy="16.7" r="2.4" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.6 9.75L7.9 12L4.6 14.25Z" fill="currentColor" stroke="currentColor" stroke-width=".7" stroke-linejoin="round"/></svg>`};
 
+
+// ===== Версия 2: настройки списком, как в iPhone =====
+const UI2 = Q.get('ui')==='2';
+if(UI2) document.body.classList.add('ui2');
+const CHEVR='<span class="lch" aria-hidden="true">›</span>';
+function lrow(icon, title, sub, value, onClick, opt={}){
+  const b=document.createElement('button'); b.className='lrow'+(opt.dis?' dis':''); b.type='button';
+  const right = opt.sw!==undefined ? `<span class="sw${opt.sw?' on':''}" role="switch" aria-checked="${!!opt.sw}"></span>`
+                                   : `<span class="lv">${value||''}</span>${CHEVR}`;
+  b.innerHTML=`<span class="lic" aria-hidden="true">${icon}</span><span class="lt">${title}${sub?`<small>${sub}</small>`:''}</span>${right}`;
+  b.setAttribute('aria-label', title+(value?': '+value:'')); b.onclick=onClick; return b; }
+function lgroup(box, head, rows){ const h=document.createElement('div'); h.className='lhead'; h.textContent=head; box.appendChild(h);
+  const g=document.createElement('div'); g.className='lgroup glass'; rows.forEach(r=>g.appendChild(r)); box.appendChild(g); }
+function renderList(){
+  const box=$('#rowsOpts'); box.innerHTML='';
+  const f=FMT.find(x=>x[0]===P.fmt), st=ST[P.style]||ST.focus, cs=(D.cardStyles.find(x=>x.id===P.card_style)||{}).name||'';
+  const po=OPTS.find(o=>o.id==='prof');
+  lgroup(box,'Ролик',[
+    lrow(IC[P.fmt==='raw'?'raw':'head'],'Формат',f?f[2]:'вырезать паузы или оставить как снято',f?f[1]:'выбрать',
+      e=>popup(e.currentTarget,'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; })),
+    lrow(IC.sub,'Субтитры','',P.captions?st.name:'выкл',()=>openSheet('sub')),
+    lrow(IC.card,'Плашки','',P.cards?cs:'выкл',()=>openSheet('card')),
+    lrow(IC.phone,'Площадка','',po.vals[Math.max(0,po.get())][0],e=>popup(e.currentTarget,'Где выйдет ролик',po.vals.map(v=>[v[0],v[1]||'']),Math.max(0,po.get()),i=>po.set(i))),
+  ]);
+  const rows=OPTS.filter(o=>o.id!=='prof').map(o=>{ const v=Math.max(0,o.get()), dis=o.off&&o.off();
+    if(o.vals.length===2) return lrow(IC[o.ic]||IC.sub,o.name,o.vals[v][1],'',()=>{ if(dis) return; o.set(v?0:1); render(); },{sw:v===1,dis});
+    return lrow(IC[o.ic]||IC.sub,o.name,'',o.vals[v][0],e=>{ if(dis) return; popup(e.currentTarget,o.name,o.vals.map(x=>[x[0],x[1]]),v,i=>o.set(i)); },{dis}); });
+  lgroup(box,'Монтаж',rows);
+}
 const WORDS = [['Первые',.25,.62],['три',.62,.9],['секунды',.9,1.4],['решают',1.4,1.85],['всё.',1.85,2.3],
   ['Не',2.75,2.95],['начинайте',2.95,3.5],['с',3.5,3.62],['приветствия.',3.62,4.4]].map(a=>({w:a[0],s:a[1],e:a[2]}));
 const LOOP = 4.9, STOP = new Set(D.stop), ST = Object.fromEntries(D.styles.map(s=>[s.id,s]));
@@ -1230,7 +1288,7 @@ function render(){
      if(id==='fmt'){ b.id='fmtBtn'; b.onclick=()=>popup(b,'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; }); }
      else if(id==='prof'){ const po=OPTS.find(o=>o.id==='prof'); b.onclick=()=>popup(b,'Где выйдет ролик',po.vals.map((v,i)=>[v[0],['подпись и кнопки Reels не закроют текст','кнопки TikTok справа и снизу','кнопки Shorts справа','с запасом под любую площадку'][i]||'']),Math.max(0,po.get()),i=>po.set(i)); }
      else b.onclick=()=>openSheet(id); q.appendChild(b); });
-  const tb=$('#rowsOpts'); tb.innerHTML=''; OPTS.filter(o=>o.id!=='prof').forEach(o=>{ const v=Math.max(0,o.get()), dis=o.off&&o.off(), b=document.createElement('button');
+  const tb=UI2?document.createElement('div'):$('#rowsOpts'); if(!UI2) tb.innerHTML=''; OPTS.filter(o=>o.id!=='prof').forEach(o=>{ const v=Math.max(0,o.get()), dis=o.off&&o.off(), b=document.createElement('button');
     b.className='t2 glass'+(v>0&&!dis&&o.id!=='prof'&&o.id!=='sfx'?' onv':''); if(dis) b.style.opacity=.45;
     b.innerHTML=`<small>${IC[o.ic].replace(/width="\d+" height="\d+"/,'width="15" height="15"')}${o.name}</small><b>${dis?'не вырезаю':o.vals[v][0]}</b>`;
     if(!dis) press(b, ()=>{ o.set((v+1)%o.vals.length); render(); }, ()=>popup(b,o.name,o.vals,v,i=>o.set(i))); tb.appendChild(b); });
@@ -1238,7 +1296,8 @@ function render(){
 
 const INSM=[['auto','Авто','поверх, где по смыслу'],['full','Весь экран','на всю зону кадра'],['split','Сплит','вставка сверху, вы снизу'],
   ['circle','Кружок','вставка на весь кадр, вы в кружке'],['prologue','Пролог','до начала ролика']];
-function renderAfmt(){
+function paintIcons(){ const fi=$('#fmtSideI'); if(fi) fi.innerHTML=IC[P.fmt==='raw'?'raw':'head']; const a=$('#insI'); if(a) a.innerHTML=IC.raw; const b=$('#insModeI'); if(b) b.innerHTML=IC.raw; }
+function renderAfmt(){ paintIcons(); if(typeof UI2!=='undefined' && UI2 && !P.auto) renderList();
   $$('#modeSeg button').forEach(b=>b.classList.toggle('on',(b.dataset.auto==='1')===!!P.auto));
   $('#modeSeg').classList.toggle('manualon',!P.auto);
   const f=FMT.find(x=>x[0]===P.fmt); $('#fmtSideV').textContent=f?f[1]:'не выбран';
