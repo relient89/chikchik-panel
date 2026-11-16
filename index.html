@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='01aefebccd';
+(function(){ var B='2a5edc834f';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -137,6 +137,7 @@ svg{display:block}
 .autotext{display:none;margin:8px 16px 0;padding:11px 14px;border-radius:18px;color:#dfe2e8;line-height:1.35;font-size:13px}
 #edit:has(.insbox.open) .autotext{display:none !important}
 .auto .autotext{display:block}.auto .manual{display:none}
+.autofx{display:none;margin-top:12px}.auto .autofx{display:block}
 .afmt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 4px}
 .afmt button{padding:12px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;
   font:600 14px/1.2 inherit;text-align:left}
@@ -1122,6 +1123,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
     <button class="side r" id="fmtSide"><i class="svgi" id="fmtSideI"></i><span>Формат<small id="fmtSideV"></small></span></button></div>
   <div class="seg glass" id="modeSeg"><i class="segknob"></i><button data-auto="1">Сделай красиво</button><button data-auto="0">Настрою сам</button></div>
   <div class="autotext glass">Цвет, заголовок, субтитры и плашки подберу под ваш ролик. Понравится стиль — следующие сделаю так же.</div>
+  <div class="autofx ui2" id="autoFx"></div>
   <div class="manual">
     <div class="quad" id="quad"></div>
     <div class="tiles2" id="rowsOpts"></div>
@@ -1137,7 +1139,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 </div>
 
 <div class="view" data-view="jobs"><div class="page">
-  <h1>Ролики</h1><div class="note" style="margin:0 4px">Готовые файлы живут 48 часов. Забрать ролик можно в чате, кнопкой «Мои ролики».</div>
+  <h1>Ролики</h1><div class="note" style="margin:0 4px">Готовые ролики хранятся 7 дней, исходники и вставки удаляются сразу после монтажа. Забрать ролик можно в чате, кнопкой «Мои ролики».</div>
   <div id="jobs" style="margin-top:12px"></div>
 </div></div>
 
@@ -1623,7 +1625,20 @@ function render(){
 const INSM=[['auto','Авто','поверх, где по смыслу'],['full','Весь экран','на всю зону кадра'],['split','Сплит','вставка сверху, вы снизу'],
   ['circle','Кружок','вставка на весь кадр, вы в кружке'],['prologue','Пролог','до начала ролика']];
 function paintIcons(){ const fi=$('#fmtSideI'); if(fi) fi.innerHTML=IC[P.fmt==='raw'?'raw':'head']; const a=$('#insI'); if(a) a.innerHTML=IC.raw; const b=$('#insModeI'); if(b) b.innerHTML=IC.raw; }
-function renderAfmt(){ paintIcons(); if(typeof UI2!=='undefined' && UI2 && !P.auto) renderList();
+/* «Сделай красиво»: стиль, цвета и шрифт подберу сам; что добавлять в ролик — переключатели */
+function renderAutoFx(){ const box=$('#autoFx'); if(!box) return; box.innerHTML=''; if(!P.auto) return;
+  const sw=(ic,title,sub,on,set)=>lrow(ic,title,sub,'',()=>{ set(!on); renderAutoFx(); render(); },{sw:on});
+  lgroup(box,'Что добавить в ролик',[
+    sw(IC.snd,'Фоновая музыка','подберу под настроение',P.music&&P.music!=='off',v=>{ P.music=v?'auto':'off'; }),
+    sw(IC.hk,'Заголовок','крупная фраза в первые секунды',!!P.hook,v=>{ P.hook=v; }),
+    sw(IC.sub,'Субтитры','',!!P.captions,v=>{ P.captions=v; }),
+    sw(IC.card,'Плашки','главные мысли поверх видео',!!P.cards,v=>{ P.cards=v; }),
+    sw(IC.cam,'Камера к лицу','наезды в такт речи',P.camera&&P.camera!=='off',v=>{ P.camera=v?'punch':'off'; }),
+    sw(IC.mic,'Голос чище и громче','',!!P.voice,v=>{ P.voice=v; }),
+    sw(IC.face,'Лёгкая ретушь','кожа ровнее, черты чёткие',P.retouch&&P.retouch!=='off',v=>{ P.retouch=v?'subtle':'off'; }),
+  ]);
+  lfoot(box,'Стиль субтитров, цвета, шрифт и плашки подберу под ваш ролик сам. Хотите выбрать сами — «Настрою сам».'); }
+function renderAfmt(){ paintIcons(); renderAutoFx(); if(typeof UI2!=='undefined' && UI2 && !P.auto) renderList();
   $$('#modeSeg button').forEach(b=>b.classList.toggle('on',(b.dataset.auto==='1')===!!P.auto));
   $('#modeSeg').classList.toggle('manualon',!P.auto);
   const f=FMT.find(x=>x[0]===P.fmt); $('#fmtSideV').textContent=f?f[1]:'не выбран';
