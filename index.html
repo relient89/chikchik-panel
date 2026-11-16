@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='e34337e711';
+(function(){ var B='eaf3ed17f5';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1208,7 +1208,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
     <div class="pane" data-pane="subg"><div class="grid" id="styles"></div></div>
     <div class="pane" data-pane="card">
       <h3>Как часто</h3><div class="duo" id="cfreq"></div>
-      <h3>Размер</h3><div class="trio" id="csizes"></div>
+      <!-- размер плашек один стандартный (владелец 2026-11-16), выбора нет -->
       <h3>Цвет плашки</h3><div class="trio" id="ccolors"></div>
       <h3>Вид плашек</h3><div class="grid" id="cgroups"></div>
       <div class="note">Плашка собирается на экране по шагам: тезис, число с подписью или список с галочками. Текст пишет нейросеть по смыслу вашей речи, без выдуманных фактов.</div>
@@ -1443,7 +1443,7 @@ function applyLook(){ pairCss(); const st=ST[P.style]||ST.focus; capin.className
   if(m) capin.style.setProperty('--m', m); else capin.style.removeProperty('--m');
   stage.style.setProperty('--acc', P.card_color==='type' ? '#ff7a1a' : (a||m||'#ffffff'));
   $('#cardzoom').className='cardzoom'+(P.card_style.startsWith('liquid')?' liquidfx':''); $('#cardzoom').innerHTML=(D.cardHtml[P.card_style]||D.cardHtml.glass)[0]; $('#cardzoom').classList.add('anim'); handLen($('#cardzoom'));
-  $('#cardzoom').style.transform=`scale(${(D.cardSizes.find(x=>x.id===P.card_size)||{zoom:.76}).zoom})`; last=-2; }
+  $('#cardzoom').style.transform='scale(.9)'; last=-2; }
 let last=-2;
 function drawMain(t){ const st=ST[P.style]||ST.focus, tl=tlOf(st.id, P.cap_words), i = P.captions ? stateAt(tl,t) : -1;
   $('#cardbox').classList.toggle('on', P.cards && t>0.5 && t<3.6);
@@ -1520,7 +1520,7 @@ function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').
     g.ids.forEach(id=>capTile(box,id,ST[id].name,'',P.style===id,()=>{ P.style=id; P.auto=false; renderSheet(); applyLook(); })); }
   if(sheet==='card' && !deep){ $('#sTitle').textContent=S.title;
     picks('#cfreq',[{id:'rare',name:'Редко',d:'раз в 20 секунд, минимум 3'},{id:'often',name:'Часто',d:'раз в 10 секунд'}],P.cards_freq,id=>{P.cards_freq=id;});
-    picks('#csizes',D.cardSizes,P.card_size,id=>{P.card_size=id;applyLook();});
+
     picks('#ccolors',D.cardColors.map(c=>({id:c.id,name:c.name[0].toUpperCase()+c.name.slice(1)})),P.card_color,id=>{P.card_color=id;applyLook();});
     const gb=$('#cgroups'); gb.innerHTML=''; D.cardGroups.forEach((g,n)=>{ const has=g.ids.includes(P.card_style), cur=has?P.card_style:g.ids[0];
       cardTile(gb, cur, g.name, stylesWord(g.ids.length)+(has?' · выбран':''), has, ()=>{ curCGroup=g.id; deep=true; noKeep=true; renderSheet(); $('#sbody').scrollTop=0; }, n); }); }
