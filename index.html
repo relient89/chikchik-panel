@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='2a5edc834f';
+(function(){ var B='c78900e430';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -257,6 +257,11 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .pane[data-only=col] > .fontsel,.pane[data-only=fnt] > .fontsel{display:none}
 #pop .fsec{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:10px 4px 4px}
 #pop{max-height:70vh;overflow-y:auto}
+.vjob{border-radius:22px;padding:12px;margin-bottom:12px}
+.vjob video{width:100%;max-height:62vh;border-radius:16px;background:#000;display:block}
+.vjob .vh{display:flex;align-items:center;gap:8px;margin:0 2px 10px}.vjob .vh b{flex:1;font-size:15px}.vjob .vh small{color:var(--mut);font-size:12px}
+.vjob .vb{display:flex;gap:8px;margin-top:10px}.vjob .vb button{flex:1;padding:12px;border-radius:14px;font-weight:700;background:rgba(255,255,255,.08);color:var(--txt)}
+.vjob .vb button.pri{background:var(--acc);color:#111}
 .pals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .pal{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid transparent;text-align:left;color:var(--txt)}
 .pal.on{border-color:var(--acc);background:rgba(255,255,255,.1)}
@@ -1139,7 +1144,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 </div>
 
 <div class="view" data-view="jobs"><div class="page">
-  <h1>Ролики</h1><div class="note" style="margin:0 4px">Готовые ролики хранятся 7 дней, исходники и вставки удаляются сразу после монтажа. Забрать ролик можно в чате, кнопкой «Мои ролики».</div>
+  <h1>Ролики</h1><div class="note" style="margin:0 4px">Готовые ролики хранятся 48 часов, исходники и вставки удаляются сразу после монтажа. В чате ролики остаются навсегда.</div>
   <div id="jobs" style="margin-top:12px"></div>
 </div></div>
 
@@ -1718,6 +1723,22 @@ function ftiles(box, head, items, kind, canAdd, foot){ const h=document.createEl
   if(canAdd){ const a=document.createElement('button'); a.className='ftile add'; a.innerHTML='<b>＋</b>Добавить'; a.onclick=()=>pickFiles(kind); g.appendChild(a); }
   box.appendChild(g); if(foot) lfoot(box,foot); }
 loadState();
+/* Вкладка «Ролики»: готовые ролики смотреть и скачивать прямо здесь (владелец 2026-11-16); в чате они тоже остаются */
+async function renderJobsApi(){ const box=$('#jobs'); box.innerHTML='<div class="empty">Загружаю ролики…</div>';
+  let d; try{ d=await api('/api/jobs'); }catch(e){ box.innerHTML='<div class="empty">Не получилось загрузить ролики. Они есть в чате.</div>'; return; }
+  if(!d.jobs.length){ box.innerHTML='<div class="empty">Готовых роликов пока нет. Смонтируйте первый — он появится здесь.</div>'; return; }
+  box.innerHTML='';
+  d.jobs.forEach(j=>{ const c=document.createElement('div'); c.className='vjob glass';
+    const st=j.url?(j.left!=null?`ещё ${j.left} ч`:''):(j.status==='running'?'монтируется…':'в очереди');
+    c.innerHTML=`<div class="vh"><b>${esc(j.when)}</b><small>${esc(j.info||'')}${j.info&&st?' · ':''}${esc(st)}</small></div>`;
+    if(j.url){ const v=document.createElement('video'); v.controls=true; v.playsInline=true; v.preload='metadata'; v.src=API+j.url; c.appendChild(v);
+      const bb=document.createElement('div'); bb.className='vb';
+      const dl=document.createElement('button'); dl.className='pri'; dl.textContent='Скачать';
+      dl.onclick=()=>{ const u=API+j.url; try{ if(tg&&tg.downloadFile){ tg.downloadFile({url:u,file_name:`chikchik_${j.id}.mp4`}); return; } }catch(e){} window.open(u,'_blank'); };
+      const ch=document.createElement('button'); ch.textContent='Прислать в чат';
+      ch.onclick=async()=>{ ch.textContent='Отправляю…'; try{ await api('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({j:j.id})}); ch.textContent='Отправлено ✓'; }catch(e){ ch.textContent='Не вышло'; toast(e.message); } };
+      bb.appendChild(dl); bb.appendChild(ch); c.appendChild(bb); }
+    box.appendChild(c); }); }
 
 // ---------- разделы: Ролики, Бонусы, Баланс (данные приходят от бота в адресе, после #) ----------
 let U = {};
@@ -1737,6 +1758,7 @@ function fillPages(){
   $('#bFriend').innerHTML=U.friend_bonus?`Друг получит <b style="color:var(--txt)">+${+U.friend_bonus} ${plural(+U.friend_bonus,'монтаж','монтажа','монтажей')}</b> в подарок, вы — бонус за каждого пришедшего.`:'';
   $('#bYou').textContent=U.you_bonus?`Вам +${+U.you_bonus} за каждого друга и ${+U.percent||0}% от монтажей, которые он купит.`:'';
   const SN={done:'готов',failed:'ошибка',queued:'в очереди',running:'монтируется'};
+  if(API){ renderJobsApi(); } else
   if(U.jobs===null){ $('#jobs').innerHTML='<div class="empty">Готовые ролики лежат в чате: кнопка «Мои ролики».</div>'; } else
   $('#jobs').innerHTML=(U.jobs||[]).map(j=>`<div class="job glass"><div>${esc(j.when)}<small>${esc(j.info||'')}</small></div><span class="badge ${esc(j.status)}">${SN[j.status]||esc(j.status)}</span></div>`).join('') || '<div class="empty">Пока пусто. Пришлите видео в чат с ботом, и ролик появится здесь.</div>';
 }
