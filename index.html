@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='6680345f7a';
+(function(){ var B='195521346c';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -348,6 +348,55 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .ui2 .plus{min-height:40px;font-size:11.5px;gap:5px;padding:5px 10px 5px 5px}.ui2 .plus i{width:24px;height:24px;font-size:18px}
 .ui2 .hintbar{display:none}
 @media (prefers-reduced-motion: reduce){.ui2 *{transition:none !important;animation:none !important}}
+/* ===== Версия 3 (?ui=3): как CapCut — крупное превью, панель инструментов снизу, шторка на полэкрана.
+   Только внешний вид: настройки, код и отправка те же (владелец 2026-11-16) ===== */
+.top3,.strip3,.tools3,.play3{display:none}
+.ui3 .top3{display:flex;align-items:center;gap:8px;padding:10px 16px 6px}
+.ui3 .top3 .logo{width:32px;height:32px;border-radius:10px;background:var(--acc);color:var(--onacc);display:grid;place-items:center}
+.ui3 .top3 .logo svg{width:22px;height:22px}
+.ui3 .top3 b{font-size:17px;font-weight:800;flex:1}
+.ui3 .top3 .save3{min-height:40px;padding:0 14px;border-radius:999px;font-weight:700;font-size:14px;background:rgba(255,255,255,.1)}
+.ui3 .top3 .go3{min-height:40px;padding:0 18px;border-radius:999px;background:var(--acc);color:var(--onacc);font-weight:800;font-size:15px;box-shadow:0 6px 20px var(--acc-a2)}
+.ui3 .app:has(#edit.on) .hdr,.ui3 #modeSeg,.ui3 .autotext,.ui3 #autoFx,.ui3 .manual,.ui3 #insbox,.ui3 #fmtSide,.ui3 #plusBtn{display:none !important}
+.ui3 .dock{display:none !important}
+.ui3 .app:has(#edit.on){padding-bottom:0}
+.ui3 .hero2{padding:2px 16px 0}
+.ui3 .stagewrap{border-radius:18px;transition:width .22s,height .22s}
+.ui3 .play3{display:grid;place-items:center;position:absolute;left:50%;bottom:10px;translate:-50% 0;width:40px;height:40px;border-radius:50%;
+  background:rgba(0,0,0,.45);color:#fff;z-index:4;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ui3 .strip3{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:10px 16px 4px;align-items:stretch}
+.ui3 .strip3::-webkit-scrollbar{display:none}
+.strip3 .sc{flex:none;display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 12px 6px 8px;border-radius:12px;background:rgba(255,255,255,.07);
+  border:1px solid var(--rim);font-size:13px;font-weight:600;white-space:nowrap;color:var(--txt)}
+.strip3 .sc .th{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.1);color:var(--mut)}
+.strip3 .sc .th svg{width:18px;height:18px}
+.strip3 .sc small{display:block;font-size:11px;font-weight:500;color:var(--mut)}
+.strip3 .sc.main{border-color:var(--acc)}
+.strip3 .sc.add{color:var(--acc);border-style:dashed;border-color:var(--acc-a2,rgba(255,255,255,.3))}
+.strip3 .sc.add .th{background:var(--acc);color:var(--onacc);font-size:20px;font-weight:700}
+.ui3 .tools3{display:flex;position:fixed;left:0;right:0;bottom:calc(84px + env(safe-area-inset-bottom));z-index:20;max-width:480px;margin:0 auto;
+  overflow-x:auto;scrollbar-width:none;gap:2px;padding:6px 10px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+  mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 24px),transparent)}
+.ui3 .tools3::-webkit-scrollbar{display:none}
+.t3{flex:none;width:68px;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:6px 2px;border-radius:14px;
+  color:var(--txt);scroll-snap-align:start;transition:background .12s}
+.t3:active{background:rgba(255,255,255,.08)}
+.t3 .t3i{color:var(--txt);background:none;position:relative;width:24px;height:24px;display:grid;place-items:center}.t3 .t3i svg{width:24px;height:24px}
+.t3 span{display:block;width:100%;font-size:11.5px;font-weight:600;line-height:1.15;text-align:center;color:#d9dce3}
+.t3.on .t3i{color:var(--acc) !important}
+.t3.on .t3i::after{content:'';position:absolute;right:-5px;top:-2px;width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.t3.cur{background:rgba(255,255,255,.1)}
+.ui3 .sheet{top:auto;height:56%;border-radius:22px 22px 0 0 !important;box-shadow:0 -10px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2)}
+.ui3 .sheet .shead{padding-top:12px}
+.ui3 .sheet .shead h2{font-size:17px;text-align:center}
+.ui3 .sheet:not(.deep) #sBack{visibility:hidden}
+.ui3 #sBack{min-width:44px}
+.ui3 .okbtn{width:40px;height:40px;min-height:40px !important;padding:0;border-radius:50%;background:var(--acc);color:var(--onacc);display:grid;place-items:center}
+.ui3 .scrim{background:transparent}
+.pane[data-only=fr] > :not(#accFrame){display:none}
+.pane[data-only=fr] #accFrame > .acch{display:none}
+.ui3 .pane[data-only=col] #accColor > .acch,.ui3 .pane[data-only=fnt] #accFont > .acch,.ui3 #colPrev{display:none}
+.ui3 .accb{padding-top:4px}
 /* ---- стили субтитров из каталога (те же, что в рендере) ---- */
 .s-onest .cap{display:flex;flex-wrap:wrap;justify-content:center;gap:0 22px;font-family:Onest;font-weight:800;font-size:96px;
            color:var(--m,#fff);line-height:1.08;text-shadow:0 4px 22px rgba(0,0,0,.45)}
@@ -1203,13 +1252,16 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
   <button class="pillbal glass" id="balPill"></button></header>
 
 <div class="view on" data-view="edit" id="edit">
+  <div class="top3" id="top3"><span class="logo" id="logo3"></span><b>ЧикЧик</b><button class="save3" id="save3">Сохранить</button><button class="go3" id="go3">Смонтировать</button></div>
   <div class="hero2"><div class="stagewrap" id="wrap"><div class="stage" id="stage">
       <div class="tag" id="tag">Пример</div>
       <div class="cardbox" id="cardbox"><div class="cardzoom" id="cardzoom"></div></div>
       <div class="capbox" id="capbox"><div class="capin" id="capin"></div></div>
       <div class="safe" id="safe"></div>
-    </div><button class="plus glass" id="plusBtn"><i>+</i>Добавить ролик</button></div>
+    </div><button class="plus glass" id="plusBtn"><i>+</i>Добавить ролик</button><button class="play3" id="play3" aria-label="Пауза"></button></div>
     <button class="side r" id="fmtSide"><i class="svgi" id="fmtSideI"></i><span>Формат<small id="fmtSideV"></small></span></button></div>
+  <div class="strip3" id="strip3"></div>
+  <div class="tools3" id="tools3" role="toolbar" aria-label="Настройки ролика"></div>
   <div class="seg glass" id="modeSeg"><i class="segknob"></i><button data-auto="1">Сделай красиво</button><button data-auto="0">Настрою сам</button></div>
   <div class="autotext glass">Цвет, заголовок, субтитры и плашки подберу под ваш ролик. Понравится стиль — следующие сделаю так же.</div>
   <div class="autofx ui2" id="autoFx"></div>
@@ -1346,6 +1398,46 @@ const IC = {
 // ===== Версия 2: настройки списком, как в iPhone =====
 const UI2 = Q.get('ui')!=='1';      // владелец 2026-11-15: вторая версия — основная; прежняя открывается с ?ui=1
 if(UI2){ document.body.classList.add('ui2'); const pb=document.getElementById('plusBtn'); if(pb && pb.lastChild) pb.lastChild.textContent='Добавить'; }   // узкое превью: кружок «+» не сжимается в овал
+const UI3 = Q.get('ui')==='3';      // владелец 2026-11-16: версия 3 «как CapCut», только внешний вид, открывается ссылкой с ?ui=3
+if(UI3) document.body.classList.add('ui3');
+Object.assign(IC,{frm:I('<rect x="3.500" y="6.500" width="17" height="11" rx="3.500"/><path d="M8 12h8"/>'),
+  note:I('<path d="M9 18V6l10-2v12"/><circle cx="6.500" cy="18" r="2.500"/><circle cx="16.500" cy="16" r="2.500"/>'),
+  globe:I('<circle cx="12" cy="12" r="8.500"/><path d="M3.500 12h17M12 3.500c2.500 2.400 2.500 14.600 0 17M12 3.500c-2.500 2.400-2.500 14.600 0 17"/>'),
+  pause:I('<path d="M9 6v12M15 6v12"/>'), playt:I('<path d="M8 5.500v13l11-6.500z" fill="currentColor"/>')});
+/* панель инструментов: [id, подпись, иконка, шторка, «включено»] — порядок по частоте использования */
+const TOOLS3=[
+  ['format','Формат',()=>IC[P.fmt==='raw'?'raw':'head'],'vid',()=>!!P.fmt],
+  ['auto','Сделай красиво',()=>IC.magic,'auto3',()=>!!P.auto],
+  ['sub','Субтитры',()=>IC.sub,'sub',()=>!!P.captions],
+  ['subcol','Цвет',()=>IC.pal,'subcol',()=>!!(P.cap_accent||P.cap_main)],
+  ['subfnt','Шрифт',()=>IC.fnt,'subfnt',()=>!!(P.cap_font||P.cap_pair||P.use_font)],
+  ['frame','Обводка',()=>IC.frm,'subfr',()=>P.cap_frame!=='default'],
+  ['card','Плашки',()=>IC.card,'card',()=>!!P.cards],
+  ['hk','Заголовок',()=>IC.hk,'hk',()=>!!P.hook],
+  ['snd2','Звук',()=>IC.mic,'snd2',()=>!!(P.voice||P.denoise)],
+  ['music','Музыка',()=>IC.note,'mus',()=>!!P.music&&P.music!=='off'],
+  ['memes','Мемы',()=>IC.sm,'memes3',()=>!!P.memes&&P.memes!=='off'],
+  ['pic','Камера',()=>IC.cam,'pic',()=>P.camera!=='off'||P.speed!==100],
+  ['ret','Ретушь',()=>IC.face,'ret',()=>P.retouch!=='off'],
+  ['ins','Вставки',()=>IC.raw,'ins',()=>!!(API&&AS?AS.inserts.length:+Q.get('k'))],
+  ['lang','Язык',()=>IC.globe,'lang3',()=>!!P.sub_lang]];
+function renderTools3(){ if(!UI3) return; const box=$('#tools3'), sl=box.scrollLeft; box.innerHTML='';
+  TOOLS3.forEach(([id,name,ic,sh,on])=>{ const b=document.createElement('button'); b.type='button'; b.className='t3'+(on()?' on':'')+(sheet===sh?' cur':''); b.dataset.t=id;
+    b.innerHTML=`<i class="t3i" aria-hidden="true">${ic()}</i><span>${name}</span>`; b.setAttribute('aria-label',name); b.onclick=()=>openSheet(sh); box.appendChild(b); });
+  box.scrollLeft=sl; }
+/* полоска состава вместо монтажной ленты: основное видео, части, вставки и «+» */
+function renderStrip3(){ if(!UI3) return; const box=$('#strip3'); box.innerHTML='';
+  const chip=(cls,th,title,sub,click)=>{ const b=document.createElement('button'); b.type='button'; b.className='sc'+(cls?' '+cls:''); b.innerHTML=`<span class="th">${th}</span><span>${esc(title)}${sub?`<small>${esc(sub)}</small>`:''}</span>`; b.onclick=click; box.appendChild(b); };
+  if(API&&AS){ if(AS.main) chip('main',IC.raw,'Основное',fmmss(AS.main.dur),()=>openSheet('parts'));
+    AS.parts.forEach((x,i)=>chip('',IC.raw,'Часть '+(i+2),fmmss(x.dur),()=>openSheet('parts')));
+    AS.inserts.forEach((x,i)=>chip('',IC.raw,'Вставка '+(i+1),x.photo?'фото':fmmss(x.dur),()=>openSheet('ins')));
+    chip('add','+','Добавить видео','',()=>AS.main?openSheet('parts'):pickFiles('part')); return; }
+  const d=Q.get('d'), k=+Q.get('k')||0;
+  if(d!=='0') chip('main',IC.raw,'Видео в чате','основное',()=>toast('Видео ждёт в чате. Нажмите «Смонтировать», когда настроите оформление.'));
+  if(k) chip('',IC.raw,'Вставок: '+k,'из чата',()=>openSheet('ins'));
+  chip('add','+','Добавить видео',d==='0'?'пришлите в чат':'',()=>$('#plusBtn').click()); }
+let paused=false, pauseT=0;
+function drawPlay3(){ const b=$('#play3'); if(!b) return; b.innerHTML=paused?IC.playt:IC.pause; b.setAttribute('aria-label',paused?'Смотреть':'Пауза'); }
 const CHEVR='<span class="lch" aria-hidden="true">›</span>';
 function lrow(icon, title, sub, value, onClick, opt={}){
   const b=document.createElement('button'); b.className='lrow'+(opt.dis?' dis':'')+(opt.need?' need':''); b.type='button';
@@ -1370,23 +1462,33 @@ const LST={
     lgroup(b,'Чистка речи',[lrow(IC.mic,'Вырезать «э-э», «м-м»',dis?'в формате «Как снято» ничего не режу':o.vals[v][1],'',()=>{ if(dis) return; o.set(v?0:1); renderSheet(); render(); },{sw:v===1,dis})]);
     const po=OPT('prof'), PD=['подпись и кнопки Reels не закроют текст','кнопки TikTok справа и снизу','кнопки Shorts справа','с запасом под любую площадку'];
     radios(b,'Где выйдет ролик',po.vals.map((v,i)=>[v[0],PD[i]||'']),Math.max(0,po.get()),i=>po.set(i),'Подписи и плашки не попадут под кнопки и описание площадки.');
-    const LN=Object.fromEntries(D.langs.map(x=>[x.id,x.name])), SL=[['auto','Определять сам']].concat(D.langs.map(x=>[x.id,x.name])), TL=[['','Как в речи']].concat(D.langs.map(x=>[x.id,x.name]));
+    langRows(b); },
+  lang3(b){ langRows(b); },
+  auto3(b){ radios(b,'Как оформить',[['Сделай красиво','стиль, цвета, шрифт и плашки подберу под ролик'],['Настрою сам','всё выбираете вы в панели снизу']],P.auto?0:1,i=>{ P.auto=i===0; });
+    if(P.auto) renderAutoFx(b); else lfoot(b,'Субтитры, цвет, шрифт, обводку и плашки настройте в панели внизу — пример сразу меняется на экране.'); },
+  mus(b){ musicRows(b); },
+  memes3(b){ const M=['off','clean','all']; radios(b,'Мемы-вставки',[['Выкл','без мемов'],['Обычные','короткие смешные вставки к месту'],['С ненормативной лексикой','обычные и с ненормативной лексикой']],
+    Math.max(0,M.indexOf(P.memes||'off')),i=>{ P.memes=M[i]; },'Мем ставлю к месту по смыслу, не чаще одного на минуту ролика.'); },
+};
+function langRows(b){ { const LN=Object.fromEntries(D.langs.map(x=>[x.id,x.name])), SL=[['auto','Определять сам']].concat(D.langs.map(x=>[x.id,x.name])), TL=[['','Как в речи']].concat(D.langs.map(x=>[x.id,x.name]));
     lgroup(b,'Язык',[
       lrow(IC.mic,'Язык речи','на каком языке вы говорите',P.lang==='auto'?'определять сам':(LN[P.lang]||P.lang),e=>popup(e.currentTarget,'Язык речи',SL.map(x=>[x[1],'']),Math.max(0,SL.findIndex(x=>x[0]===P.lang)),i=>{ P.lang=SL[i][0]; })),
       lrow(IC.sub,'Язык субтитров','перевод, если отличается от речи',P.sub_lang?(LN[P.sub_lang]||P.sub_lang):'как в речи',e=>popup(e.currentTarget,'Язык субтитров',TL.map(x=>[x[1],'']),Math.max(0,TL.findIndex(x=>x[0]===(P.sub_lang||''))),i=>{ P.sub_lang=TL[i][0]; })),
     ]);
-    lfoot(b,'«Определять сам» — язык речи узнаю по звуку. Язык субтитров отличается от речи — переведу фразы, сохраню их время; плашки и заголовок тоже будут на этом языке.'); },
+    lfoot(b,'«Определять сам» — язык речи узнаю по звуку. Язык субтитров отличается от речи — переведу фразы, сохраню их время; плашки и заголовок тоже будут на этом языке.'); } }
+function musicRows(b){ const MU=[['off','Без музыки',''],['auto','Подберу по смыслу','под настроение и темп речи'],['energetic','Энергичная',''],['calm','Спокойная',''],['sad','Грустная',''],['inspiring','Вдохновляющая',''],['playful','Игривая','']];
+    radios(b,'Фоновая музыка',MU.map(x=>[x[1],x[2]]),Math.max(0,MU.findIndex(x=>x[0]===(P.music||'off'))),i=>{ P.music=MU[i][0]; });
+    if(P.music && P.music!=='off'){ const ML=[['quiet','Тише','фоном, едва слышно'],['normal','Средне','слышно, но голос главный'],['loud','Громче','музыка заметна, голос всё равно разборчив']];
+      const MP=[['','Подберу сам','под темп и настроение речи'],['slow','Спокойная','медленно, мягко'],['medium','Средняя','ровный ритм'],['fast','Быстрая','бодро, динамично']];
+      radios(b,'Динамика музыки',MP.map(x=>[x[1],x[2]]),Math.max(0,MP.findIndex(x=>x[0]===(P.music_pace||''))),i=>{ P.music_pace=MP[i][0]; });
+      radios(b,'Громкость музыки',ML.map(x=>[x[1],x[2]]),Math.max(0,ML.findIndex(x=>x[0]===(P.music_level||'normal'))),i=>{ P.music_level=ML[i][0]; },'Когда вы говорите, музыка сама становится тише. Живая музыка со свободной лицензией: ролик можно публиковать без указания автора.'); } }
+Object.assign(LST,{
   ret(b){ const o=OPT('ret'); radios(b,'Сила ретуши',o.vals,Math.max(0,o.get()),i=>o.set(i));
     lgroup(b,'Для мужчин',[swRow(OPT('retm')),swRow(OPT('beard'))]);
     lfoot(b,'Сглаживаю только кожу лица: глаза, брови, губы и волосы остаются резкими. Субтитры и плашки ретушь не задевает. Монтаж станет заметно дольше: примерно +4 минуты на минуту ролика.'); },
   snd2(b){ lgroup(b,'Голос',[swRow(OPT('voice')),swRow(OPT('dn'))]);
     lfoot(b,'«Чище и громче» убирает гул, добавляет разборчивости и выводит громкость как в Reels. Шумоподавление приглушает шум комнаты и улицы.');
-    const MU=[['off','Без музыки',''],['auto','Подберу по смыслу','под настроение и темп речи'],['energetic','Энергичная',''],['calm','Спокойная',''],['sad','Грустная',''],['inspiring','Вдохновляющая',''],['playful','Игривая','']];
-    radios(b,'Фоновая музыка',MU.map(x=>[x[1],x[2]]),Math.max(0,MU.findIndex(x=>x[0]===(P.music||'off'))),i=>{ P.music=MU[i][0]; });
-    if(P.music && P.music!=='off'){ const ML=[['quiet','Тише','фоном, едва слышно'],['normal','Средне','слышно, но голос главный'],['loud','Громче','музыка заметна, голос всё равно разборчив']];
-      const MP=[['','Подберу сам','под темп и настроение речи'],['slow','Спокойная','медленно, мягко'],['medium','Средняя','ровный ритм'],['fast','Быстрая','бодро, динамично']];
-      radios(b,'Динамика музыки',MP.map(x=>[x[1],x[2]]),Math.max(0,MP.findIndex(x=>x[0]===(P.music_pace||''))),i=>{ P.music_pace=MP[i][0]; });
-      radios(b,'Громкость музыки',ML.map(x=>[x[1],x[2]]),Math.max(0,ML.findIndex(x=>x[0]===(P.music_level||'normal'))),i=>{ P.music_level=ML[i][0]; },'Когда вы говорите, музыка сама становится тише. Живая музыка со свободной лицензией: ролик можно публиковать без указания автора.'); }
+    if(!UI3) musicRows(b);
     const o=OPT('sfx'); radios(b,'Звук появления плашек',o.vals,Math.max(0,o.get()),i=>o.set(i)); },
   pic(b){ const c=OPT('cam'), s=OPT('spd'); radios(b,'Движение камеры',c.vals,Math.max(0,c.get()),i=>c.set(i),'Камера приближается к лицу, субтитры при этом не увеличиваются.');
     radios(b,'Ускорение',s.vals,Math.max(0,s.get()),i=>s.set(i),'Голос ускоряется без «мультяшности»: высота не меняется.'); },
@@ -1402,7 +1504,7 @@ const LST={
   parts(b){ const mx=AS?AS.max_parts:8, ps=AS&&AS.main?[{name:AS.main.name,dur:AS.main.dur,tag:'основное',main:1,del:()=>apiDel('part',0)}].concat(AS.parts.map((x,i)=>({name:x.name,dur:x.dur,tag:'часть '+(i+2),del:()=>apiDel('part',i+1)}))):[];
     ftiles(b,`Видео ролика · ${ps.length} из ${mx}`,ps,'part',ps.length<mx,
       ps.length?'Склею по порядку загрузки. Видео берутся из галереи без сжатия — качество полное.':'Добавьте видео, где вы говорите в камеру. Несколько файлов склею в один ролик по порядку.'); },
-};
+});
 function retSum(){ const a=[]; if(P.retouch!=='off') a.push(OPT('ret').vals[Math.max(0,OPT('ret').get())][0].toLowerCase());
   if(P.retouch_male) a.push('муж.'); if(P.beard) a.push('борода');
   return a.length?a.join(' · '):'выкл'; }
@@ -1478,7 +1580,11 @@ const stateAt = (tl, t) => tl.findIndex(s => t>=s.a && t<s.b);
 
 // ---------- главное превью (тёмная подложка, без человечка) ----------
 const stage=$('#stage'), wrap=$('#wrap'), capin=$('#capin'), capbox=$('#capbox');
-function fitStage(){ const h=Math.max(170, Math.min(window.innerHeight*(UI2&&!P.auto?0.29:0.36), 380)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
+function fitStage(){ if(UI3) return fitStage3(); const h=Math.max(170, Math.min(window.innerHeight*(UI2&&!P.auto?0.29:0.36), 380)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
+/* версия 3: превью занимает всё место между верхом и полоской состава; при открытой шторке — место над ней */
+function fitStage3(){ const H=window.innerHeight, top=wrap.getBoundingClientRect().top+window.scrollY;
+  const bottom = document.body.classList.contains('sh3') ? H*0.44-10 : $('#tools3').getBoundingClientRect().top-($('#strip3').offsetHeight||58)-8;
+  const h=Math.max(150, Math.min(bottom-top, H*0.64, 640)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
 function accentHex(){ if(P.cap_accent==='custom') return P.cap_accent_hex||null; const a=D.accents.find(x=>x.id===P.cap_accent); return a&&a.hex ? a.hex : (P.cap_accent==='video' ? '#ff7a1a' : null); }
 function mainHex(){ return P.cap_main==='custom' ? (P.cap_main_hex||null) : (D.mains.find(x=>x.id===P.cap_main)||{}).hex; }
 const isRev = st => st.mode==='reveal' && !st.kind;
@@ -1563,11 +1669,13 @@ const stylesWord=n=>n+' '+plural(n,'стиль','стиля','стилей');
 
 // ---------- шторка ----------
 const SHEETS={sub:{title:'Субтитры',key:'captions'},card:{title:'Плашки',key:'cards'},col:{title:'Цвет текста'},snd:{title:'Звук и площадка'},
-  vid:{title:'Ролик'},ret:{title:'Ретушь лица'},snd2:{title:'Звук'},pic:{title:'Камера и скорость'},hk:{title:'Заголовок',key:'hook'},subcol:{title:'Цвет субтитров'},subfnt:{title:'Шрифт субтитров'},ins:{title:'Вставки'},parts:{title:'Части ролика'}};
+  vid:{title:'Ролик'},ret:{title:'Ретушь лица'},snd2:{title:'Звук'},pic:{title:'Камера и скорость'},hk:{title:'Заголовок',key:'hook'},subcol:{title:'Цвет субтитров'},subfnt:{title:'Шрифт субтитров'},ins:{title:'Вставки'},parts:{title:'Части ролика'},
+  auto3:{title:'Сделай красиво'},subfr:{title:'Обводка и тень'},mus:{title:'Музыка'},memes3:{title:'Мемы'},lang3:{title:'Язык'}};
 let sheet=null, deep=null, curGroup=null, curCGroup=null;
-function openSheet(id){ tgBack(true); sheet=id; deep=null; $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); noKeep=true; renderSheet(); $('#sbody').scrollTop=0;
-  if(id==='subcol') requestAnimationFrame(colPrev); }
-function closeSheet(){ tgBack(false); restoreMoved(); sheet=null; deep=null; $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); render(); }
+function openSheet(id){ if(UI3 && sheet && sheet!==id) restoreMoved(); tgBack(true); sheet=id; deep=null; $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); noKeep=true; renderSheet(); $('#sbody').scrollTop=0;
+  if(id==='subcol') requestAnimationFrame(colPrev);
+  if(UI3){ document.body.classList.add('sh3'); window.scrollTo(0,0); fitStage(); renderTools3(); } }
+function closeSheet(){ tgBack(false); restoreMoved(); sheet=null; deep=null; $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); document.body.classList.remove('sh3'); render(); }
 function picks(sel, items, cur, on){ const box=$(sel); box.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.className='pick'+(it.id===cur?' on':'');
   b.innerHTML=it.name+(it.d?`<small>${it.d}</small>`:''); b.onclick=()=>{ on(it.id); renderSheet(); }; box.appendChild(b); }); }
 function swatches(sel, items, cur, on){ const box=$(sel); box.innerHTML=''; items.forEach(it=>{ const b=document.createElement('button'); b.className='swt'+(it.id===cur?' on':'');
@@ -1579,9 +1687,9 @@ const SFX={normal:['Стандарт','под голосом'],quiet:['Тихо'
 const WORDS_OPT=[0,2,3,4,5];
 let noKeep=false;
 function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').scrollTop; requestAnimationFrame(()=>{ $('#sbody').scrollTop=keepY; }); } noKeep=false;
-  const S=SHEETS[sheet], SUBX=sheet==='subcol'||sheet==='subfnt', pane=LST[sheet]?'lst':(deep?sheet+'g':(SUBX?'sub':sheet));
-  { const sp=document.querySelector('#sheet .pane[data-pane="sub"]'); if(sp) sp.dataset.only=sheet==='subcol'?'col':sheet==='subfnt'?'fnt':'main';
-    if(SUBX){ ['accColor','accFont'].forEach(id=>$('#'+id).classList.add('open')); } }
+  const S=SHEETS[sheet], SUBX=sheet==='subcol'||sheet==='subfnt'||sheet==='subfr', pane=LST[sheet]?'lst':(deep?sheet+'g':(SUBX?'sub':sheet));
+  { const sp=document.querySelector('#sheet .pane[data-pane="sub"]'); if(sp) sp.dataset.only=sheet==='subcol'?'col':sheet==='subfnt'?'fnt':sheet==='subfr'?'fr':'main';
+    if(SUBX){ ['accColor','accFont','accFrame'].forEach(id=>$('#'+id).classList.add('open')); } }
   $('#sheet').classList.toggle('deep',!!deep); $('#sBackT').textContent = deep ? 'Назад' : 'Меню'; $$('#sheet .pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===pane));
   $('#sSw').style.display = S.key && !deep ? '' : 'none'; if(S.key) $('#sSw').classList.toggle('on',!!P[S.key]);
   if(LST[sheet]){ $('#sTitle').textContent=S.title; const lb=$('#lstBody'); [...lb.children].forEach(c=>{ if(c.id!=='hookTxt'&&c.id!=='wish') c.remove(); }); LST[sheet](lb); return; }
@@ -1645,7 +1753,7 @@ function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').
 }
 $('#sBack').innerHTML=IC.back+'<span id="sBackT">Меню</span>';
 $('#sBack').onclick=()=>{ if(deep){ deep=null; noKeep=true; renderSheet(); $('#sbody').scrollTop=0; } else closeSheet(); };
-$('#sOk').onclick=closeSheet; $('#scrim').onclick=closeSheet;
+$('#sOk').onclick=closeSheet; if(UI3){ $('#sOk').innerHTML=OKI; $('#sOk').setAttribute('aria-label','Готово'); } $('#scrim').onclick=closeSheet;
 $('#note2x').onclick=()=>$('#note2').classList.remove('on');
 /* Назад, как в iPhone: свайп вправо по странице настроек (страница едет за пальцем) и кнопка «Назад» Telegram
    в шапке (на Android — и системная кнопка «назад»). Владелец 2026-11-15. */
@@ -1693,7 +1801,7 @@ const OPTS=[
   {id:'prof',name:'Площадка',ic:'phone',vals:D.profiles.map(id=>[PROF[id],'']),get:()=>D.profiles.indexOf(P.profile),set:v=>{P.profile=D.profiles[v];}}];
 const FMT=[['head','Чистая речь','Вырезаю паузы между фразами'],['raw','Как снято','Ничего не вырезаю, только оформляю']];
 function popup(anchor, title, items, cur, on){ const p=$('#pop'); p.innerHTML=`<h4>${title}</h4>`; items.forEach((it,i)=>{ const b=document.createElement('button'); b.className=i===cur?'on':'';
-  b.innerHTML=`<span class="rd"></span><span>${it[0]}${it[1]?`<small>${it[1]}</small>`:''}</span>`; b.onclick=e=>{ e.stopPropagation(); on(i); hidePop(); render(); }; p.appendChild(b); });
+  b.innerHTML=`<span class="rd"></span><span>${it[0]}${it[1]?`<small>${it[1]}</small>`:''}</span>`; b.onclick=e=>{ e.stopPropagation(); on(i); hidePop(); render(); if(sheet) renderSheet(); }; p.appendChild(b); });
   p.classList.add('on'); const r=anchor.getBoundingClientRect(), w=p.offsetWidth, h=p.offsetHeight;
   p.style.left=Math.max(8,Math.min(window.innerWidth-w-8,r.left))+'px'; p.style.top=Math.max(8,r.top-h-8)+'px'; $('#scrim').classList.add('on'); }
 function hidePop(){ $('#pop').classList.remove('on'); if(!sheet) $('#scrim').classList.remove('on'); }
@@ -1717,14 +1825,14 @@ function render(){
     b.className='t2 glass'+(v>0&&!dis&&o.id!=='prof'&&o.id!=='sfx'?' onv':''); if(dis) b.style.opacity=.45;
     b.innerHTML=`<small>${IC[o.ic].replace(/width="\d+" height="\d+"/,'width="15" height="15"')}${o.name}</small><b>${dis?'не вырезаю':o.vals[v][0]}</b>`;
     if(!dis) press(b, ()=>{ o.set((v+1)%o.vals.length); render(); }, ()=>popup(b,o.name,o.vals,v,i=>o.set(i))); tb.appendChild(b); });
-  applyLook(); }
+  renderTools3(); renderStrip3(); applyLook(); }
 
 const INSM=[['auto','Авто','поверх, где по смыслу'],['full','Весь экран','на всю зону кадра'],['split','Сплит','вставка сверху, вы снизу'],
   ['circle','Кружок','вставка на весь кадр, вы в кружке'],['prologue','Пролог','до начала ролика']];
 function paintIcons(){ const fi=$('#fmtSideI'); if(fi) fi.innerHTML=IC[P.fmt==='raw'?'raw':'head']; const a=$('#insI'); if(a) a.innerHTML=IC.raw; const b=$('#insModeI'); if(b) b.innerHTML=IC.raw; }
 /* «Сделай красиво»: стиль, цвета и шрифт подберу сам; что добавлять в ролик — переключатели */
-function renderAutoFx(){ const box=$('#autoFx'); if(!box) return; box.innerHTML=''; if(!P.auto) return;
-  const sw=(ic,title,sub,on,set)=>lrow(ic,title,sub,'',()=>{ set(!on); renderAutoFx(); render(); },{sw:on});
+function renderAutoFx(target){ const box=target||$('#autoFx'); if(!box) return; if(!target) box.innerHTML=''; if(!P.auto) return;
+  const sw=(ic,title,sub,on,set)=>lrow(ic,title,sub,'',()=>{ set(!on); render(); if(sheet) renderSheet(); },{sw:on});
   lgroup(box,'Что добавить в ролик',[
     sw(IC.snd,'Фоновая музыка','подберу под настроение',P.music&&P.music!=='off',v=>{ P.music=v?'auto':'off'; }),
     ...(P.music&&P.music!=='off'?[lrow(IC.snd,'Громкость музыки','',({quiet:'тише',normal:'средне',loud:'громче'})[P.music_level||'normal'],
@@ -1757,7 +1865,7 @@ $$('#modeSeg button').forEach(b=>b.onclick=()=>{ P.auto=b.dataset.auto==='1'; re
 $('#fmtSide').onclick=()=>popup($('#fmtSide'),'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; renderAfmt(); });
 let toastT=null; function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),4200); }
 $('#plusBtn').onclick=()=>toast('Пока ролик отправляется боту прямо в чат: закройте это окно и пришлите видео. Загрузка отсюда и просмотр на своём ролике появятся после переезда на наш сервер.');
-$('#logo').innerHTML=IC.cut;
+$('#logo').innerHTML=IC.cut; $('#logo3').innerHTML=IC.cut;
 $('#scrim').addEventListener('click',hidePop);
 function prefsCode(forBot){ let out=D.codecSign; for(const [k,vals] of D.codec){ if(D.codeHex.includes(k)){ const A=D.alphabet, n=/^#[0-9a-f]{6}$/i.test(P[k]||'')?parseInt(P[k].slice(1),16):0; out+=[18,12,6,0].map(sh=>A[(n>>sh)&63]).join(''); continue; } let i=vals.indexOf(P[k]); if(i<0) i=0; if(forBot && k==='fmt' && !fmtTouched && !gotFmt) i=0; const A=D.alphabet; out += D.codeWide.includes(k) ? A[Math.floor(i/64)]+A[i%64] : A[Math.min(i,63)]; } return out; }
 /* Сохранить: только настройки. Смонтировать: настройки и запуск ролика, который ждёт в чате. */
@@ -1785,7 +1893,7 @@ function sendPrefs(go, btn, action){ const ht=($('#hookTxt').value||'').trim();
   /* открыто с карточки ролика: пожелание напрямую не передать — копируем, чтобы человек вставил его в чат */
   if(wish){ try{ navigator.clipboard.writeText(wish); }catch(e){} toast('Пожелание скопировано: вставьте его в чат одним сообщением.'); }
   btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; /* открыто с карточки ролика (&j=): «Смонтировать» запускает именно этот ролик — каждый монтаж отдельная сессия */ const jid=/^[0-9a-f]{10}$/.test(Q.get('j')||'')?Q.get('j'):''; tg.openTelegramLink(`https://t.me/${bot}?start=${action==='ins'?(jid?'n_'+jid:'i_'):(go?(jid?'j_'+jid:'g_'):'s_')}${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
-$('#save').onclick=()=>sendPrefs(false,$('#save')); $('#insAdd').onclick=()=>API?pickFiles('insert'):sendPrefs(false,$('#insAdd'),'ins'); $('#goBtn').onclick=()=>sendPrefs(true,$('#goBtn'));
+$('#save').onclick=()=>sendPrefs(false,$('#save')); $('#go3').onclick=()=>sendPrefs(true,$('#go3')); $('#save3').onclick=()=>sendPrefs(false,$('#save3')); $('#insAdd').onclick=()=>API?pickFiles('insert'):sendPrefs(false,$('#insAdd'),'ins'); $('#goBtn').onclick=()=>sendPrefs(true,$('#goBtn'));
 window.__code = prefsCode;
 /* Файлы прямо в приложении (владелец 2026-11-15: «надо всё делать с приложения»): бот доступен по адресу туннеля a=.
    Файл уходит кусками по 8 МБ с повтором при обрыве; оригинал из галереи, без сжатия Telegram. Адрес не отвечает —
@@ -1878,7 +1986,8 @@ if(tg){ tg.ready(); tg.expand();
   try{ if(tg.requestFullscreen && ['android','ios'].includes(tg.platform) && !tg.isFullscreen) tg.requestFullscreen(); }catch(e){}
   try{ tg.disableVerticalSwipes && tg.disableVerticalSwipes(); }catch(e){} try{ tg.setHeaderColor('#090a0d'); tg.setBackgroundColor('#090a0d'); }catch(e){} }
 window.addEventListener('resize',()=>{fitStage();render();});
-const t0=performance.now(); function draw(){ const t=((performance.now()-t0)/1000)%LOOP; drawMain(t); drawMinis(t); }
+let t0=performance.now(); function draw(){ if(paused) return; const t=((performance.now()-t0)/1000)%LOOP; drawMain(t); drawMinis(t); }
+$('#play3').onclick=()=>{ paused=!paused; if(paused) pauseT=performance.now(); else t0+=performance.now()-pauseT; drawPlay3(); }; drawPlay3();
 fitStage(); render();
 setInterval(draw, 40); draw();   /* таймер, а не кадры браузера: превью живёт и в фоновой вкладке */
 window.__state = () => ({prefs:P, view:curView, user:U, sheet, deep, tiles:$$('#styles .tile').length, cap:capin.innerText});
