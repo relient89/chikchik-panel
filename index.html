@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='c22cddb2a8';
+(function(){ var B='88d64055da';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1635,6 +1635,9 @@ function renderAutoFx(){ const box=$('#autoFx'); if(!box) return; box.innerHTML=
   const sw=(ic,title,sub,on,set)=>lrow(ic,title,sub,'',()=>{ set(!on); renderAutoFx(); render(); },{sw:on});
   lgroup(box,'Что добавить в ролик',[
     sw(IC.snd,'Фоновая музыка','подберу под настроение',P.music&&P.music!=='off',v=>{ P.music=v?'auto':'off'; }),
+    ...(P.music&&P.music!=='off'?[lrow(IC.snd,'Громкость музыки','',({quiet:'тише',normal:'средне',loud:'громче'})[P.music_level||'normal'],
+      e=>popup(e.currentTarget,'Громкость музыки',[['Тише','фоном, едва слышно'],['Средне','слышно, но голос главный'],['Громче','музыка заметна, голос разборчив']],
+        Math.max(0,['quiet','normal','loud'].indexOf(P.music_level||'normal')),i=>{ P.music_level=['quiet','normal','loud'][i]; renderAutoFx(); }))]:[]),
     sw(IC.hk,'Заголовок','крупная фраза в первые секунды',!!P.hook,v=>{ P.hook=v; }),
     sw(IC.sub,'Субтитры','',!!P.captions,v=>{ P.captions=v; }),
     sw(IC.card,'Плашки','главные мысли поверх видео',!!P.cards,v=>{ P.cards=v; }),
