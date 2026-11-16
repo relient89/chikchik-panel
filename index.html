@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='c78900e430';
+(function(){ var B='c22cddb2a8';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1301,7 +1301,7 @@ const LST={
     const MU=[['off','Без музыки',''],['auto','Подберу по смыслу','под настроение и темп речи'],['energetic','Энергичная',''],['calm','Спокойная',''],['sad','Грустная',''],['inspiring','Вдохновляющая',''],['playful','Игривая','']];
     radios(b,'Фоновая музыка',MU.map(x=>[x[1],x[2]]),Math.max(0,MU.findIndex(x=>x[0]===(P.music||'off'))),i=>{ P.music=MU[i][0]; });
     if(P.music && P.music!=='off'){ const ML=[['quiet','Тише','фоном, едва слышно'],['normal','Средне','слышно, но голос главный'],['loud','Громче','музыка заметна, голос всё равно разборчив']];
-      radios(b,'Громкость музыки',ML.map(x=>[x[1],x[2]]),Math.max(0,ML.findIndex(x=>x[0]===(P.music_level||'normal'))),i=>{ P.music_level=ML[i][0]; },'Когда вы говорите, музыка сама становится тише. Треки свободные (CC0): ролик можно публиковать без указания автора.'); }
+      radios(b,'Громкость музыки',ML.map(x=>[x[1],x[2]]),Math.max(0,ML.findIndex(x=>x[0]===(P.music_level||'normal'))),i=>{ P.music_level=ML[i][0]; },'Когда вы говорите, музыка сама становится тише. Живая музыка со свободной лицензией: ролик можно публиковать без указания автора.'); }
     const o=OPT('sfx'); radios(b,'Звук появления плашек',o.vals,Math.max(0,o.get()),i=>o.set(i)); },
   pic(b){ const c=OPT('cam'), s=OPT('spd'); radios(b,'Движение камеры',c.vals,Math.max(0,c.get()),i=>c.set(i),'Камера приближается к лицу, субтитры при этом не увеличиваются.');
     radios(b,'Ускорение',s.vals,Math.max(0,s.get()),i=>s.set(i),'Голос ускоряется без «мультяшности»: высота не меняется.'); },
