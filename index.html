@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='88d64055da';
+(function(){ var B='5e8f7c2e1a';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1295,7 +1295,7 @@ const LST={
     lfoot(b,'«Определять сам» — язык речи узнаю по звуку. Язык субтитров отличается от речи — переведу фразы, сохраню их время; плашки и заголовок тоже будут на этом языке.'); },
   ret(b){ const o=OPT('ret'); radios(b,'Сила ретуши',o.vals,Math.max(0,o.get()),i=>o.set(i));
     lgroup(b,'Для мужчин',[swRow(OPT('retm')),swRow(OPT('beard'))]);
-    lfoot(b,'Сглаживаю только кожу лица: глаза, брови, губы и волосы остаются резкими. Субтитры и плашки ретушь не задевает. Монтаж станет дольше: примерно +2 минуты на минуту ролика.'); },
+    lfoot(b,'Сглаживаю только кожу лица: глаза, брови, губы и волосы остаются резкими. Субтитры и плашки ретушь не задевает. Монтаж станет заметно дольше: примерно +4 минуты на минуту ролика.'); },
   snd2(b){ lgroup(b,'Голос',[swRow(OPT('voice')),swRow(OPT('dn'))]);
     lfoot(b,'«Чище и громче» убирает гул, добавляет разборчивости и выводит громкость как в Reels. Шумоподавление приглушает шум комнаты и улицы.');
     const MU=[['off','Без музыки',''],['auto','Подберу по смыслу','под настроение и темп речи'],['energetic','Энергичная',''],['calm','Спокойная',''],['sad','Грустная',''],['inspiring','Вдохновляющая',''],['playful','Игривая','']];
@@ -1585,7 +1585,7 @@ $$('.acch').forEach(b=>b.onclick=()=>{ $('#'+b.dataset.acc).classList.toggle('op
 let hookOwn=false;
 function showHookTxt(){ const el=$('#hookTxt'); if(!el) return; el.style.display=hookOwn&&P.hook?'block':'none'; if(hookOwn&&P.hook) setTimeout(()=>el.focus(),50); }
 const RET=['off','subtle','light','mid','strong'];
-function timeNote(){ const n=$('#note2'); $('#note2t').textContent='Монтаж станет дольше: примерно +2 минуты на каждую минуту ролика.'; n.classList.add('on'); }
+function timeNote(){ const n=$('#note2'); $('#note2t').textContent='Ретушь значительно увеличит время монтажа: примерно +4 минуты на каждую минуту ролика. Без неё ролик будет готов намного быстрее.'; n.classList.add('on'); }
 const OPTS=[
   {id:'fill',name:'Запинки «э-э», «м-м»',ic:'mic',vals:[['Оставить','ничего не вырезаю'],['Вырезать','убираю «э-э», «м-м» и подобные звуки']],get:()=>P.fillers?1:0,set:v=>{P.fillers=!!v;P.filler_words=false;},off:()=>P.fmt==='raw'},
   {id:'hook',name:'Заголовок в начале',ic:'cam',vals:[['Выкл','ролик начинается без заголовка'],['Придумаю сам','заголовок по смыслу ролика'],['Свой текст','напишете заголовок сами']],get:()=>P.hook?(hookOwn?2:1):0,set:v=>{P.hook=v>0;hookOwn=v===2;showHookTxt();}},
@@ -1643,7 +1643,7 @@ function renderAutoFx(){ const box=$('#autoFx'); if(!box) return; box.innerHTML=
     sw(IC.card,'Плашки','главные мысли поверх видео',!!P.cards,v=>{ P.cards=v; }),
     sw(IC.cam,'Камера к лицу','наезды в такт речи',P.camera&&P.camera!=='off',v=>{ P.camera=v?'punch':'off'; }),
     sw(IC.mic,'Голос чище и громче','',!!P.voice,v=>{ P.voice=v; }),
-    sw(IC.face,'Лёгкая ретушь','кожа ровнее, черты чёткие',P.retouch&&P.retouch!=='off',v=>{ P.retouch=v?'subtle':'off'; }),
+    sw(IC.face,'Лёгкая ретушь','дольше монтаж: +4 мин на минуту ролика',P.retouch&&P.retouch!=='off',v=>{ P.retouch=v?'subtle':'off'; if(v) timeNote(); }),
   ]);
   lfoot(box,'Стиль субтитров, цвета, шрифт и плашки подберу под ваш ролик сам. Хотите выбрать сами — «Настрою сам».'); }
 function renderAfmt(){ paintIcons(); renderAutoFx(); if(typeof UI2!=='undefined' && UI2 && !P.auto) renderList();
