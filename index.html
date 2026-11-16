@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='72c7738e72';
+(function(){ var B='9e8dadfc38';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1513,7 +1513,7 @@ function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').
   if(sheet==='sub' && deep){ const g=D.groups.find(x=>x.id===curGroup)||D.groups[0]; $('#sTitle').textContent=g.name; const box=$('#styles'); box.innerHTML='';
     g.ids.forEach(id=>capTile(box,id,ST[id].name,'',P.style===id,()=>{ P.style=id; P.auto=false; renderSheet(); applyLook(); })); }
   if(sheet==='card' && !deep){ $('#sTitle').textContent=S.title;
-    picks('#cfreq',[{id:'rare',name:'Редко',d:'к месту, до 3 на ролик'},{id:'often',name:'Часто',d:'по максимуму, до 8'}],P.cards_freq,id=>{P.cards_freq=id;});
+    picks('#cfreq',[{id:'rare',name:'Редко',d:'раз в полминуты, минимум 3'},{id:'often',name:'Часто',d:'раз в 10–15 секунд'}],P.cards_freq,id=>{P.cards_freq=id;});
     picks('#csizes',D.cardSizes,P.card_size,id=>{P.card_size=id;applyLook();});
     picks('#ccolors',D.cardColors.map(c=>({id:c.id,name:c.name[0].toUpperCase()+c.name.slice(1)})),P.card_color,id=>{P.card_color=id;applyLook();});
     const gb=$('#cgroups'); gb.innerHTML=''; D.cardGroups.forEach((g,n)=>{ const has=g.ids.includes(P.card_style), cur=has?P.card_style:g.ids[0];
