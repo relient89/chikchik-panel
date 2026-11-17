@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='ba515f38c6';
+(function(){ var B='9855050905';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -164,11 +164,11 @@ svg{display:block}
 .qb.need .ring{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-a2),inset 0 1px 0 rgba(255,255,255,.38)}
 .qb small{color:var(--mut);font-weight:500;font-size:10.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tiles2{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 16px 0}
-.t2{text-align:left;border-radius:18px;padding:8px 10px 9px;min-height:54px;min-width:0;user-select:none;-webkit-user-select:none}
-.t2 small{display:flex;align-items:flex-start;gap:5px;color:var(--mut);font-size:10.5px;font-weight:600;line-height:1.15;overflow:hidden}
-.t2 small svg{flex:none;opacity:.8}
-.t2 b{display:block;font-size:13.5px;font-weight:800;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.t2.onv b{color:var(--acc)}
+.tile2{text-align:left;border-radius:18px;padding:8px 10px 9px;min-height:54px;min-width:0;user-select:none;-webkit-user-select:none}
+.tile2 small{display:flex;align-items:flex-start;gap:5px;color:var(--mut);font-size:10.5px;font-weight:600;line-height:1.15;overflow:hidden}
+.tile2 small svg{flex:none;opacity:.8}
+.tile2 b{display:block;font-size:13.5px;font-weight:800;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile2.onv b{color:var(--acc)}
 .hintbar{margin:12px 30px 0;color:var(--mut);font-size:12px;line-height:1.45}
 .hintbar b{color:#dfe2e8}
 .dock{position:fixed;left:0;right:0;bottom:calc(78px + env(safe-area-inset-bottom));z-index:20;max-width:480px;margin:0 auto;padding:0 16px;pointer-events:none;display:grid;grid-template-columns:1fr 1.5fr;gap:8px}
@@ -378,14 +378,14 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
   overflow-x:auto;scrollbar-width:none;gap:2px;padding:6px 10px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
   mask-image:linear-gradient(90deg,transparent 0,#000 12px,#000 calc(100% - 24px),transparent)}
 .ui3 .tools3::-webkit-scrollbar{display:none}
-.t3{flex:none;width:68px;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:6px 2px;border-radius:14px;
+.tool3{flex:none;width:68px;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:6px 2px;border-radius:14px;
   color:var(--txt);scroll-snap-align:start;transition:background .12s}
-.t3:active{background:rgba(255,255,255,.08)}
-.t3 .t3i{color:var(--txt);background:none;position:relative;width:24px;height:24px;display:grid;place-items:center}.t3 .t3i svg{width:24px;height:24px}
-.t3 span{display:block;width:100%;font-size:11.5px;font-weight:600;line-height:1.15;text-align:center;color:#d9dce3}
-.t3.on .t3i{color:var(--acc) !important}
-.t3.on .t3i::after{content:'';position:absolute;right:-5px;top:-2px;width:6px;height:6px;border-radius:50%;background:var(--acc)}
-.t3.cur{background:rgba(255,255,255,.1)}
+.tool3:active{background:rgba(255,255,255,.08)}
+.tool3 .t3i{color:var(--txt);background:none;position:relative;width:24px;height:24px;display:grid;place-items:center}.tool3 .t3i svg{width:24px;height:24px}
+.tool3 span{display:block;width:100%;font-size:11.5px;font-weight:600;line-height:1.15;text-align:center;color:#d9dce3}
+.tool3.on .t3i{color:var(--acc) !important}
+.tool3.on .t3i::after{content:'';position:absolute;right:-5px;top:-2px;width:6px;height:6px;border-radius:50%;background:var(--acc)}
+.tool3.cur{background:rgba(255,255,255,.1)}
 .ui3 .sheet{top:auto;height:56%;border-radius:22px 22px 0 0 !important;box-shadow:0 -10px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2)}
 .ui3 .sheet .shead{padding-top:12px}
 .ui3 .sheet .shead h2{font-size:17px;text-align:center}
@@ -397,14 +397,14 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .pane[data-only=fr] #accFrame > .acch{display:none}
 /* v3, правки владельца 2026-11-16 */
 .ui3 .tools3{mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 24px),transparent);scroll-snap-type:none}
-.t3.big{background:rgba(255,255,255,.05);border:1px solid var(--rim)}
-.t3.big.on{background:var(--acc-a1);border-color:var(--acc)}
-.t3.big:not(.on) .t3i{opacity:.55}
-.t3.big .t3i::after{display:none}
-.t3.big{position:relative}
-.t3 .msw{position:absolute;top:5px;right:5px;width:22px;height:13px;border-radius:7px;background:rgba(255,255,255,.28);transition:background .15s}
-.t3 .msw::after{content:'';position:absolute;top:2px;left:2px;width:9px;height:9px;border-radius:50%;background:#fff;transition:transform .15s}
-.t3.on .msw{background:var(--acc)}.t3.on .msw::after{transform:translateX(9px);background:#111318}
+.tool3.big{background:rgba(255,255,255,.05);border:1px solid var(--rim)}
+.tool3.big.on{background:var(--acc-a1);border-color:var(--acc)}
+.tool3.big:not(.on) .t3i{opacity:.55}
+.tool3.big .t3i::after{display:none}
+.tool3.big{position:relative}
+.tool3 .msw{position:absolute;top:5px;right:5px;width:22px;height:13px;border-radius:7px;background:rgba(255,255,255,.28);transition:background .15s}
+.tool3 .msw::after{content:'';position:absolute;top:2px;left:2px;width:9px;height:9px;border-radius:50%;background:#fff;transition:transform .15s}
+.tool3.on .msw{background:var(--acc)}.tool3.on .msw::after{transform:translateX(9px);background:#111318}
 .ui3 #accFont{display:none}
 .ui3 .frames{grid-template-columns:repeat(3,minmax(0,1fr))}
 .frh{grid-column:1/-1;margin:10px 2px 0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
@@ -1447,7 +1447,7 @@ const TOOLS3=[
   ['ret','Ретушь',()=>IC.face,'ret',()=>P.retouch!=='off'],
   ['lang','Язык',()=>IC.globe,'lang3',()=>!!P.sub_lang]];
 function renderTools3(){ if(!UI3) return; const box=$('#tools3'), sl=box.scrollLeft; box.innerHTML='';
-  TOOLS3.forEach(([id,name,ic,sh,on,big])=>{ const b=document.createElement('button'); b.type='button'; const o=on(); b.className='t3'+(o?' on':'')+(sheet===sh?' cur':'')+(big?' big':''); b.dataset.t=id;
+  TOOLS3.forEach(([id,name,ic,sh,on,big])=>{ const b=document.createElement('button'); b.type='button'; const o=on(); b.className='tool3'+(o?' on':'')+(sheet===sh?' cur':'')+(big?' big':''); b.dataset.t=id;
     b.innerHTML=`<i class="t3i" aria-hidden="true">${ic()}</i><span>${name}</span>${big?'<b class="msw" aria-hidden="true"></b>':''}`; if(big) b.setAttribute('aria-pressed',o); b.setAttribute('aria-label',name+(big?(o?': включено':': выключено'):'')); b.onclick=()=>openSheet(sh); box.appendChild(b); });
   box.scrollLeft=sl; }
 /* полоска состава вместо монтажной ленты: основное видео, части, вставки и «+» */
@@ -1902,7 +1902,7 @@ function render(){
      else if(id==='prof'){ const po=OPTS.find(o=>o.id==='prof'); b.onclick=()=>popup(b,'Где выйдет ролик',po.vals.map((v,i)=>[v[0],['подпись и кнопки Reels не закроют текст','кнопки TikTok справа и снизу','кнопки Shorts справа','с запасом под любую площадку'][i]||'']),Math.max(0,po.get()),i=>po.set(i)); }
      else b.onclick=()=>openSheet(id); q.appendChild(b); });
   const tb=UI2?document.createElement('div'):$('#rowsOpts'); if(!UI2) tb.innerHTML=''; OPTS.filter(o=>o.id!=='prof'&&!o.v2).forEach(o=>{ const v=Math.max(0,o.get()), dis=o.off&&o.off(), b=document.createElement('button');
-    b.className='t2 glass'+(v>0&&!dis&&o.id!=='prof'&&o.id!=='sfx'?' onv':''); if(dis) b.style.opacity=.45;
+    b.className='tile2 glass'+(v>0&&!dis&&o.id!=='prof'&&o.id!=='sfx'?' onv':''); if(dis) b.style.opacity=.45;
     b.innerHTML=`<small>${IC[o.ic].replace(/width="\d+" height="\d+"/,'width="15" height="15"')}${o.name}</small><b>${dis?'не вырезаю':o.vals[v][0]}</b>`;
     if(!dis) press(b, ()=>{ o.set((v+1)%o.vals.length); render(); }, ()=>popup(b,o.name,o.vals,v,i=>o.set(i))); tb.appendChild(b); });
   renderTools3(); renderStrip3(); applyLook(); }
