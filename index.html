@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='dcbe353576';
+(function(){ var B='fafb33ae9a';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1443,12 +1443,11 @@ Object.assign(IC,{frm:I('<rect x="3.500" y="6.500" width="17" height="11" rx="3.
   insv:I('<rect x="3.500" y="5" width="17" height="14" rx="3"/><rect x="11" y="10" width="7" height="6" rx="1.500" fill="currentColor"/>'), playt:I('<path d="M8 5.500v13l11-6.500z" fill="currentColor"/>')});
 /* панель инструментов: [id, подпись, иконка, шторка, «включено»] — порядок по частоте использования */
 const TOOLS3=[
-  ['tpl','Мои стили',()=>IC.star,'tpl3',()=>TPL.length>0],
+  ['auto','Сделай красиво',()=>IC.magic,'auto3',()=>!!P.auto,'big'],     /* владелец 2026-11-16: первым, «Формат» вторым */
   ['format','Формат',()=>IC[P.fmt==='raw'?'raw':'head'],'vid',()=>!!P.fmt],
-  ['auto','Сделай красиво',()=>IC.magic,'auto3',()=>!!P.auto,'big'],
+  ['tpl','Мои стили',()=>IC.star,'tpl3',()=>TPL.length>0],
   ['subcol','Цвет',()=>IC.pal,'subcol',()=>!!(P.cap_accent||P.cap_main)],
   ['sub','Субтитры',()=>IC.sub,'sub',()=>!!P.captions],
-  ['frame','Обводка',()=>IC.frm,'subfr',()=>P.cap_frame!=='default'],
   ['card','Плашки',()=>IC.card,'card',()=>!!P.cards],
   ['hk','Заголовок',()=>IC.hk,'hk',()=>!!P.hook],
   ['snd2','Звук',()=>IC.mic,'snd2',()=>!!(P.voice||P.denoise)],
@@ -1522,7 +1521,8 @@ const LST={
     langRows(b); },
   lang3(b){ langRows(b); },
   auto3(b){ ltop(b,'<b>Автомонтаж.</b> Стиль субтитров, цвета, шрифт, плашки и заголовок подберу под ваш ролик сам. Понравится — следующие сделаю так же.');
-    if(P.auto) renderAutoFx(b); else lfoot(b,'Выключено: оформление выбираете сами в панели снизу — пример сразу меняется на экране. Включите переключатель вверху, чтобы всё подобрал я.'); },
+    /* владелец 2026-11-16: здесь только переключатель, без настроек — остальное остаётся как выбрано в панели */
+    lfoot(b, P.auto ? 'Включено. Музыка, мемы, вставки и звук — как выбраны в панели снизу.' : 'Выключено: оформление выбираете сами в панели снизу. Включите переключатель вверху — всё подберу я.'); },
   tpl3(b){ tplSheet(b); },
   mus(b){ musicRows(b); },
   memes3(b){ const M=['off','clean','all']; radios(b,'Мемы-вставки',[['Выкл','без мемов'],['Обычные','короткие смешные вставки к месту'],['С ненормативной лексикой','обычные и с ненормативной лексикой']],
