@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='9855050905';
+(function(){ var B='a031fa55be';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -113,7 +113,7 @@ svg{display:block}
 .stage .tag{position:absolute;left:44px;top:44px;padding:14px 28px;border-radius:999px;background:rgba(0,0,0,.4);font:700 34px 'Manr';color:#dfe2e8}
 .safe{position:absolute;left:80px;right:140px;top:270px;bottom:420px;border:4px dashed rgba(255,255,255,.4);border-radius:18px;display:none}
 .safe.on{display:block}
-.capbox{position:absolute;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
+.capbox{position:absolute;left:0;right:0;display:flex;justify-content:center;pointer-events:none;will-change:transform}
 .capin{display:inline-block;transform-origin:center}
 .colprev{position:sticky;top:0;z-index:3;display:flex;justify-content:center;align-items:center;min-height:96px;margin:0 0 12px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#3a3f4a,#20242c 60%,#4a3d36)}.colprev .capin{pointer-events:none}
 .rev .cur{animation:wordin .17s ease-out}
@@ -1639,7 +1639,9 @@ const TL = {}; const tlOf = (id, mw) => TL[id+':'+(mw||0)] || (TL[id+':'+(mw||0)
 const stateAt = (tl, t) => tl.findIndex(s => t>=s.a && t<s.b);
 
 // ---------- главное превью (тёмная подложка, без человечка) ----------
-const stage=$('#stage'), wrap=$('#wrap'), capin=$('#capin'), capbox=$('#capbox');
+const stage=$('#stage'), wrap=$('#wrap'); let capin=$('#capin'), capbox=$('#capbox');
+/* новый слой подписи вместо старого: на iPhone так не остаётся обрывков обводки и тени прошлой фразы */
+function freshCap(){ const nb=capbox.cloneNode(true), ni=nb.querySelector('#capin'); ni.innerHTML=''; capbox.replaceWith(nb); capbox=nb; capin=ni; }
 function fitStage(){ if(UI3) return fitStage3(); const h=Math.max(170, Math.min(window.innerHeight*(UI2&&!P.auto?0.29:0.36), 380)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
 /* версия 3: превью занимает всё место между верхом и полоской состава; при открытой шторке — место над ней */
 function fitStage3(){ const H=window.innerHeight, top=wrap.getBoundingClientRect().top+window.scrollY;
@@ -1707,7 +1709,8 @@ function zs(el,z){ el.style.transform = z===1 ? '' : `scale(${z})`; }
 let last=-2;
 function drawMain(t){ const st=ST[P.style]||ST.focus, tl=tlOf(st.id, P.cap_words), i = P.captions ? stateAt(tl,t) : -1;
   $('#cardbox').classList.toggle('on', P.cards && t>0.5 && t<3.6);
-  if(i===last) return; last=i; if(i<0){ capin.innerHTML=''; return; }
+  if(i===last) return; last=i; if(i<0){ freshCap(); return; }
+  if(tl[i].line) freshCap();
   const s=tl[i]; if(!s.exit){ capin.innerHTML=s.html; const z0=P.cap_size/100;
   const maxW=(1080-220)*0.86, w=capin.scrollWidth*z0; zs(capin, w>maxW ? z0*maxW/w*0.98 : z0);
   capbox.style.top = (s.zone? 1080 : 1200)+'px'; }
