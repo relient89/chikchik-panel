@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='9d7aa5e0f8';
+(function(){ var B='ba515f38c6';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1699,21 +1699,23 @@ function cardAcc(){ const a=accentHex(); return P.card_color==='type' ? '#ff7a1a
 function colPrev(){ const el=$('#colCap'); if(!el) return; const st=ST[P.style]||ST.focus;
   el.className=capin.className; ['--a','--m'].forEach(v=>{ const x=capin.style.getPropertyValue(v); if(x) el.style.setProperty(v,x); else el.style.removeProperty(v); });
   const tl=tlOf(st.id, P.cap_words).filter(x=>!x.exit), s=tl[Math.min(tl.length-1, Math.max(0, tl.length-2))];
-  el.innerHTML=s?s.html:''; el.style.zoom=1; const box=$('#colPrev'), w=el.scrollWidth||1, h=el.scrollHeight||1;
+  el.innerHTML=s?s.html:''; zs(el,1); const box=$('#colPrev'), w=el.scrollWidth||1, h=el.scrollHeight||1;
   if(!box.clientWidth){ requestAnimationFrame(colPrev); return; }      /* окно ещё не раскрыто — посчитать после */
-  el.style.zoom=Math.min(.5, (box.clientWidth-28)/w, 120/h); }
+  const z=Math.min(.5, (box.clientWidth-28)/w, 120/h); zs(el,z); el.style.margin=`${-h*(1-z)/2}px ${-w*(1-z)/2}px`; }
+/* масштаб подписи без CSS zoom: на iPhone zoom раскладывает слова под одним размером, а рисует под другим */
+function zs(el,z){ el.style.transform = z===1 ? '' : `scale(${z})`; }
 let last=-2;
 function drawMain(t){ const st=ST[P.style]||ST.focus, tl=tlOf(st.id, P.cap_words), i = P.captions ? stateAt(tl,t) : -1;
   $('#cardbox').classList.toggle('on', P.cards && t>0.5 && t<3.6);
   if(i===last) return; last=i; if(i<0){ capin.innerHTML=''; return; }
-  const s=tl[i]; if(!s.exit){ capin.innerHTML=s.html; capin.style.zoom=P.cap_size/100;
-  const maxW=(1080-220)*0.86, w=capin.scrollWidth*(P.cap_size/100); if(w>maxW) capin.style.zoom=(P.cap_size/100)*maxW/w*0.98;
+  const s=tl[i]; if(!s.exit){ capin.innerHTML=s.html; const z0=P.cap_size/100;
+  const maxW=(1080-220)*0.86, w=capin.scrollWidth*z0; zs(capin, w>maxW ? z0*maxW/w*0.98 : z0);
   capbox.style.top = (s.zone? 1080 : 1200)+'px'; }
   anim(capin, s); }
 
 // ---------- плитки с живым примером ----------
 const minis=[]; const io = new IntersectionObserver(es=>es.forEach(e=>{ e.target._vis=e.isIntersecting; }),{rootMargin:'120px'});
-function drawMinis(t){ for(const m of minis){ if(m.el._vis===false||!m.el.isConnected) continue; const i=stateAt(m.tl,t); if(i===m.last) continue; m.last=i; if(i<0){ m.in.innerHTML=''; continue; } const s=m.tl[i]; if(!s.exit){ m.in.style.zoom=1; m.in.innerHTML=s.html; const w=m.in.scrollWidth; if(w>800) m.in.style.zoom=800/w; } anim(m.in, s); } }
+function drawMinis(t){ for(const m of minis){ if(m.el._vis===false||!m.el.isConnected) continue; const i=stateAt(m.tl,t); if(i===m.last) continue; m.last=i; if(i<0){ m.in.innerHTML=''; continue; } const s=m.tl[i]; if(!s.exit){ m.in.innerHTML=s.html; const w=m.in.scrollWidth; zs(m.in, w>800 ? 800/w : 1); } anim(m.in, s); } }
 const CHK=`<span class="chk">${I('<path d="M5.500 12.500l4 4 9-9.500"/>',13)}</span>`;
 function capTile(box, id, name, desc, on, click){ const st=ST[id], b=document.createElement('button'); b.className='tile'+(on?' on':'')+(st.group==='outline'?' light':'');
   b.innerHTML=`<span class="mini"><span class="ministage"><span class="capin s-${id}${isRev(st)?' rev':''}${accentHex()?' tinted':''}${P.cap_frame&&P.cap_frame!=='default'?' fr-'+P.cap_frame:''}"></span></span></span><span class="nm">${name}</span><span class="ds">${desc}</span>${CHK}`;
