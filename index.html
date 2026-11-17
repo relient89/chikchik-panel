@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='a031fa55be';
+(function(){ var B='8a2599e890';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1644,9 +1644,13 @@ const stage=$('#stage'), wrap=$('#wrap'); let capin=$('#capin'), capbox=$('#capb
 function freshCap(){ const nb=capbox.cloneNode(true), ni=nb.querySelector('#capin'); ni.innerHTML=''; capbox.replaceWith(nb); capbox=nb; capin=ni; }
 function fitStage(){ if(UI3) return fitStage3(); const h=Math.max(170, Math.min(window.innerHeight*(UI2&&!P.auto?0.29:0.36), 380)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
 /* версия 3: превью занимает всё место между верхом и полоской состава; при открытой шторке — место над ней */
-function fitStage3(){ const H=window.innerHeight, top=wrap.getBoundingClientRect().top+window.scrollY;
-  const bottom = document.body.classList.contains('sh3') ? H*0.44-10 : $('#tools3').getBoundingClientRect().top-($('#strip3').offsetHeight||58)-8;
-  const h=Math.max(150, Math.min(bottom-top, H*0.64, 640)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
+function fitStage3(){ const H=window.innerHeight, top=wrap.getBoundingClientRect().top+window.scrollY, sh=document.body.classList.contains('sh3');
+  const tb=$('#tools3'), st=$('#strip3'), toolsTop = tb.children.length ? tb.getBoundingClientRect().top : H-180;
+  const bottom = sh ? H*0.44-10 : toolsTop-Math.max(st.offsetHeight,64)-10;
+  const set=h=>{ h=Math.max(150, Math.min(h, H*0.64, 640)); const w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; return h; };
+  let h=set(bottom-top);
+  /* проверка: полоска состава не должна заходить на панель инструментов */
+  if(!sh && tb.children.length){ const over=st.getBoundingClientRect().bottom-(tb.getBoundingClientRect().top-4); if(over>0) set(h-over); } }
 function accentHex(){ if(P.cap_accent==='custom') return P.cap_accent_hex||null; const a=D.accents.find(x=>x.id===P.cap_accent); return a&&a.hex ? a.hex : (P.cap_accent==='video' ? '#ff7a1a' : null); }
 function mainHex(){ return P.cap_main==='custom' ? (P.cap_main_hex||null) : (D.mains.find(x=>x.id===P.cap_main)||{}).hex; }
 const isRev = st => st.mode==='reveal' && !st.kind;
@@ -1908,7 +1912,7 @@ function render(){
     b.className='tile2 glass'+(v>0&&!dis&&o.id!=='prof'&&o.id!=='sfx'?' onv':''); if(dis) b.style.opacity=.45;
     b.innerHTML=`<small>${IC[o.ic].replace(/width="\d+" height="\d+"/,'width="15" height="15"')}${o.name}</small><b>${dis?'не вырезаю':o.vals[v][0]}</b>`;
     if(!dis) press(b, ()=>{ o.set((v+1)%o.vals.length); render(); }, ()=>popup(b,o.name,o.vals,v,i=>o.set(i))); tb.appendChild(b); });
-  renderTools3(); renderStrip3(); applyLook(); }
+  renderTools3(); renderStrip3(); if(UI3) fitStage(); applyLook(); }
 
 const INSM=[['auto','Авто','поверх, где по смыслу'],['full','Весь экран','на всю зону кадра'],['split','Сплит','вставка сверху, вы снизу'],
   ['circle','Кружок','вставка на весь кадр, вы в кружке'],['prologue','Пролог','до начала ролика']];
@@ -2073,6 +2077,13 @@ if(tg){ tg.ready(); tg.expand();
   try{ if(tg.requestFullscreen && ['android','ios'].includes(tg.platform) && !tg.isFullscreen) tg.requestFullscreen(); }catch(e){}
   try{ tg.disableVerticalSwipes && tg.disableVerticalSwipes(); }catch(e){} try{ tg.setHeaderColor('#090a0d'); tg.setBackgroundColor('#090a0d'); }catch(e){} }
 window.addEventListener('resize',()=>{fitStage();render();});
+/* Telegram на iPhone меняет высоту окна уже после открытия (полный экран): пересчитать размер примера */
+try{ if(tg && tg.onEvent) tg.onEvent('viewportChanged',()=>fitStage()); }catch(e){}
+[150,500,1200].forEach(ms=>setTimeout(()=>{ if(curView==='edit') fitStage(); },ms));
+/* страховка: раз в секунду — не налезла ли полоска состава на панель и не изменилась ли высота окна */
+let lastH=0; if(UI3) setInterval(()=>{ if(curView!=='edit'||sheet) return; const tb=$('#tools3'), st=$('#strip3');
+  const bad = tb.children.length && st.getBoundingClientRect().bottom > tb.getBoundingClientRect().top-2;
+  if(bad || window.innerHeight!==lastH){ lastH=window.innerHeight; fitStage(); } }, 1000);
 let t0=performance.now(); function draw(){ if(paused) return; const t=((performance.now()-t0)/1000)%LOOP; drawMain(t); drawMinis(t); }
 $('#play3').onclick=()=>{ paused=!paused; if(paused) pauseT=performance.now(); else t0+=performance.now()-pauseT; drawPlay3(); }; drawPlay3();
 fitStage(); render();
