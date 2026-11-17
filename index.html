@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='8a2599e890';
+(function(){ var B='dcbe353576';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -419,6 +419,17 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .lrow .tdel{flex:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--mut);font-size:16px}
 .strip3 .sc.add2 .th{background:rgba(255,255,255,.9);color:#111318}
 .strip3 .sc.add2{color:#fff;border-style:dashed}
+.ui3 .strip3{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
+.ui3 .strip3 .sc{min-width:0;padding-right:8px}.ui3 .strip3 .sc>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.ui3 .strip3 .sc small{overflow:hidden;text-overflow:ellipsis}
+.ui3 .strip3 .sc{white-space:normal;line-height:1.15;gap:7px;padding:6px 8px 6px 6px;min-height:52px}.ui3 .strip3 .sc .th{flex:none;width:28px;height:28px}
+.ui2 #lstBody textarea{border-radius:14px;border:1px solid var(--rim);background:rgba(0,0,0,.25);color:#fff;font:inherit;font-size:15px;line-height:1.35;padding:12px 14px;min-height:76px;resize:vertical}
+.ui2 #lstBody textarea::placeholder{color:var(--mut)}
+.ui3 .ftiles{grid-template-columns:repeat(4,1fr);gap:8px}
+.ui3 .ftile{aspect-ratio:1;border-radius:14px;padding:6px}
+.ui3 .ftile .fx{width:26px;height:26px;font-size:13px;right:4px;top:4px}
+.ui3 .ftile .fk{left:5px;top:5px;font-size:10px;padding:1px 6px}
+.ui3 .ftile .fi svg{width:22px;height:22px}
 .ui3 .toast{bottom:auto;top:calc(12px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px));z-index:95}
 .ui3 .pane[data-only=col] #accColor > .acch,.ui3 .pane[data-only=fnt] #accFont > .acch,.ui3 #colPrev{display:none}
 .ui3 .accb{padding-top:4px}
@@ -1453,16 +1464,12 @@ function renderTools3(){ if(!UI3) return; const box=$('#tools3'), sl=box.scrollL
 /* полоска состава вместо монтажной ленты: основное видео, части, вставки и «+» */
 function renderStrip3(){ if(!UI3) return; const box=$('#strip3'); box.innerHTML='';
   const chip=(cls,th,title,sub,click)=>{ const b=document.createElement('button'); b.type='button'; b.className='sc'+(cls?' '+cls:''); b.innerHTML=`<span class="th">${th}</span><span>${esc(title)}${sub?`<small>${esc(sub)}</small>`:''}</span>`; b.onclick=click; box.appendChild(b); return b; };
-  const im=(INSM.find(x=>x[0]===P.ins_mode)||INSM[0])[1];
-  /* владелец 2026-11-16: «Добавить видео» слева, «Добавить вставку» рядом; значки разные, у обоих плюс */
-  chip('add','+','Добавить видео','',()=>API&&AS?(AS.main?openSheet('parts'):pickFiles('part')):$('#plusBtn').click());
-  const ib=chip('add add2','+','Добавить вставку','',()=>API?pickFiles('insert'):sendPrefs(false,ib,'ins'));
-  if(API&&AS){ if(AS.main) chip('main',IC.raw,'Основное',fmmss(AS.main.dur),()=>openSheet('parts'));
-    AS.parts.forEach((x,i)=>chip('',IC.raw,'Часть '+(i+2),fmmss(x.dur),()=>openSheet('parts')));
-    chip('',IC.insv,'Вставки'+(AS.inserts.length?' · '+AS.inserts.length:''),im,()=>openSheet('ins')); return; }
-  const d=Q.get('d'), k=+Q.get('k')||0;
-  if(d!=='0') chip('main',IC.raw,'Видео','основное',()=>toast('Видео загружено. Настройте оформление и нажмите «Смонтировать».'));
-  chip('',IC.insv,'Вставки'+(k?' · '+k:''),im,()=>openSheet('ins')); }
+  const im=(INSM.find(x=>x[0]===P.ins_mode)||INSM[0])[1], nv=vidCount(), ni=insCount();
+  /* владелец 2026-11-16: две кнопки в один ряд; каждая открывает свой экран с файлами и настройками */
+  chip('add','+','Добавить видео',nv?nv+' '+plural(nv,'видео','видео','видео'):'',()=>openSheet('parts'));
+  chip('add add2','+','Добавить вставку',ni?ni+' · '+im.toLowerCase():'',()=>openSheet('ins')); }
+const vidCount=()=>API&&AS ? (AS.main?1+AS.parts.length:0) : (Q.get('d')==='0'?0:1);
+const insCount=()=>API&&AS ? AS.inserts.length : (+Q.get('k')||0);
 /* «Мои стили» (владелец 2026-11-16): до 20 наборов настроек со своими названиями. Хранятся в облаке Telegram
    у каждого пользователя (на любом его телефоне); вне Telegram — в браузере. Набор — тот же короткий код настроек. */
 let TPL=[]; const TPL_MAX=20;
@@ -1564,6 +1571,22 @@ Object.assign(LST,{
   parts(b){ const mx=AS?AS.max_parts:8, ps=AS&&AS.main?[{name:AS.main.name,dur:AS.main.dur,tag:'основное',main:1,del:()=>apiDel('part',0)}].concat(AS.parts.map((x,i)=>({name:x.name,dur:x.dur,tag:'часть '+(i+2),del:()=>apiDel('part',i+1)}))):[];
     ftiles(b,`Видео ролика · ${ps.length} из ${mx}`,ps,'part',ps.length<mx,
       ps.length?'Склею по порядку загрузки. Видео берутся из галереи без сжатия — качество полное.':'Добавьте видео, где вы говорите в камеру. Несколько файлов склею в один ролик по порядку.'); },
+});
+/* версия 3: «Видео ролика» и «Вставки» — квадратики с крестиком и компактные настройки (владелец 2026-11-16) */
+if(UI3) Object.assign(LST,{
+  parts(b){ const mx=AS?AS.max_parts:8;
+    const ps = API&&AS ? (AS.main?[{name:AS.main.name,dur:AS.main.dur,tag:'1',main:1,del:()=>apiDel('part',0)}].concat(AS.parts.map((x,i)=>({name:x.name,dur:x.dur,tag:String(i+2),del:()=>apiDel('part',i+1)}))):[])
+                       : (Q.get('d')==='0'?[]:[{name:'Ваше видео',dur:null,tag:'1',main:1}]);
+    ftiles(b,`Видео · ${ps.length} из ${mx}`,ps,'part',ps.length<mx,
+      ps.length>1?'Склею по порядку. Видео в полном качестве, без сжатия.':'Видео, где вы говорите в камеру. Несколько — склею по порядку.',
+      API?null:()=>toast('Отправьте видео боту — оно появится здесь.')); },
+  ins(b){ const mx=AS?AS.max_inserts:8, k=+Q.get('k')||0;
+    const its = API&&AS ? AS.inserts.map((it,i)=>({name:it.name,dur:it.photo?null:it.dur,photo:it.photo,tag:String(i+1),del:()=>apiDel('insert',i)}))
+                        : Array.from({length:k},(_,i)=>({name:'Вставка '+(i+1),dur:null,tag:String(i+1)}));
+    ftiles(b,`Фото и видео · ${its.length} из ${mx}`,its,'insert',its.length<mx,null,API?null:()=>sendPrefs(false,$('#insAdd'),'ins'));
+    dropdown(b,'Как показать',INSM.map(x=>[x[1],x[2]]),Math.max(0,INSM.findIndex(x=>x[0]===P.ins_mode)),i=>{ P.ins_mode=INSM[i][0]; });
+    const w=$('#wish'); w.placeholder='Пожелания: что, где и как вставить'; b.appendChild(w);
+    lfoot(b,'Вставки встанут поверх речи по смыслу. В пожеланиях можно уточнить, что и где показать.'); },
 });
 function retSum(){ const a=[]; if(P.retouch!=='off') a.push(OPT('ret').vals[Math.max(0,OPT('ret').get())][0].toLowerCase());
   if(P.retouch_male) a.push('муж.'); if(P.beard) a.push('борода');
@@ -1745,7 +1768,7 @@ const stylesWord=n=>n+' '+plural(n,'стиль','стиля','стилей');
 
 // ---------- шторка ----------
 const SHEETS={sub:{title:'Субтитры',key:'captions'},card:{title:'Плашки',key:'cards'},col:{title:'Цвет текста'},snd:{title:'Звук и площадка'},
-  vid:{title:'Ролик'},ret:{title:'Ретушь лица'},snd2:{title:'Звук'},pic:{title:'Камера и скорость'},hk:{title:'Заголовок',key:'hook'},subcol:{title:'Цвет субтитров'},subfnt:{title:'Шрифт субтитров'},ins:{title:'Вставки'},parts:{title:'Части ролика'},
+  vid:{title:'Ролик'},ret:{title:'Ретушь лица'},snd2:{title:'Звук'},pic:{title:'Камера и скорость'},hk:{title:'Заголовок',key:'hook'},subcol:{title:'Цвет субтитров'},subfnt:{title:'Шрифт субтитров'},ins:{title:'Вставки'},parts:{title:UI3?'Видео ролика':'Части ролика'},
   auto3:{title:'Сделай красиво',key:'auto'},tpl3:{title:'Мои стили'},subfr:{title:'Обводка и тень'},mus:{title:'Музыка'},memes3:{title:'Мемы'},lang3:{title:'Язык'}};
 let sheet=null, deep=null, curGroup=null, curCGroup=null;
 function openSheet(id){ if(UI3 && sheet && sheet!==id) restoreMoved(); tgBack(true); sheet=id; deep=null; $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); noKeep=true; renderSheet(); $('#sbody').scrollTop=0;
@@ -2013,15 +2036,15 @@ function drawUps(){ for(const pr of UPS){ const el=[...document.querySelectorAll
 async function apiDel(kind,i){ try{ AS=await api('/api/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,i,j:JID()})}); }
   catch(e){ toast(e.message); } if(sheet) renderSheet(); render(); }
 function fmmss(t){ t=Math.round(t||0); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0'); }
-function ftiles(box, head, items, kind, canAdd, foot){ const h=document.createElement('div'); h.className='lhead'; h.textContent=head; box.appendChild(h);
+function ftiles(box, head, items, kind, canAdd, foot, addFn){ const h=document.createElement('div'); h.className='lhead'; h.textContent=head; box.appendChild(h);
   const g=document.createElement('div'); g.className='ftiles';
   items.forEach(it=>{ const t=document.createElement('div'); t.className='ftile';
-    t.innerHTML=`<span class="fk${it.main?' main':''}">${it.tag}</span><button class="fx" aria-label="Убрать">✕</button><span class="fi">${IC.raw}</span><span class="fn"></span><span class="fd">${fmmss(it.dur)}</span>`;
-    t.querySelector('.fn').textContent=it.name; t.querySelector('.fx').onclick=it.del; g.appendChild(t); });
+    t.innerHTML=`<span class="fk${it.main?' main':''}">${it.tag}</span>${it.del?'<button class="fx" aria-label="Убрать">✕</button>':''}<span class="fi">${it.photo?IC.insv:IC.raw}</span><span class="fn"></span><span class="fd">${it.dur!=null?fmmss(it.dur):''}</span>`;
+    t.querySelector('.fn').textContent=it.name; if(it.del) t.querySelector('.fx').onclick=it.del; g.appendChild(t); });
   UPS.filter(u=>u.kind===kind).forEach(u=>{ const t=document.createElement('div'); t.className='ftile'; t.dataset.up=u.name;
     t.innerHTML=`<span class="fi">${IC.raw}</span><span class="fn"></span><span class="fd">${u.wait?'обрабатываю…':Math.round(u.p*100)+' %'}</span><span class="bar"><i style="width:${Math.round(u.p*100)}%"></i></span>`;
     t.querySelector('.fn').textContent=u.name; g.appendChild(t); });
-  if(canAdd){ const a=document.createElement('button'); a.className='ftile add'; a.innerHTML='<b>＋</b>Добавить'; a.onclick=()=>pickFiles(kind); g.appendChild(a); }
+  if(canAdd){ const a=document.createElement('button'); a.className='ftile add'; a.innerHTML='<b>＋</b>Добавить'; a.onclick=addFn||(()=>pickFiles(kind)); g.appendChild(a); }
   box.appendChild(g); if(foot) lfoot(box,foot); }
 loadState(); tplLoad();
 /* Вкладка «Ролики»: готовые ролики смотреть и скачивать прямо здесь (владелец 2026-11-16); в чате они тоже остаются */
