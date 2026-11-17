@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='2612e8b037';
+(function(){ var B='90279497c9';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -420,12 +420,16 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .strip3 .sc.add2 .th{background:rgba(255,255,255,.9);color:#111318}
 .strip3 .sc.add2{color:#fff;border-style:dashed}
 .ui3 .tabbar{grid-template-columns:repeat(5,1fr)}
-.tabbar .autotg{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin:-2px 0;border-radius:24px;border:1.5px solid var(--acc);
-  background:rgba(0,0,0,.4);color:var(--txt);font-size:10px;font-weight:800;line-height:1.05;text-align:center;padding:4px 2px;transition:background .15s,color .15s}
-.tabbar .autotg .msw{position:relative;display:block;width:28px;height:16px;border-radius:8px;background:rgba(255,255,255,.3);transition:background .15s}
-.tabbar .autotg .msw::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .15s}
-.tabbar .autotg.on{background:var(--acc);color:var(--onacc);box-shadow:0 6px 18px var(--acc-a2)}.tabbar .autotg.on .msw{background:#111318}
-.tabbar .autotg.on .msw::after{transform:translateX(12px);background:var(--acc)}
+/* «Сделай красиво» внизу посередине: как плитка в панели — звёздочка, подпись, бегунок в углу (владелец 2026-11-16) */
+.tabbar .autotg{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin:-2px 1px;border-radius:20px;
+  border:1px solid var(--rim);background:rgba(255,255,255,.05);color:#d9dce3;font-size:10.5px;font-weight:700;line-height:1.1;text-align:center;padding:6px 2px;
+  transition:background .15s,border-color .15s,color .15s}
+.tabbar .autotg .ai{width:22px;height:22px;display:grid;place-items:center;opacity:.55;transition:opacity .15s}.tabbar .autotg .ai svg{width:22px;height:22px}
+.tabbar .autotg .msw{position:absolute;top:5px;right:6px;width:22px;height:13px;border-radius:7px;background:rgba(255,255,255,.28);transition:background .15s}
+.tabbar .autotg .msw::after{content:'';position:absolute;top:2px;left:2px;width:9px;height:9px;border-radius:50%;background:#fff;transition:transform .15s}
+.tabbar .autotg.on{background:rgba(255,255,255,.2);border-color:var(--acc);color:#fff;box-shadow:0 0 18px var(--acc-a2)}
+.tabbar .autotg.on .ai{opacity:1}
+.tabbar .autotg.on .msw{background:var(--acc)}.tabbar .autotg.on .msw::after{transform:translateX(9px);background:#111318}
 .tabbar .autotg.off{visibility:hidden}
 .ui3.autoon .tools3{display:none}
 .ui3 .strip3{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
@@ -2106,7 +2110,7 @@ function toggleAuto(){ P.auto=!P.auto; if(P.auto && !P.fmt){ P.fmt='head'; fmtTo
 function nav(){ const tb=$('#tabbar'); tb.innerHTML=''; NAV.forEach(([id,ic,nm])=>{ const b=document.createElement('button'); b.className=id===curView?'on':'';
   b.innerHTML=IC[ic].replace(/width="\d+" height="\d+"/,'width="22" height="22"')+nm; b.onclick=()=>go(id); tb.appendChild(b);
     if(UI3 && id==='jobs'){ const a=document.createElement('button'); a.id='autoTg'; a.type='button'; a.setAttribute('role','switch');
-      a.innerHTML='<span>Сделай<br>красиво</span><b class="msw" aria-hidden="true"></b>'; a.onclick=toggleAuto; tb.appendChild(a); } });
+      a.innerHTML=`<i class="ai" aria-hidden="true">${IC.magic}</i><span>Сделай<br>красиво</span><b class="msw" aria-hidden="true"></b>`; a.onclick=toggleAuto; tb.appendChild(a); } });
   paintAutoTg();
   const bal=+U.balance||0; $('#balPill').innerHTML = knowBalance ? `${IC.wallet.replace(/width="\d+" height="\d+"/,'width="16" height="16"')}${bal<0?'Безлимит':bal+' '+plural(bal,'монтаж','монтажа','монтажей')}` : 'Баланс';
   $('.dock').style.display = curView==='edit' ? '' : 'none'; }
