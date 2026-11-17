@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='3141753a57';
+(function(){ var B='62015e8e89';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1588,7 +1588,7 @@ Object.assign(LST,{
 if(UI3) Object.assign(LST,{
   parts(b){ const mx=AS?AS.max_parts:8;
     const ps = API&&AS ? (AS.main?[{name:AS.main.name,dur:AS.main.dur,tag:'1',main:1,del:()=>apiDel('part',0)}].concat(AS.parts.map((x,i)=>({name:x.name,dur:x.dur,tag:String(i+2),del:()=>apiDel('part',i+1)}))):[])
-                       : (Q.get('d')==='0'?[]:[{name:'Ваше видео',dur:null,tag:'1',main:1}]);
+                       : (Q.get('d')==='0'?[]:[{name:'Ваше видео',dur:null,tag:'1',main:1,del:()=>{ if(confirm('Убрать это видео?')) openBot('x_'+((/^[0-9a-f]{10}$/.test(Q.get('j')||''))?Q.get('j'):'')); }}]);
     ftiles(b,`Видео · ${ps.length} из ${mx}`,ps,'part',ps.length<mx,
       ps.length>1?'Склею по порядку. Видео в полном качестве, без сжатия.':'Видео, где вы говорите в камеру. Несколько — склею по порядку.',
       API?null:()=>sendPrefs(false,$('#insAdd'),'vid')); },      /* пока без прямой связи — «＋» переводит в чат (владелец 2026-11-16) */
@@ -2025,6 +2025,9 @@ function sendPrefs(go, btn, action){ const ht=($('#hookTxt').value||'').trim();
   btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; /* открыто с карточки ролика (&j=): «Смонтировать» запускает именно этот ролик — каждый монтаж отдельная сессия */ const jid=/^[0-9a-f]{10}$/.test(Q.get('j')||'')?Q.get('j'):''; tg.openTelegramLink(`https://t.me/${bot}?start=${action==='ins'?(jid?'n_'+jid:'i_'):action==='vid'?'v_':ownHook?(go?(jid?'k_'+jid:'q_'):'h_'):(go?(jid?'j_'+jid:'g_'):'s_')}${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
 $('#save').onclick=()=>sendPrefs(false,$('#save')); $('#go3').onclick=()=>sendPrefs(true,$('#go3')); $('#save3').onclick=()=>sendPrefs(false,$('#save3')); $('#insAdd').onclick=()=>API?pickFiles('insert'):sendPrefs(false,$('#insAdd'),'ins'); $('#goBtn').onclick=()=>sendPrefs(true,$('#goBtn'));
 window.__code = prefsCode;
+/* открыть чат с ботом с командой (пока нет прямой связи с ботом) */
+function openBot(start){ const bot=U.bot || D.bot || ((U.ref||'').match(/t\.me\/([A-Za-z0-9_]+)/)||[])[1];
+  if(!tg||!bot){ toast('Откройте приложение из чата бота.'); return; } tg.openTelegramLink(`https://t.me/${bot}?start=${start}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} },400); }
 /* Файлы прямо в приложении (владелец 2026-11-15: «надо всё делать с приложения»): бот доступен по адресу туннеля a=.
    Файл уходит кусками по 8 МБ с повтором при обрыве; оригинал из галереи, без сжатия Telegram. Адрес не отвечает —
    приложение работает по-старому, через чат. */
