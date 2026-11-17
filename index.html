@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='90279497c9';
+(function(){ var B='80b8d8c06b';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -443,7 +443,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .ui3 .ftile .fx{width:26px;height:26px;font-size:13px;right:4px;top:4px}
 .ui3 .ftile .fk{left:5px;top:5px;font-size:10px;padding:1px 6px}
 .ui3 .ftile .fi svg{width:22px;height:22px}
-.ui3 .toast{bottom:auto;top:calc(12px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px));z-index:95}
+.ui3 .toast{font-size:15px;font-weight:700;line-height:1.35;color:#fff;background:rgba(18,20,26,.96) !important;border-color:rgba(255,255,255,.18);bottom:auto;top:calc(12px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px));z-index:95}
 .ui3 .pane[data-only=col] #accColor > .acch,.ui3 .pane[data-only=fnt] #accFont > .acch,.ui3 #colPrev{display:none}
 .ui3 .accb{padding-top:4px}
 /* ---- стили субтитров из каталога (те же, что в рендере) ---- */
@@ -1986,7 +1986,7 @@ $('#insMode').onclick=()=>{ const i=INSM.findIndex(x=>x[0]===P.ins_mode); P.ins_
 $('#insHead').onclick=()=>$('#insbox').classList.toggle('open');
 $$('#modeSeg button').forEach(b=>b.onclick=()=>{ P.auto=b.dataset.auto==='1'; render(); });
 $('#fmtSide').onclick=()=>popup($('#fmtSide'),'Формат ролика',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; renderAfmt(); });
-let toastT=null; function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),4200); }
+let toastT=null; function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),6500); }      /* владелец 2026-11-16: дольше, чтобы успеть прочитать */
 $('#plusBtn').onclick=()=>toast('Пока ролик отправляется боту прямо в чат: закройте это окно и пришлите видео. Загрузка отсюда и просмотр на своём ролике появятся после переезда на наш сервер.');
 $('#logo').innerHTML=IC.cut; $('#logo3').innerHTML=IC.cut;
 $('#scrim').addEventListener('click',hidePop);
