@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='fafb33ae9a';
+(function(){ var B='2612e8b037';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -419,6 +419,15 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .lrow .tdel{flex:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--mut);font-size:16px}
 .strip3 .sc.add2 .th{background:rgba(255,255,255,.9);color:#111318}
 .strip3 .sc.add2{color:#fff;border-style:dashed}
+.ui3 .tabbar{grid-template-columns:repeat(5,1fr)}
+.tabbar .autotg{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin:-2px 0;border-radius:24px;border:1.5px solid var(--acc);
+  background:rgba(0,0,0,.4);color:var(--txt);font-size:10px;font-weight:800;line-height:1.05;text-align:center;padding:4px 2px;transition:background .15s,color .15s}
+.tabbar .autotg .msw{position:relative;display:block;width:28px;height:16px;border-radius:8px;background:rgba(255,255,255,.3);transition:background .15s}
+.tabbar .autotg .msw::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .15s}
+.tabbar .autotg.on{background:var(--acc);color:var(--onacc);box-shadow:0 6px 18px var(--acc-a2)}.tabbar .autotg.on .msw{background:#111318}
+.tabbar .autotg.on .msw::after{transform:translateX(12px);background:var(--acc)}
+.tabbar .autotg.off{visibility:hidden}
+.ui3.autoon .tools3{display:none}
 .ui3 .strip3{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
 .ui3 .strip3 .sc{min-width:0;padding-right:8px}.ui3 .strip3 .sc>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .ui3 .strip3 .sc small{overflow:hidden;text-overflow:ellipsis}
@@ -1443,7 +1452,6 @@ Object.assign(IC,{frm:I('<rect x="3.500" y="6.500" width="17" height="11" rx="3.
   insv:I('<rect x="3.500" y="5" width="17" height="14" rx="3"/><rect x="11" y="10" width="7" height="6" rx="1.500" fill="currentColor"/>'), playt:I('<path d="M8 5.500v13l11-6.500z" fill="currentColor"/>')});
 /* панель инструментов: [id, подпись, иконка, шторка, «включено»] — порядок по частоте использования */
 const TOOLS3=[
-  ['auto','Сделай красиво',()=>IC.magic,'auto3',()=>!!P.auto,'big'],     /* владелец 2026-11-16: первым, «Формат» вторым */
   ['format','Формат',()=>IC[P.fmt==='raw'?'raw':'head'],'vid',()=>!!P.fmt],
   ['tpl','Мои стили',()=>IC.star,'tpl3',()=>TPL.length>0],
   ['subcol','Цвет',()=>IC.pal,'subcol',()=>!!(P.cap_accent||P.cap_main)],
@@ -1579,12 +1587,13 @@ if(UI3) Object.assign(LST,{
                        : (Q.get('d')==='0'?[]:[{name:'Ваше видео',dur:null,tag:'1',main:1}]);
     ftiles(b,`Видео · ${ps.length} из ${mx}`,ps,'part',ps.length<mx,
       ps.length>1?'Склею по порядку. Видео в полном качестве, без сжатия.':'Видео, где вы говорите в камеру. Несколько — склею по порядку.',
-      API?null:()=>toast('Отправьте видео боту — оно появится здесь.')); },
+      API?null:()=>sendPrefs(false,$('#insAdd'),'vid')); },      /* пока без прямой связи — «＋» переводит в чат (владелец 2026-11-16) */
   ins(b){ const mx=AS?AS.max_inserts:8, k=+Q.get('k')||0;
     const its = API&&AS ? AS.inserts.map((it,i)=>({name:it.name,dur:it.photo?null:it.dur,photo:it.photo,tag:String(i+1),del:()=>apiDel('insert',i)}))
                         : Array.from({length:k},(_,i)=>({name:'Вставка '+(i+1),dur:null,tag:String(i+1)}));
     ftiles(b,`Фото и видео · ${its.length} из ${mx}`,its,'insert',its.length<mx,null,API?null:()=>sendPrefs(false,$('#insAdd'),'ins'));
-    dropdown(b,'Как показать',INSM.map(x=>[x[1],x[2]]),Math.max(0,INSM.findIndex(x=>x[0]===P.ins_mode)),i=>{ P.ins_mode=INSM[i][0]; });
+    if(P.auto){ const r=lrow('','Как показать','','подберу сам',()=>{},{dis:true}); r.querySelector('.lic').remove(); lgroup(b,'',[r]); }
+    else dropdown(b,'Как показать',INSM.map(x=>[x[1],x[2]]),Math.max(0,INSM.findIndex(x=>x[0]===P.ins_mode)),i=>{ P.ins_mode=INSM[i][0]; });
     const w=$('#wish'); w.placeholder='Пожелания: что, где и как вставить'; b.appendChild(w);
     lfoot(b,'Вставки встанут поверх речи по смыслу. В пожеланиях можно уточнить, что и где показать.'); },
 });
@@ -1668,7 +1677,7 @@ function freshCap(){ const nb=capbox.cloneNode(true), ni=nb.querySelector('#capi
 function fitStage(){ if(UI3) return fitStage3(); const h=Math.max(170, Math.min(window.innerHeight*(UI2&&!P.auto?0.29:0.36), 380)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
 /* версия 3: превью занимает всё место между верхом и полоской состава; при открытой шторке — место над ней */
 function fitStage3(){ const H=window.innerHeight, top=wrap.getBoundingClientRect().top+window.scrollY, sh=document.body.classList.contains('sh3');
-  const tb=$('#tools3'), st=$('#strip3'), toolsTop = tb.children.length ? tb.getBoundingClientRect().top : H-180;
+  const tb=(UI3&&P.auto)?$('#tabbar'):$('#tools3'), st=$('#strip3'), toolsTop = tb.children.length ? tb.getBoundingClientRect().top-(P.auto?8:0) : H-180;
   const bottom = sh ? H*0.44-10 : toolsTop-Math.max(st.offsetHeight,64)-10;
   const set=h=>{ h=Math.max(150, Math.min(h, H*0.64, 640)); const w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; return h; };
   let h=set(bottom-top);
@@ -1935,7 +1944,7 @@ function render(){
     b.className='tile2 glass'+(v>0&&!dis&&o.id!=='prof'&&o.id!=='sfx'?' onv':''); if(dis) b.style.opacity=.45;
     b.innerHTML=`<small>${IC[o.ic].replace(/width="\d+" height="\d+"/,'width="15" height="15"')}${o.name}</small><b>${dis?'не вырезаю':o.vals[v][0]}</b>`;
     if(!dis) press(b, ()=>{ o.set((v+1)%o.vals.length); render(); }, ()=>popup(b,o.name,o.vals,v,i=>o.set(i))); tb.appendChild(b); });
-  renderTools3(); renderStrip3(); if(UI3) fitStage(); applyLook(); }
+  renderTools3(); renderStrip3(); if(UI3){ paintAutoTg(); fitStage(); } applyLook(); }
 
 const INSM=[['auto','Авто','поверх, где по смыслу'],['full','Весь экран','на всю зону кадра'],['split','Сплит','вставка сверху, вы снизу'],
   ['circle','Кружок','вставка на весь кадр, вы в кружке'],['prologue','Пролог','до начала ролика']];
@@ -2006,7 +2015,7 @@ function sendPrefs(go, btn, action){ const ht=($('#hookTxt').value||'').trim();
   if(cloud){ try{ cloud.setItem('prefs', prefsCode()); }catch(e){} }
   /* открыто с карточки ролика: пожелание напрямую не передать — копируем, чтобы человек вставил его в чат */
   if(wish){ try{ navigator.clipboard.writeText(wish); }catch(e){} toast('Пожелание скопировано: вставьте его в чат одним сообщением.'); }
-  btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; /* открыто с карточки ролика (&j=): «Смонтировать» запускает именно этот ролик — каждый монтаж отдельная сессия */ const jid=/^[0-9a-f]{10}$/.test(Q.get('j')||'')?Q.get('j'):''; tg.openTelegramLink(`https://t.me/${bot}?start=${action==='ins'?(jid?'n_'+jid:'i_'):(go?(jid?'j_'+jid:'g_'):'s_')}${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
+  btn.textContent = go ? 'Запускаю…' : 'Сохраняю…'; /* открыто с карточки ролика (&j=): «Смонтировать» запускает именно этот ролик — каждый монтаж отдельная сессия */ const jid=/^[0-9a-f]{10}$/.test(Q.get('j')||'')?Q.get('j'):''; tg.openTelegramLink(`https://t.me/${bot}?start=${action==='ins'?(jid?'n_'+jid:'i_'):action==='vid'?'v_':(go?(jid?'j_'+jid:'g_'):'s_')}${prefsCode(true)}`); setTimeout(()=>{ try{ tg.close(); }catch(e){} }, 400); }
 $('#save').onclick=()=>sendPrefs(false,$('#save')); $('#go3').onclick=()=>sendPrefs(true,$('#go3')); $('#save3').onclick=()=>sendPrefs(false,$('#save3')); $('#insAdd').onclick=()=>API?pickFiles('insert'):sendPrefs(false,$('#insAdd'),'ins'); $('#goBtn').onclick=()=>sendPrefs(true,$('#goBtn'));
 window.__code = prefsCode;
 /* Файлы прямо в приложении (владелец 2026-11-15: «надо всё делать с приложения»): бот доступен по адресу туннеля a=.
@@ -2089,8 +2098,16 @@ function fillPages(){
 $('#copyref').onclick=async e=>{ if(!U.ref) return; try{ await navigator.clipboard.writeText(U.ref); e.target.textContent='Скопировано'; }catch(_){ e.target.textContent='Не вышло'; } };
 const NAV=[['edit','cut','Монтаж'],['jobs','play','Ролики'],['bonus','gift','Бонусы'],['pay','wallet','Баланс']]; let curView='edit';
 function go(id){ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); render(); } }
+function paintAutoTg(){ const a=$('#autoTg'); if(!a) return; a.className='autotg'+(P.auto?' on':'')+(curView==='edit'?'':' off');
+  a.setAttribute('aria-checked',!!P.auto); a.setAttribute('aria-label','Сделай красиво: '+(P.auto?'включено':'выключено'));
+  document.body.classList.toggle('autoon', !!P.auto); }
+function toggleAuto(){ P.auto=!P.auto; if(P.auto && !P.fmt){ P.fmt='head'; fmtTouched=true; }      /* автомонтаж: паузы вырежу сам */
+  if(sheet) closeSheet(); render(); paintAutoTg(); toast(P.auto?'Сделай красиво включено: оформление подберу сам.':'Сделай красиво выключено: настройки снова в панели.'); }
 function nav(){ const tb=$('#tabbar'); tb.innerHTML=''; NAV.forEach(([id,ic,nm])=>{ const b=document.createElement('button'); b.className=id===curView?'on':'';
-  b.innerHTML=IC[ic].replace(/width="\d+" height="\d+"/,'width="22" height="22"')+nm; b.onclick=()=>go(id); tb.appendChild(b); });
+  b.innerHTML=IC[ic].replace(/width="\d+" height="\d+"/,'width="22" height="22"')+nm; b.onclick=()=>go(id); tb.appendChild(b);
+    if(UI3 && id==='jobs'){ const a=document.createElement('button'); a.id='autoTg'; a.type='button'; a.setAttribute('role','switch');
+      a.innerHTML='<span>Сделай<br>красиво</span><b class="msw" aria-hidden="true"></b>'; a.onclick=toggleAuto; tb.appendChild(a); } });
+  paintAutoTg();
   const bal=+U.balance||0; $('#balPill').innerHTML = knowBalance ? `${IC.wallet.replace(/width="\d+" height="\d+"/,'width="16" height="16"')}${bal<0?'Безлимит':bal+' '+plural(bal,'монтаж','монтажа','монтажей')}` : 'Баланс';
   $('.dock').style.display = curView==='edit' ? '' : 'none'; }
 $('#balPill').onclick=()=>go('pay');
@@ -2104,7 +2121,7 @@ window.addEventListener('resize',()=>{fitStage();render();});
 try{ if(tg && tg.onEvent) tg.onEvent('viewportChanged',()=>fitStage()); }catch(e){}
 [150,500,1200].forEach(ms=>setTimeout(()=>{ if(curView==='edit') fitStage(); },ms));
 /* страховка: раз в секунду — не налезла ли полоска состава на панель и не изменилась ли высота окна */
-let lastH=0; if(UI3) setInterval(()=>{ if(curView!=='edit'||sheet) return; const tb=$('#tools3'), st=$('#strip3');
+let lastH=0; if(UI3) setInterval(()=>{ if(curView!=='edit'||sheet) return; const tb=P.auto?$('#tabbar'):$('#tools3'), st=$('#strip3');
   const bad = tb.children.length && st.getBoundingClientRect().bottom > tb.getBoundingClientRect().top-2;
   if(bad || window.innerHeight!==lastH){ lastH=window.innerHeight; fitStage(); } }, 1000);
 let t0=performance.now(); function draw(){ if(paused) return; const t=((performance.now()-t0)/1000)%LOOP; drawMain(t); drawMinis(t); }
