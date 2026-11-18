@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='ce8550b4ba';
+(function(){ var B='753381d601';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2053,7 +2053,7 @@ let PICK=null;
 /* orig=false — выбор одного файла: iPhone сам быстро сжимает видео до HD (как у конкурента, владелец 2026-11-18);
    orig=true — несколько файлов, оригиналы без сжатия (дольше) */
 function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.createElement('input'); PICK=inp;
-  inp.type='file'; inp.multiple=!!orig || kind==='insert';      /* вставки: при одном файле iPhone показывал только фото (владелец 2026-11-18) */ /* форматы — как у конкурента: с конкретными расширениями iPhone отдаёт файл без долгой перекодировки */
+  inp.type='file'; inp.multiple=true;      /* сколько галочек поставили — столько и грузим (владелец 2026-11-18) */ /* форматы — как у конкурента: с конкретными расширениями iPhone отдаёт файл без долгой перекодировки */
   inp.accept=kind==='part'?'video/*,.mp4,.mov,.m4v,.webm,.mkv':'image/png,image/jpeg,image/webp,image/gif,video/mp4,video/quicktime,video/webm,.png,.jpg,.jpeg,.webp,.gif,.mp4,.mov,.m4v,.webm';
   inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';
   document.body.appendChild(inp); let done=false;
@@ -2061,28 +2061,30 @@ function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.creat
     toast(fs.length>1?`Загружаю ${fs.length} файла…`:'Загружаю «'+fs[0].name+'»…');
     for(const f of fs) await upOne(kind,f); inp.remove(); if(PICK===inp) PICK=null; };
   inp.addEventListener('change',go); inp.addEventListener('input',go); inp.click();
-  if(orig) toast('Оригиналы без сжатия: iPhone готовит их дольше (кружок), потом пойдёт загрузка.'); }
+}
 /* файл одним запросом с ходом загрузки (быстрее кусков); не вышло — запасной путь кусками ниже */
-function upWhole(kind,f,onp){ return new Promise((ok,bad)=>{ const x=new XMLHttpRequest();
+function upWhole(kind,f,onp,pr){ return new Promise((ok,bad)=>{ const x=new XMLHttpRequest(); if(pr) pr.xhr=x;
   x.open('POST',(API||API0)+`/api/upfile?kind=${kind}&size=${f.size}&name=${encodeURIComponent(f.name)}&j=${encodeURIComponent(JID()||'')}`);
   x.setRequestHeader('X-Tg',tg?tg.initData:''); x.setRequestHeader('Content-Type','application/octet-stream');
   x.upload.onprogress=e=>{ if(e.lengthComputable) onp(e.loaded/e.total); };
   x.onload=()=>{ let d={}; try{ d=JSON.parse(x.responseText); }catch(e){} if(x.status===200) ok(d); else bad(Object.assign(new Error(d.error||('Ошибка '+x.status)),{final:x.status>=400&&x.status<500})); };
   x.onerror=x.ontimeout=x.onabort=()=>bad(new Error('связь прервалась')); x.send(f); }); }
 async function upOne(kind,f){ upBusy++; const pr={name:f.name,kind,p:0}; UPS.push(pr); if(sheet) renderSheet();
-  try{ try{ const st=await upWhole(kind,f,v=>{ pr.p=v; drawUps(); toast(v<1?`Загружаю «${f.name}»… ${Math.round(v*100)}%`:'Обрабатываю видео…'); });
+  const CANCEL=new Error('отменено');      /* крестик на загружаемом файле (владелец 2026-11-18) */
+  try{ try{ const st=await upWhole(kind,f,v=>{ pr.p=v; drawUps(); toast(v<1?`Загружаю «${f.name}»… ${Math.round(v*100)}%`:'Обрабатываю видео…'); },pr);
+      if(pr.cancelled) throw CANCEL;
       AS=st; toast(kind==='insert'?'✓ Вставка добавлена':'✓ Видео добавлено'); return; }
-    catch(e){ if(e.final) throw e; toast('Связь прервалась, загружаю по частям…'); }
+    catch(e){ if(pr.cancelled) throw CANCEL; if(e.final) throw e; toast('Связь прервалась, загружаю по частям…'); }
     const s=await api('/api/up',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,name:f.name,size:f.size,j:JID()})});
     let off=0, tries=0;
-    while(off<f.size){ try{ const r=await api(`/api/up/${s.id}?off=${off}`,{method:'PUT',body:f.slice(off,off+s.chunk)}); off=r.got; tries=0; }
+    while(off<f.size){ if(pr.cancelled) throw CANCEL; try{ const r=await api(`/api/up/${s.id}?off=${off}`,{method:'PUT',body:f.slice(off,off+s.chunk)}); off=r.got; tries=0; }
       catch(e){ if(++tries>8) throw new Error('связь с сервером обрывается, попробуйте ещё раз ('+e.message+')');
         toast(`Связь прервалась, повторяю… (${tries} из 8)`); await new Promise(z=>setTimeout(z,Math.min(10000,1500*tries)));
         try{ const r=await api(`/api/up/${s.id}?off=-1`,{method:'PUT',body:new Blob([])}); if(typeof r.got==='number') off=r.got; }catch(_){} }   /* сколько уже дошло — продолжаем с этого места */
       pr.p=off/f.size; drawUps(); toast(`Загружаю «${f.name}»… ${Math.round(pr.p*100)}%`); }      /* ход загрузки виден всегда (владелец 2026-11-18) */
     pr.p=1; pr.wait=1; drawUps();
     toast('Обрабатываю видео…'); AS=await api(`/api/up/${s.id}/done`,{method:'POST'}); toast(kind==='insert'?'✓ Вставка добавлена':'✓ Видео добавлено'); }
-  catch(e){ toast('Не загрузилось «'+f.name+'»: '+e.message); }
+  catch(e){ toast(pr.cancelled?'Загрузка отменена':'Не загрузилось «'+f.name+'»: '+e.message); }
   finally{ UPS.splice(UPS.indexOf(pr),1); upBusy--; if(sheet) renderSheet(); render(); } }
 function drawUps(){ for(const pr of UPS){ const el=[...document.querySelectorAll('[data-up]')].find(x=>x.dataset.up===pr.name); if(!el) continue;
   el.querySelector('.bar i').style.width=Math.round(pr.p*100)+'%'; el.querySelector('.fd').textContent=pr.wait?'обрабатываю…':Math.round(pr.p*100)+' %'; } }
@@ -2095,11 +2097,10 @@ function ftiles(box, head, items, kind, canAdd, foot, addFn){ const h=document.c
     t.innerHTML=`<span class="fk${it.main?' main':''}">${it.tag}</span>${it.del?'<button class="fx" aria-label="Убрать">✕</button>':''}<span class="fi">${it.photo?IC.insv:IC.raw}</span><span class="fn"></span><span class="fd">${it.dur!=null?fmmss(it.dur):''}</span>`;
     t.querySelector('.fn').textContent=it.name; if(it.del) t.querySelector('.fx').onclick=it.del; g.appendChild(t); });
   UPS.filter(u=>u.kind===kind).forEach(u=>{ const t=document.createElement('div'); t.className='ftile'; t.dataset.up=u.name;
-    t.innerHTML=`<span class="fi">${IC.raw}</span><span class="fn"></span><span class="fd">${u.wait?'обрабатываю…':Math.round(u.p*100)+' %'}</span><span class="bar"><i style="width:${Math.round(u.p*100)}%"></i></span>`;
-    t.querySelector('.fn').textContent=u.name; g.appendChild(t); });
+    t.innerHTML=`<span class="fi">${IC.raw}</span><span class="fn"></span><span class="fd">${u.wait?'обрабатываю…':Math.round(u.p*100)+' %'}</span><span class="bar"><i style="width:${Math.round(u.p*100)}%"></i></span><button class="fx" aria-label="Отменить загрузку">✕</button>`;
+    t.querySelector('.fn').textContent=u.name; t.querySelector('.fx').onclick=()=>{ u.cancelled=true; try{ u.xhr&&u.xhr.abort(); }catch(e){} toast('Отменяю загрузку…'); }; g.appendChild(t); });
   if(canAdd){ const a=document.createElement('button'); a.className='ftile add'; a.innerHTML='<b>＋</b>Добавить'; a.onclick=addFn||(()=>pickFiles(kind)); g.appendChild(a); }
   box.appendChild(g);
-  if(canAdd && !addFn && UI3){ const o=document.createElement('button'); o.type='button'; o.className='origbtn'; o.textContent='Загрузить оригинал без сжатия (дольше, можно несколько)'; o.onclick=()=>pickFiles(kind,true); box.appendChild(o); }
   if(foot) lfoot(box,foot); return; }
 loadState(); tplLoad();
 /* Вкладка «Ролики»: готовые ролики смотреть и скачивать прямо здесь (владелец 2026-11-16); в чате они тоже остаются */
