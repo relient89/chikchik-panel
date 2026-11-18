@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='62015e8e89';
+(function(){ var B='f0cc272db9';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2038,8 +2038,17 @@ async function api(path,opt={}){ const r=await fetch((API||API0)+path,{...opt,he
 async function loadState(){ if(!API0||!tg||!tg.initData) return;
   try{ AS=await api('/api/state'+(JID()?'?j='+JID():'')); API=API0; if(AS.wishes && !$('#wish').value) $('#wish').value=AS.wishes; render(); if(sheet) renderSheet(); }
   catch(e){ API=''; AS=null; } }
-function pickFiles(kind){ const inp=document.createElement('input'); inp.type='file'; inp.multiple=true; inp.accept=kind==='part'?'video/*':'video/*,image/*';
-  inp.onchange=async()=>{ for(const f of [...inp.files]) await upOne(kind,f); }; inp.click(); }
+/* Выбор файлов. Поле вставляется в страницу и живёт до конца загрузки: на iPhone поле «на лету» (вне страницы)
+   не сообщало о выбранном файле — загрузка не начиналась (владелец 2026-11-18) */
+let PICK=null;
+function pickFiles(kind){ if(PICK) PICK.remove(); const inp=document.createElement('input'); PICK=inp;
+  inp.type='file'; inp.multiple=true; inp.accept=kind==='part'?'video/*':'video/*,image/*';
+  inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';
+  document.body.appendChild(inp); let done=false;
+  const go=async()=>{ if(done) return; const fs=[...(inp.files||[])]; if(!fs.length) return; done=true;
+    toast(fs.length>1?`Загружаю ${fs.length} файла…`:'Загружаю «'+fs[0].name+'»…');
+    for(const f of fs) await upOne(kind,f); inp.remove(); if(PICK===inp) PICK=null; };
+  inp.addEventListener('change',go); inp.addEventListener('input',go); inp.click(); }
 async function upOne(kind,f){ upBusy++; const pr={name:f.name,kind,p:0}; UPS.push(pr); if(sheet) renderSheet();
   try{ const s=await api('/api/up',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,name:f.name,size:f.size,j:JID()})});
     let off=0, tries=0;
