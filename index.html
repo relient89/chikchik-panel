@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='6f64906519';
+(function(){ var B='ce8550b4ba';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -109,7 +109,7 @@ svg{display:block}
   background:rgba(0,0,0,.2);color:#fff;font-family:inherit;font-size:14px;line-height:1.3;resize:vertical;min-height:44px;height:44px}
 .insbox .note{margin-top:8px}
 .stagewrap{position:relative;margin:0 auto;border-radius:28px;overflow:hidden;background:var(--spot);box-shadow:0 0 0 1px var(--rim),0 20px 50px rgba(0,0,0,.6)}
-.stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden}
+.stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;overflow:hidden;background-size:cover;background-position:center}
 .stage .tag{position:absolute;left:44px;top:44px;padding:14px 28px;border-radius:999px;background:rgba(0,0,0,.4);font:700 34px 'Manr';color:#dfe2e8}
 .safe{position:absolute;left:80px;right:140px;top:270px;bottom:420px;border:4px dashed rgba(255,255,255,.4);border-radius:18px;display:none}
 .safe.on{display:block}
@@ -1505,6 +1505,14 @@ function tplSheet(b){ ltop(b,'Сохраните оформление под с�
 /* сравнение наборов без формата ролика: формат выбирают к каждому видео */
 function codeSame(a,b){ const k=D.codec.findIndex(x=>x[0]==='fmt'); if(k<0) return a===b; let pos=2; for(let i=0;i<k;i++){ const key=D.codec[i][0]; pos+=D.codeHex.includes(key)?4:D.codeWide.includes(key)?2:1; }
   return a.slice(0,pos)+a.slice(pos+1)===b.slice(0,pos)+b.slice(pos+1); }
+/* Пример на кадрах своего видео (владелец 2026-11-18, как у конкурента): сервер отдаёт стоп-кадры основного видео,
+   они сменяются под субтитрами и плашками. Нет видео или связи — прежний тёмный фон. */
+let FR=[], frKey='', frShown='';
+function loadFrames(){ const list=(API&&AS&&AS.main&&AS.frames)||[], key=list.length?AS.j+':'+AS.main.name+':'+AS.main.dur:'';      /* ссылки на кадры каждый раз новые (подпись) — ключ по самому видео */
+  if(key===frKey) return; frKey=key; FR=[]; frShown=''; stage.style.backgroundImage='';
+  list.forEach((u,i)=>{ const im=new Image(); im.onload=()=>{ if(frKey===key){ FR[i]=API+u; $('#tag').textContent='Ваше видео'; } }; im.src=API+u; }); }
+function drawFrame(t){ if(!FR.length) return; const n=AS&&AS.frames?AS.frames.length:FR.length, k=Math.floor(t/LOOP*n)%n;
+  const u=FR[k]||FR.find(Boolean); if(u && u!==frShown){ frShown=u; stage.style.backgroundImage=`url("${u}")`; } }
 let paused=false, pauseT=0;
 function drawPlay3(){ const b=$('#play3'); if(!b) return; b.innerHTML=paused?IC.playt:IC.pause; b.setAttribute('aria-label',paused?'Смотреть':'Пауза'); }
 const CHEVR='<span class="lch" aria-hidden="true">›</span>';
@@ -1936,7 +1944,7 @@ function rowEl(icon, title, sub, value, opts){ const b=document.createElement('b
   b.innerHTML=`<span class="ri">${icon}</span><span class="rt">${title}${sub?`<small>${sub}</small>`:''}</span>${value?`<span class="rv${opts&&opts.acc?' acc':''}">${value}</span>`:''}${opts&&opts.chev?`<span class="chev">${CHEV}</span>`:''}`; return b; }
 function render(){
   $('#edit').classList.toggle('auto',P.auto); fitStage(); renderAfmt(); 
-  const f=FMT.find(x=>x[0]===P.fmt); $('#tag').textContent = P.fmt==='raw' ? 'Пример · без резки' : 'Пример';
+  const f=FMT.find(x=>x[0]===P.fmt); $('#tag').textContent = FR.some(Boolean) ? 'Ваше видео' : (P.fmt==='raw' ? 'Пример · без резки' : 'Пример'); loadFrames();
   const st=ST[P.style]||ST.focus, a=accentHex()||'var(--acc)', cs=(D.cardStyles.find(x=>x.id===P.card_style)||{}).name||'';
   const q=$('#quad'); q.innerHTML='';
   [['fmt',IC[P.fmt==='raw'?'raw':'head'],'Формат',f?f[1]:'выбрать',!!f,!f],['sub',IC.sub,'Субтитры',P.captions?st.name:'выкл',P.captions,false],
@@ -2162,7 +2170,7 @@ try{ if(tg && tg.onEvent) tg.onEvent('viewportChanged',()=>fitStage()); }catch(e
 let lastH=0; if(UI3) setInterval(()=>{ if(curView!=='edit'||sheet) return; const tb=P.auto?$('#tabbar'):$('#tools3'), st=$('#strip3');
   const bad = tb.children.length && st.getBoundingClientRect().bottom > tb.getBoundingClientRect().top-2;
   if(bad || window.innerHeight!==lastH){ lastH=window.innerHeight; fitStage(); } }, 1000);
-let t0=performance.now(); function draw(){ if(paused) return; const t=((performance.now()-t0)/1000)%LOOP; drawMain(t); drawMinis(t); }
+let t0=performance.now(); function draw(){ if(paused) return; const t=((performance.now()-t0)/1000)%LOOP; drawMain(t); drawMinis(t); drawFrame(t); }
 $('#play3').onclick=()=>{ paused=!paused; if(paused) pauseT=performance.now(); else t0+=performance.now()-pauseT; drawPlay3(); }; drawPlay3();
 fitStage(); render();
 setInterval(draw, 40); draw();   /* таймер, а не кадры браузера: превью живёт и в фоновой вкладке */
