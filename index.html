@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='cb2e5fb51f';
+(function(){ var B='a8c238dab5';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1456,6 +1456,7 @@ Object.assign(IC,{frm:I('<rect x="3.500" y="6.500" width="17" height="11" rx="3.
   pause:I('<path d="M9 6v12M15 6v12"/>'), star:I('<path d="M12 4l2.400 4.900 5.400.800-3.900 3.800.900 5.400L12 16.400 7.200 18.900l.900-5.400L4.200 9.700l5.400-.800z"/>'),
   insv:I('<rect x="3.500" y="5" width="17" height="14" rx="3"/><rect x="11" y="10" width="7" height="6" rx="1.500" fill="currentColor"/>'), playt:I('<path d="M8 5.500v13l11-6.500z" fill="currentColor"/>')});
 /* панель инструментов: [id, подпись, иконка, шторка, «включено»] — порядок по частоте использования */
+const RETOUCH=false;   /* ретушь убрана 2026-11-18 (тяжёлая: +4 мин на минуту ролика); true — вернуть во все версии */
 const TOOLS3=[
   ['format','Формат',()=>IC[P.fmt==='raw'?'raw':'head'],'vid',()=>!!P.fmt],
   ['tpl','Мои стили',()=>IC.star,'tpl3',()=>TPL.length>0],
@@ -1468,7 +1469,7 @@ const TOOLS3=[
   ['memes','Мемы',()=>IC.sm,'memes3',()=>!!P.memes&&P.memes!=='off'],
   ['pic','Камера',()=>IC.cam,'pic',()=>P.camera!=='off'||P.speed!==100],
   ['ret','Ретушь',()=>IC.face,'ret',()=>P.retouch!=='off'],
-  ['lang','Язык',()=>IC.globe,'lang3',()=>!!P.sub_lang]];
+  ['lang','Язык',()=>IC.globe,'lang3',()=>!!P.sub_lang]].filter(t=>RETOUCH||t[0]!=='ret');
 function renderTools3(){ if(!UI3) return; const box=$('#tools3'), sl=box.scrollLeft; box.innerHTML='';
   TOOLS3.forEach(([id,name,ic,sh,on,big])=>{ const b=document.createElement('button'); b.type='button'; const o=on(); b.className='tool3'+(o?' on':'')+(sheet===sh?' cur':'')+(big?' big':''); b.dataset.t=id;
     b.innerHTML=`<i class="t3i" aria-hidden="true">${ic()}</i><span>${name}</span>${big?'<b class="msw" aria-hidden="true"></b>':''}`; if(big) b.setAttribute('aria-pressed',o); b.setAttribute('aria-label',name+(big?(o?': включено':': выключено'):'')); b.onclick=()=>openSheet(sh); box.appendChild(b); });
@@ -1646,7 +1647,7 @@ function renderList2(){
   lgroup(box,'Монтаж',[
     lrow(IC.snd,'Звук','',sndSum(),()=>openSheet('snd2')),
     lrow(IC.cam,'Камера и скорость','',picSum(),()=>openSheet('pic')),
-    lrow(IC.face,'Ретушь лица','',retSum(),()=>openSheet('ret')),
+    ...(RETOUCH?[lrow(IC.face,'Ретушь лица','',retSum(),()=>openSheet('ret'))]:[]),
     ...(API?[lrow(IC.head,'Части ролика','',AS&&AS.main?`${1+AS.parts.length} видео`:'добавить видео',()=>openSheet('parts'),{need:!(AS&&AS.main)})]:[]),
     lrow(IC.sm,'Мемы',P.memes==='all'?'и с ненормативной лексикой':'',({off:'выкл',clean:'обычные',all:'все'})[P.memes||'off'],e=>popup(e.currentTarget,'Мемы-вставки',
       [['off','Выкл','без мемов'],['clean','Обычные','короткие смешные вставки к месту'],['all','С ненормативной лексикой','обычные и с ненормативной лексикой']].map(x=>[x[1],x[2]]),Math.max(0,['off','clean','all'].indexOf(P.memes||'off')),i=>{ P.memes=['off','clean','all'][i]; })),
@@ -1982,7 +1983,7 @@ function renderAutoFx(target){ const box=target||$('#autoFx'); if(!box) return; 
       e=>popup(e.currentTarget,'Мемы',[['Обычные','без ненормативной лексики'],['С ненормативной лексикой','обычные и с ненормативной лексикой']],
         P.memes==='all'?1:0,i=>{ P.memes=i?'all':'clean'; renderAutoFx(); }))]:[]),
     sw(IC.mic,'Голос чище и громче','',!!P.voice,v=>{ P.voice=v; }),
-    sw(IC.face,'Лёгкая ретушь','дольше монтаж: +4 мин на минуту ролика',P.retouch&&P.retouch!=='off',v=>{ P.retouch=v?'subtle':'off'; if(v) timeNote(); }),
+    ...(RETOUCH?[sw(IC.face,'Лёгкая ретушь','дольше монтаж: +4 мин на минуту ролика',P.retouch&&P.retouch!=='off',v=>{ P.retouch=v?'subtle':'off'; if(v) timeNote(); })]:[]),
   ]);
   if(!target) lfoot(box,'Стиль субтитров, цвета, шрифт и плашки подберу под ваш ролик сам. Хотите выбрать сами — «Настрою сам».'); }
 function renderAfmt(){ paintIcons(); renderAutoFx(); if(typeof UI2!=='undefined' && UI2 && !P.auto) renderList();
