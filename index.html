@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='38384726aa';
+(function(){ var B='cabb581459';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2053,11 +2053,13 @@ async function upOne(kind,f){ upBusy++; const pr={name:f.name,kind,p:0}; UPS.pus
   try{ const s=await api('/api/up',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,name:f.name,size:f.size,j:JID()})});
     let off=0, tries=0;
     while(off<f.size){ try{ const r=await api(`/api/up/${s.id}?off=${off}`,{method:'PUT',body:f.slice(off,off+s.chunk)}); off=r.got; tries=0; }
-      catch(e){ if(++tries>4) throw e; await new Promise(z=>setTimeout(z,1500*tries)); }
+      catch(e){ if(++tries>8) throw new Error('связь с сервером обрывается, попробуйте ещё раз ('+e.message+')');
+        toast(`Связь прервалась, повторяю… (${tries} из 8)`); await new Promise(z=>setTimeout(z,Math.min(10000,1500*tries)));
+        try{ const r=await api(`/api/up/${s.id}?off=-1`,{method:'PUT',body:new Blob([])}); if(typeof r.got==='number') off=r.got; }catch(_){} }   /* сколько уже дошло — продолжаем с этого места */
       pr.p=off/f.size; drawUps(); toast(`Загружаю «${f.name}»… ${Math.round(pr.p*100)}%`); }      /* ход загрузки виден всегда (владелец 2026-11-18) */
     pr.p=1; pr.wait=1; drawUps();
     toast('Обрабатываю видео…'); AS=await api(`/api/up/${s.id}/done`,{method:'POST'}); toast(kind==='insert'?'✓ Вставка добавлена':'✓ Видео добавлено'); }
-  catch(e){ toast(f.name+': '+e.message); }
+  catch(e){ toast('Не загрузилось «'+f.name+'»: '+e.message); }
   finally{ UPS.splice(UPS.indexOf(pr),1); upBusy--; if(sheet) renderSheet(); render(); } }
 function drawUps(){ for(const pr of UPS){ const el=[...document.querySelectorAll('[data-up]')].find(x=>x.dataset.up===pr.name); if(!el) continue;
   el.querySelector('.bar i').style.width=Math.round(pr.p*100)+'%'; el.querySelector('.fd').textContent=pr.wait?'обрабатываю…':Math.round(pr.p*100)+' %'; } }
