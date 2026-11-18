@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='8b0b85dad5';
+(function(){ var B='071ea6b8ce';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2045,7 +2045,7 @@ let PICK=null;
 /* orig=false — выбор одного файла: iPhone сам быстро сжимает видео до HD (как у конкурента, владелец 2026-11-18);
    orig=true — несколько файлов, оригиналы без сжатия (дольше) */
 function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.createElement('input'); PICK=inp;
-  inp.type='file'; inp.multiple=!!orig; inp.accept=kind==='part'?'video/*':'video/*,image/*';
+  inp.type='file'; inp.multiple=!!orig || kind==='insert';      /* вставки: при одном файле iPhone показывал только фото (владелец 2026-11-18) */ inp.accept=kind==='part'?'video/*':'video/*,image/*';
   inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';
   document.body.appendChild(inp); let done=false;
   const go=async()=>{ if(done) return; const fs=[...(inp.files||[])]; if(!fs.length) return; done=true;
