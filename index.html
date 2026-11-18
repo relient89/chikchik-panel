@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='753381d601';
+(function(){ var B='23b8f75dec';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2054,7 +2054,7 @@ let PICK=null;
    orig=true — несколько файлов, оригиналы без сжатия (дольше) */
 function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.createElement('input'); PICK=inp;
   inp.type='file'; inp.multiple=true;      /* сколько галочек поставили — столько и грузим (владелец 2026-11-18) */ /* форматы — как у конкурента: с конкретными расширениями iPhone отдаёт файл без долгой перекодировки */
-  inp.accept=kind==='part'?'video/*,.mp4,.mov,.m4v,.webm,.mkv':'image/png,image/jpeg,image/webp,image/gif,video/mp4,video/quicktime,video/webm,.png,.jpg,.jpeg,.webp,.gif,.mp4,.mov,.m4v,.webm';
+  inp.accept=kind==='part'?'video/*,.mp4,.mov,.m4v,.webm,.mkv':'video/*,image/*';      /* вставки: со списком типов iPhone открывал только фото (владелец 2026-11-18) */
   inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';
   document.body.appendChild(inp); let done=false;
   const go=async()=>{ if(done) return; const fs=[...(inp.files||[])]; if(!fs.length) return; done=true;
