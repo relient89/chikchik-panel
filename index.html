@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='cabb581459';
+(function(){ var B='65d9c760f7';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2048,7 +2048,8 @@ function pickFiles(kind){ if(PICK) PICK.remove(); const inp=document.createEleme
   const go=async()=>{ if(done) return; const fs=[...(inp.files||[])]; if(!fs.length) return; done=true;
     toast(fs.length>1?`Загружаю ${fs.length} файла…`:'Загружаю «'+fs[0].name+'»…');
     for(const f of fs) await upOne(kind,f); inp.remove(); if(PICK===inp) PICK=null; };
-  inp.addEventListener('change',go); inp.addEventListener('input',go); inp.click(); }
+  inp.addEventListener('change',go); inp.addEventListener('input',go); inp.click();
+  toast('Выберите видео. iPhone сначала подготовит его (кружок) — длинное видео до минуты, потом пойдёт загрузка.'); }
 async function upOne(kind,f){ upBusy++; const pr={name:f.name,kind,p:0}; UPS.push(pr); if(sheet) renderSheet();
   try{ const s=await api('/api/up',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,name:f.name,size:f.size,j:JID()})});
     let off=0, tries=0;
