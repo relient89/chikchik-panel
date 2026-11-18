@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='071ea6b8ce';
+(function(){ var B='6f64906519';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2045,7 +2045,8 @@ let PICK=null;
 /* orig=false — выбор одного файла: iPhone сам быстро сжимает видео до HD (как у конкурента, владелец 2026-11-18);
    orig=true — несколько файлов, оригиналы без сжатия (дольше) */
 function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.createElement('input'); PICK=inp;
-  inp.type='file'; inp.multiple=!!orig || kind==='insert';      /* вставки: при одном файле iPhone показывал только фото (владелец 2026-11-18) */ inp.accept=kind==='part'?'video/*':'video/*,image/*';
+  inp.type='file'; inp.multiple=!!orig || kind==='insert';      /* вставки: при одном файле iPhone показывал только фото (владелец 2026-11-18) */ /* форматы — как у конкурента: с конкретными расширениями iPhone отдаёт файл без долгой перекодировки */
+  inp.accept=kind==='part'?'video/*,.mp4,.mov,.m4v,.webm,.mkv':'image/png,image/jpeg,image/webp,image/gif,video/mp4,video/quicktime,video/webm,.png,.jpg,.jpeg,.webp,.gif,.mp4,.mov,.m4v,.webm';
   inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';
   document.body.appendChild(inp); let done=false;
   const go=async()=>{ if(done) return; const fs=[...(inp.files||[])]; if(!fs.length) return; done=true;
@@ -2053,8 +2054,18 @@ function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.creat
     for(const f of fs) await upOne(kind,f); inp.remove(); if(PICK===inp) PICK=null; };
   inp.addEventListener('change',go); inp.addEventListener('input',go); inp.click();
   if(orig) toast('Оригиналы без сжатия: iPhone готовит их дольше (кружок), потом пойдёт загрузка.'); }
+/* файл одним запросом с ходом загрузки (быстрее кусков); не вышло — запасной путь кусками ниже */
+function upWhole(kind,f,onp){ return new Promise((ok,bad)=>{ const x=new XMLHttpRequest();
+  x.open('POST',(API||API0)+`/api/upfile?kind=${kind}&size=${f.size}&name=${encodeURIComponent(f.name)}&j=${encodeURIComponent(JID()||'')}`);
+  x.setRequestHeader('X-Tg',tg?tg.initData:''); x.setRequestHeader('Content-Type','application/octet-stream');
+  x.upload.onprogress=e=>{ if(e.lengthComputable) onp(e.loaded/e.total); };
+  x.onload=()=>{ let d={}; try{ d=JSON.parse(x.responseText); }catch(e){} if(x.status===200) ok(d); else bad(Object.assign(new Error(d.error||('Ошибка '+x.status)),{final:x.status>=400&&x.status<500})); };
+  x.onerror=x.ontimeout=x.onabort=()=>bad(new Error('связь прервалась')); x.send(f); }); }
 async function upOne(kind,f){ upBusy++; const pr={name:f.name,kind,p:0}; UPS.push(pr); if(sheet) renderSheet();
-  try{ const s=await api('/api/up',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,name:f.name,size:f.size,j:JID()})});
+  try{ try{ const st=await upWhole(kind,f,v=>{ pr.p=v; drawUps(); toast(v<1?`Загружаю «${f.name}»… ${Math.round(v*100)}%`:'Обрабатываю видео…'); });
+      AS=st; toast(kind==='insert'?'✓ Вставка добавлена':'✓ Видео добавлено'); return; }
+    catch(e){ if(e.final) throw e; toast('Связь прервалась, загружаю по частям…'); }
+    const s=await api('/api/up',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,name:f.name,size:f.size,j:JID()})});
     let off=0, tries=0;
     while(off<f.size){ try{ const r=await api(`/api/up/${s.id}?off=${off}`,{method:'PUT',body:f.slice(off,off+s.chunk)}); off=r.got; tries=0; }
       catch(e){ if(++tries>8) throw new Error('связь с сервером обрывается, попробуйте ещё раз ('+e.message+')');
