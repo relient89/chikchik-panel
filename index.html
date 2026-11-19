@@ -8,10 +8,10 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='9ea6acbfb9';
+(function(){ var B='d5e115b9e3';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-    if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
-    var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
+    if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
+    u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
 </script>
 <style>
 [hidden]{display:none !important}
@@ -291,10 +291,20 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #edov .w.del{opacity:.4;text-decoration:line-through;background:rgba(255,255,255,.04)}
 #edov .w.key{box-shadow:inset 0 -2px 0 #ff9a3c}
 #edov .w.sel{outline:2px solid var(--acc);outline-offset:1px}
+#edov .w.gone{opacity:.55;text-decoration:line-through;background:transparent;border:1px dashed rgba(255,255,255,.3);font-size:14px}
+#edov .w.gone.on{opacity:1;text-decoration:none;background:var(--acc);color:#111;border-color:var(--acc)}
 #edov .wbar{position:absolute;left:12px;right:12px;bottom:96px;display:none;gap:6px;padding:8px;border-radius:16px;background:rgba(30,32,40,.96);border:1px solid var(--rim);box-shadow:0 10px 30px rgba(0,0,0,.5)}
 #edov .wbar.on{display:flex}
 #edov .wbar button{flex:1;padding:10px 4px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt);font-size:13px;font-weight:700}
 #edov .wbar button.x{flex:none;width:42px}
+#edov .eh .undo{flex:none;width:44px;padding:8px 0;font-size:18px}
+#edov .eh .undo:disabled{opacity:.3}
+#edov .eh .undo i{font-style:normal;font-size:11px;margin-left:2px;color:var(--mut)}
+#edov .wbar{flex-wrap:wrap}
+#edov .wbar button.on{background:var(--acc);color:#111}
+#edov .wbar .row2{display:flex;gap:6px;width:100%}
+#edov .ef button small{display:block;font-size:12px;font-weight:600;opacity:.75;margin-top:2px}
+
 
 
 .pals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -2290,58 +2300,81 @@ loadState(); tplLoad();
 /* Правка готового ролика (2026-11-19): слова по строкам (сомнительные — жёлтым), заголовок, плашки. Бесплатно, до трёх раз. */
 let EDJ=null, ED={words:{},cards:{},drop:{},hook:null};
 function edClose(){ $('#edov').classList.remove('on'); EDJ=null; }
-async function edOpen(jid){ EDJ=jid; ED={words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{}};
+async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{}}); ED=fresh(); let HIST=[];
   let ov=$('#edov'); if(!ov){ ov=document.createElement('div'); ov.id='edov'; document.body.appendChild(ov); }
   ov.innerHTML='<div class="eh"><b>Править ролик</b><button id="edx">Закрыть</button></div><div class="eb"><div class="empty">Загружаю…</div></div>'; ov.classList.add('on');
   $('#edx').onclick=edClose;
   let d; try{ d=await api('/api/edit/'+jid); }catch(e){ ov.querySelector('.eb').innerHTML='<div class="empty">Не получилось открыть правку: '+esc(e.message)+'</div>'; return; }
-  const eb=ov.querySelector('.eb');
-  if(!d.editable){ eb.innerHTML='<div class="empty">'+esc(d.why||'Этот ролик править нельзя.')+'</div>'; return; }
-  const W={}; d.lines.forEach(l=>l.words.forEach(w=>W[w.i]=w));
+  if(!d.editable){ ov.querySelector('.eb').innerHTML='<div class="empty">'+esc(d.why||'Этот ролик править нельзя.')+'</div>'; return; }
+  const W={}, R={}; d.lines.forEach(l=>l.words.forEach(w=>{ if(w.r) R[w.r]=w; else W[w.i]=w; }));
+  const norm=t=>String(t).replace(/^[\s.,!?;:«»"'()\[\]…—–-]+|[\s.,!?;:«»"'()\[\]…—–-]+$/g,'').toLowerCase();
+  const rawcore=t=>String(t).replace(/^[\s.,!?;:«»"'()\[\]…—–-]+|[\s.,!?;:«»"'()\[\]…—–-]+$/g,'');
+  const same=i=>Object.keys(W).filter(j=>norm(W[j].w)===norm(W[i].w)).map(Number);
   const isDel=i=>ED.cut[i]||(W[i].del&&!ED.restore[i]), isKey=i=>ED.kon[i]||(W[i].key&&!ED.koff[i]);
   const low=d.lines.reduce((n,l)=>n+l.words.filter(w=>w.low).length,0);
-  let h=(d.url?'<div class="evw"><video id="edv" controls playsinline preload="metadata" src="'+API+d.url+'"></video></div>':'')
-       +'<p class="hint">Коснитесь слова: исправить, убрать из ролика или сделать ключевым. '+(low?'Жёлтым отмечены слова, в которых программа не уверена.':'')+'</p><div class="eh2">Текст</div>';
-  d.lines.forEach(l=>{ h+='<div class="eln"><small>'+fmmss(l.t)+'</small><div class="ewd">'+l.words.map(w=>'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(w.w)+'</span>').join('')+'</div></div>'; });
-  h+='<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(d.hook||'')+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">';
-  if(d.cards.length){ h+='<div class="eh2">Плашки</div><p class="hint">Черта | отделяет главное от подписи, например «25 | минут».</p>'; d.cards.forEach(c=>{ h+='<div class="ecd" data-c="'+c.i+'"><input class="fld" value="'+esc(c.text)+'" maxlength="120"><button class="dc" title="Убрать плашку">✕</button></div>'; }); }
-  eb.innerHTML=h;
-  const cnt=()=>Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0)+Object.keys(ED.cut).length+Object.keys(ED.restore).length+Object.keys(ED.kon).length+Object.keys(ED.koff).length;
-  const upd=()=>{ const n=cnt(); $('#edgo').disabled=!n; $('#edgo').style.opacity=n?1:.45; };
-  const paint=el=>{ const i=+el.dataset.i; el.classList.toggle('del',!!isDel(i)); el.classList.toggle('key',!!isKey(i)); el.classList.toggle('chg',ED.words[i]!==undefined); };
-  const bar=document.createElement('div'); bar.className='wbar'; ov.appendChild(bar);
-  let selEl=null;
-  const closeBar=()=>{ bar.classList.remove('on'); if(selEl) selEl.classList.remove('sel'); selEl=null; };
-  const wordEdit=el=>{ const i=+el.dataset.i, old=W[i].w, cur=ED.words[i]||old; closeBar();
-    el.innerHTML='<input value="'+esc(cur)+'">'; const inp=el.querySelector('input'); inp.focus(); inp.select();
-    const done=()=>{ const v=inp.value.trim(); if(v&&v!==old){ ED.words[i]=v; } else { delete ED.words[i]; } el.textContent=ED.words[i]||old; paint(el); upd(); };
-    inp.onblur=done; inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); }; };
-  const toggle=(map,rev,i,base)=>{ const on=base?!rev[i]:!!map[i]; if(on){ if(base){ rev[i]=1; } else { delete map[i]; } } else { if(base){ delete rev[i]; } else { map[i]=1; } } };
-  const showBar=el=>{ const i=+el.dataset.i; if(selEl) selEl.classList.remove('sel'); selEl=el; el.classList.add('sel');
-    const v=$('#edv'); if(v&&W[i].t!=null){ try{ v.currentTime=W[i].t; }catch(e){} }
-    const dl=isDel(i), ky=isKey(i);
-    bar.innerHTML='<button data-a="fix">Исправить</button><button data-a="del">'+(dl?'Вернуть':'Удалить')+'</button><button data-a="key">'+(ky?'Не ключевое':'Ключевое')+'</button><button class="x" data-a="x">✕</button>';
-    bar.classList.add('on');
-    bar.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const a=b.dataset.a;
-      if(a==='x') return closeBar();
-      if(a==='fix') return wordEdit(el);
-      if(a==='del'){ if(W[i].del){ if(ED.restore[i]) delete ED.restore[i]; else ED.restore[i]=1; } else { if(ED.cut[i]) delete ED.cut[i]; else ED.cut[i]=1; } }
-      if(a==='key'){ if(W[i].key){ if(ED.koff[i]) delete ED.koff[i]; else ED.koff[i]=1; } else { if(ED.kon[i]) delete ED.kon[i]; else ED.kon[i]=1; } }
-      paint(el); upd(); showBar(el); }); };
-  eb.querySelectorAll('.w').forEach(el=>{ paint(el); el.onclick=()=>{ if(el.querySelector('input')) return; showBar(el); }; });
-  $('#edhook').oninput=e=>{ ED.hook=e.target.value; if(ED.hook===(d.hook||'')) ED.hook=null; upd(); };
-  eb.querySelectorAll('.ecd').forEach(r=>{ const i=r.dataset.c, inp=r.querySelector('input'), orig=inp.value;
-    inp.oninput=()=>{ if(inp.value.trim()&&inp.value!==orig) ED.cards[i]=inp.value; else delete ED.cards[i]; upd(); };
-    r.querySelector('.dc').onclick=()=>{ ED.drop[i]=!ED.drop[i]; r.classList.toggle('off',ED.drop[i]); upd(); }; });
-  const f=document.createElement('div'); f.className='ef'; f.innerHTML='<button id="edgo">Пересобрать бесплатно</button><small>Осталось правок: '+d.left+'. Новый ролик придёт в чат.</small>'; ov.appendChild(f);
-  $('#edgo').onclick=async()=>{ const b=$('#edgo'); b.disabled=true; b.textContent='Отправляю…';
-    const edits={}; if(Object.keys(ED.words).length) edits.words=ED.words; if(Object.keys(ED.cards).length) edits.cards=ED.cards;
-    const dr=Object.keys(ED.drop).filter(k=>ED.drop[k]).map(Number); if(dr.length) edits.drop_cards=dr; if(ED.hook!==null) edits.hook=ED.hook;
-    const ks=m=>Object.keys(m).map(Number); if(ks(ED.cut).length) edits.cut=ks(ED.cut); if(ks(ED.restore).length) edits.restore=ks(ED.restore);
-    if(ks(ED.kon).length) edits.keys_on=ks(ED.kon); if(ks(ED.koff).length) edits.keys_off=ks(ED.koff);
-    try{ await api('/api/edit/'+EDJ,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}); toast('Правка принята — новый ролик придёт в чат'); edClose(); }
-    catch(e){ b.disabled=false; b.textContent='Пересобрать бесплатно'; toast(e.message); } };
-  upd(); }
+  const restN=Object.keys(R).length;
+  const snap=()=>{ HIST.push(JSON.stringify(ED)); if(HIST.length>60) HIST.shift(); };
+  const cnt=()=>Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0)+Object.keys(ED.cut).length+Object.keys(ED.restore).length+Object.keys(ED.kon).length+Object.keys(ED.koff).length+Object.keys(ED.rest).length;
+  const dsec=()=>Object.keys(ED.cut).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.restore).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.rest).reduce((a,r)=>a+(R[r].d||0),0);
+  const fsec=x=>Math.abs(x)<0.05?'':(x>0?'−':'+')+Math.abs(x).toFixed(1).replace('.',',')+' с';
+  let selEl=null, bar=null;
+  const build=()=>{
+    ov.innerHTML='<div class="eh"><b>Править ролик</b><button class="undo" id="edun" title="Шаг назад">↶</button><button id="edx">Закрыть</button></div><div class="eb"></div>';
+    $('#edx').onclick=edClose; const eb=ov.querySelector('.eb');
+    let h=(d.url?'<div class="evw"><video id="edv" controls playsinline preload="metadata" src="'+API+d.url+'"></video></div>':'')
+         +'<p class="hint">Коснитесь слова: исправить, убрать из ролика или сделать ключевым. '+(low?'Жёлтым отмечены слова, в которых программа не уверена. ':'')+(restN?'Пунктиром показано то, что убрал автомонтаж (паузы, запинки): коснитесь, чтобы вернуть.':'')+'</p><div class="eh2">Текст</div>';
+    d.lines.forEach(l=>{ h+='<div class="eln"><small>'+fmmss(l.t)+'</small><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; });
+    h+='<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">';
+    if(d.cards.length){ h+='<div class="eh2">Плашки</div><p class="hint">Черта | отделяет главное от подписи, например «25 | минут».</p>'; d.cards.forEach(c=>{ h+='<div class="ecd'+(ED.drop[c.i]?' off':'')+'" data-c="'+c.i+'"><input class="fld" value="'+esc(ED.cards[c.i]!==undefined?ED.cards[c.i]:c.text)+'" maxlength="120"><button class="dc" title="Убрать плашку">✕</button></div>'; }); }
+    eb.innerHTML=h;
+    bar=document.createElement('div'); bar.className='wbar'; ov.appendChild(bar); selEl=null;
+    const f=document.createElement('div'); f.className='ef'; f.innerHTML='<button id="edgo"></button><small>Осталось правок на этот ролик: '+d.left+'. Новый ролик придёт в чат.</small>'; ov.appendChild(f);
+    const upd=()=>{ const n=cnt(), b=$('#edgo'); b.disabled=!n; b.style.opacity=n?1:.45;
+      b.innerHTML='Пересобрать'+(n?' · '+n+' '+plural(n,'правка','правки','правок'):'')+'<small>бесплатно'+(fsec(dsec())?' · '+fsec(dsec()):'')+'</small>';
+      const u=$('#edun'); u.disabled=!HIST.length; u.innerHTML='↶'+(HIST.length?'<i>'+HIST.length+'</i>':''); };
+    const paint=el=>{ const i=+el.dataset.i; el.classList.toggle('del',!!isDel(i)); el.classList.toggle('key',!!isKey(i)); el.classList.toggle('chg',ED.words[i]!==undefined); };
+    const closeBar=()=>{ bar.classList.remove('on'); if(selEl) selEl.classList.remove('sel'); selEl=null; };
+    const wordEdit=el=>{ const i=+el.dataset.i, old=W[i].w, cur=ED.words[i]!==undefined?ED.words[i]:old; closeBar();
+      el.innerHTML='<input value="'+esc(cur)+'">'; const inp=el.querySelector('input'); inp.focus(); inp.select();
+      const done=()=>{ const v=inp.value.trim(); const had=ED.words[i]; const next=(v&&v!==old)?v:undefined;
+        if(next!==had){ snap(); if(next===undefined){ delete ED.words[i]; delete ED.all[i]; delete ED.learn[i]; } else ED.words[i]=next; }
+        el.textContent=ED.words[i]!==undefined?ED.words[i]:old; paint(el); upd(); if(ED.words[i]!==undefined) showBar(el); };
+      inp.onblur=done; inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); }; };
+    const showBar=el=>{ const i=+el.dataset.i; if(selEl) selEl.classList.remove('sel'); selEl=el; el.classList.add('sel');
+      const v=$('#edv'); if(v&&W[i].t!=null){ try{ v.currentTime=W[i].t; }catch(e){} }
+      const dl=isDel(i), ky=isKey(i), changed=ED.words[i]!==undefined, n=same(i).length;
+      let h='<div class="row2"><button data-a="fix">Исправить</button><button data-a="del">'+(dl?'Вернуть':'Удалить')+'</button><button data-a="key">'+(ky?'Не ключевое':'Ключевое')+'</button><button class="x" data-a="x">✕</button></div>';
+      if(changed) h+='<div class="row2">'+(n>1?'<button data-a="all" class="'+(ED.all[i]?'on':'')+'">Везде ('+n+')</button>':'')+'<button data-a="learn" class="'+(ED.learn[i]?'on':'')+'">Запомнить для новых роликов</button></div>';
+      bar.innerHTML=h; bar.classList.add('on');
+      bar.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const a=b.dataset.a;
+        if(a==='x') return closeBar();
+        if(a==='fix') return wordEdit(el);
+        snap();
+        if(a==='del'){ if(W[i].del){ if(ED.restore[i]) delete ED.restore[i]; else ED.restore[i]=1; } else { if(ED.cut[i]) delete ED.cut[i]; else ED.cut[i]=1; } }
+        if(a==='key'){ if(W[i].key){ if(ED.koff[i]) delete ED.koff[i]; else ED.koff[i]=1; } else { if(ED.kon[i]) delete ED.kon[i]; else ED.kon[i]=1; } }
+        if(a==='all'){ if(ED.all[i]) delete ED.all[i]; else ED.all[i]=1; }
+        if(a==='learn'){ if(ED.learn[i]) delete ED.learn[i]; else ED.learn[i]=1; }
+        paint(el); upd(); showBar(el); }); };
+    eb.querySelectorAll('.w[data-i]').forEach(el=>{ paint(el); el.onclick=()=>{ if(el.querySelector('input')) return; showBar(el); }; });
+    eb.querySelectorAll('.w.gone').forEach(el=>{ el.onclick=()=>{ snap(); const r=el.dataset.r; if(ED.rest[r]) delete ED.rest[r]; else ED.rest[r]=1; el.classList.toggle('on',!!ED.rest[r]); closeBar(); upd(); }; });
+    let pend=false; const hk=$('#edhook'); hk.onfocus=()=>{ pend=true; }; hk.oninput=e=>{ if(pend){ snap(); pend=false; } ED.hook=e.target.value; if(ED.hook===(d.hook||'')) ED.hook=null; upd(); };
+    eb.querySelectorAll('.ecd').forEach(r=>{ const i=r.dataset.c, inp=r.querySelector('input'), orig=d.cards.find(c=>String(c.i)===i).text; let pc=false; inp.onfocus=()=>{ pc=true; };
+      inp.oninput=()=>{ if(pc){ snap(); pc=false; } if(inp.value.trim()&&inp.value!==orig) ED.cards[i]=inp.value; else delete ED.cards[i]; upd(); };
+      r.querySelector('.dc').onclick=()=>{ snap(); ED.drop[i]=!ED.drop[i]; r.classList.toggle('off',ED.drop[i]); upd(); }; });
+    $('#edun').onclick=()=>{ if(!HIST.length) return; ED=JSON.parse(HIST.pop()); build(); };
+    $('#edgo').onclick=async()=>{ const b=$('#edgo'); b.disabled=true; b.textContent='Отправляю…';
+      const words=Object.assign({},ED.words), learn=[];
+      Object.keys(ED.all).forEach(i=>{ const nv=rawcore(ED.words[i]||''); if(!nv) return; same(+i).forEach(j=>{ if(words[j]===undefined){ const raw=String(W[j].w), lead=raw.match(/^[\s.,!?;:«»"'()\[\]…—–-]*/)[0], tail=raw.match(/[\s.,!?;:«»"'()\[\]…—–-]*$/)[0]; words[j]=lead+nv+tail; } }); });
+      Object.keys(ED.learn).forEach(i=>{ if(ED.words[i]!==undefined) learn.push({from:norm(W[i].w),to:rawcore(ED.words[i])}); });
+      const edits={}; if(Object.keys(words).length) edits.words=words; if(Object.keys(ED.cards).length) edits.cards=ED.cards;
+      const dr=Object.keys(ED.drop).filter(k=>ED.drop[k]).map(Number); if(dr.length) edits.drop_cards=dr; if(ED.hook!==null) edits.hook=ED.hook;
+      const ks=m=>Object.keys(m).map(Number); if(ks(ED.cut).length) edits.cut=ks(ED.cut); if(ks(ED.restore).length) edits.restore=ks(ED.restore);
+      if(ks(ED.kon).length) edits.keys_on=ks(ED.kon); if(ks(ED.koff).length) edits.keys_off=ks(ED.koff); if(learn.length) edits.learn=learn;
+      const rw=Object.keys(ED.rest).filter(r=>r[0]==='g').map(r=>+r.slice(1)), rp=Object.keys(ED.rest).filter(r=>r[0]==='p').map(r=>+r.slice(1)); if(rw.length) edits.restore_words=rw; if(rp.length) edits.restore_pauses=rp;
+      try{ await api('/api/edit/'+EDJ,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}); toast('Правка принята — новый ролик придёт в чат'); edClose(); }
+      catch(e){ b.disabled=false; upd(); toast(e.message); } };
+    upd(); };
+  build(); }
 
 /* Вкладка «Ролики»: готовые ролики смотреть и скачивать прямо здесь (владелец 2026-11-16); в чате они тоже остаются */
 async function renderJobsApi(){ const box=$('#jobs'); box.innerHTML='<div class="empty">Загружаю ролики…</div>';
