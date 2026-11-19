@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='de82f84529';
+(function(){ var B='d2fbbea9fd';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2085,7 +2085,7 @@ const JID=()=>(AS&&AS.j)||(/^[0-9a-f]{10}$/.test(Q.get('j')||'')?Q.get('j'):'');
 async function api(path,opt={}){ const r=await fetch((API||API0)+path,{...opt,headers:{...(opt.headers||{}),'X-Tg':tg?tg.initData:''}});
   let d={}; try{ d=await r.json(); }catch(e){} if(!r.ok) throw new Error(d.error||('Ошибка связи '+r.status)); return d; }
 async function loadState(){ if(!API0||!tg||!tg.initData) return;
-  try{ AS=await api('/api/state'+(JID()?'?j='+JID():'')); API=API0; if(AS.wishes && !$('#wish').value) $('#wish').value=AS.wishes; render(); if(sheet) renderSheet(); }
+  try{ AS=await api('/api/state'+(JID()?'?j='+JID():'')); API=API0; if(AS.wishes && !$('#wish').value) $('#wish').value=AS.wishes; render(); if(sheet) renderSheet(); if(curView!=='edit') fillPages(); }
   catch(e){ API=''; AS=null; } }
 /* Выбор файлов. Поле вставляется в страницу и живёт до конца загрузки: на iPhone поле «на лету» (вне страницы)
    не сообщало о выбранном файле — загрузка не начиналась (владелец 2026-11-18) */
@@ -2187,7 +2187,7 @@ function fillPages(){
 }
 $('#copyref').onclick=async e=>{ if(!U.ref) return; try{ await navigator.clipboard.writeText(U.ref); e.target.textContent='Скопировано'; }catch(_){ e.target.textContent='Не вышло'; } };
 const NAV=[['edit','cut','Монтаж'],['jobs','play','Ролики'],['bonus','gift','Бонусы'],['pay','wallet','Баланс']]; let curView='edit';
-function go(id){ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); render(); } }
+function go(id){ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); render(); } else fillPages(); }
 function paintAutoTg(){ const a=$('#autoTg'); if(!a) return; a.className='autotg'+(P.auto?' on':'')+(curView==='edit'?'':' off');
   a.setAttribute('aria-checked',!!P.auto); a.setAttribute('aria-label','Сделай красиво: '+(P.auto?'включено':'выключено'));
   document.body.classList.toggle('autoon', !!P.auto); }
