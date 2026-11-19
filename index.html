@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='213ee04078';
+(function(){ var B='e52398042f';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var k='rv_'+j.v; if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1');
     var u=new URL(location.href); u.searchParams.set('rv',j.v); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -265,6 +265,28 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .vjob .vh{display:flex;align-items:center;gap:8px;margin:0 2px 10px}.vjob .vh b{flex:1;font-size:15px}.vjob .vh small{color:var(--mut);font-size:12px}
 .vjob .vb{display:flex;gap:8px;margin-top:10px}.vjob .vb button{flex:1;padding:12px;border-radius:14px;font-weight:700;background:rgba(255,255,255,.08);color:var(--txt)}
 .vjob .vb button.pri{background:var(--acc);color:#111}
+.vjob .vb button.edb{flex:none;padding:12px 16px}
+#edov{position:fixed;inset:0;z-index:60;background:var(--bg,#0b0d12);display:none;flex-direction:column}
+#edov.on{display:flex}
+#edov .eh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--rim)}
+#edov .eh b{flex:1;font-size:17px}#edov .eh button{padding:8px 14px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt);font-weight:700}
+#edov .eb{flex:1;overflow-y:auto;padding:14px 16px 110px}
+#edov .eh2{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:16px 2px 8px}
+#edov .eln{display:flex;gap:10px;align-items:baseline;margin:6px 0}#edov .eln>small{flex:none;width:34px;color:var(--mut);font-size:11px}
+#edov .ewd{display:flex;flex-wrap:wrap;gap:6px 6px}
+#edov .w{padding:5px 9px;border-radius:10px;background:rgba(255,255,255,.07);font-size:16px;line-height:1.2}
+#edov .w.low{background:rgba(255,196,60,.2);box-shadow:inset 0 0 0 1px rgba(255,196,60,.55)}
+#edov .w.chg{background:var(--acc);color:#111;font-weight:700}
+#edov .w input{font:inherit;color:var(--txt);background:transparent;border:0;outline:0;width:9ch;min-width:5ch}
+#edov .fld{display:block;width:100%;box-sizing:border-box;padding:12px 14px;border-radius:14px;border:1px solid var(--rim);background:rgba(255,255,255,.06);color:var(--txt);font:inherit;font-size:16px}
+#edov .ecd{display:flex;gap:8px;align-items:center;margin:8px 0}#edov .ecd .fld{flex:1}
+#edov .ecd button{flex:none;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt)}
+#edov .ecd.off .fld{opacity:.35;text-decoration:line-through}
+#edov .ef{position:absolute;left:0;right:0;bottom:0;padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg,#0b0d12) 70%,transparent)}
+#edov .ef button{width:100%;padding:15px;border-radius:16px;background:var(--acc);color:#111;font-weight:800;font-size:16px}
+#edov .ef small{display:block;text-align:center;color:var(--mut);margin-top:6px;font-size:12px}
+#edov .hint{color:var(--mut);font-size:13px;margin:0 2px 6px}
+
 .pals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .pal{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid transparent;text-align:left;color:var(--txt)}
 .pal.on{border-color:var(--acc);background:rgba(255,255,255,.1)}
@@ -1099,11 +1121,11 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .st-liquid_rim .card{border:4px solid rgba(255,255,255,.55);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35),inset 0 0 40px rgba(0,0,0,.28)}
 .st-liquid_mini .ic{display:none}.st-liquid_mini .card{padding:24px 38px 26px}
 /* ---- основные стили (v_*): сдержанные, один акцент, плашка собирается по шагам ---- */
-.pro{display:block;width:fit-content;max-width:820px;box-sizing:border-box;padding:30px 40px 32px;border-radius:38px;color:#fff;
+.pro{display:block;width:fit-content;max-width:820px;box-sizing:border-box;padding:20px 30px 22px;border-radius:32px;color:#fff;
      font-family:Onest;border:none;box-shadow:none;background:none;position:relative}
 .pro .lab{font-size:21px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.58);margin:0 0 10px;
      background:none;padding:0;border-radius:0;display:block}
-.pro .tx{font-size:52px;font-weight:700;line-height:1.16;color:#fff}
+.pro .tx{font-size:52px;font-weight:700;line-height:1.16;color:#fff;text-wrap:balance}
 .pro .hl{background:none;-webkit-text-fill-color:currentColor;color:inherit;padding:0;border-radius:0;
      box-shadow:inset 0 -0.16em 0 0 transparent;transition:none}
 .pro .hl.on{-webkit-text-fill-color:var(--c);color:var(--c)}
@@ -1121,11 +1143,11 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .pro li.on{color:#fff}.pro li.on .box{background:var(--c);border-color:var(--c);color:#111}
 .st-v_classic .pro{background:#15171c;border-radius:30px;box-shadow:0 18px 44px rgba(0,0,0,.42)}
 .st-v_classic .pro .cap{background:var(--c);color:#111}
-.st-v_glass .pro{background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(12,14,20,.30));border:1.5px solid rgba(255,255,255,.34);overflow:hidden;
+.st-v_glass .pro{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(12,14,20,.18));border:1.5px solid rgba(255,255,255,.28);overflow:hidden;
      box-shadow:inset 0 1.5px 0 rgba(255,255,255,.42),inset 0 -1px 0 rgba(255,255,255,.1),inset 0 0 44px rgba(0,0,0,.22)}
 .st-v_glass .pro::before{content:'';position:absolute;left:0;top:0;right:0;height:44%;pointer-events:none;
      background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,0))}
-.st-v_glass .pro .tx,.st-v_glass .pro li,.st-v_glass .pro .num{text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.st-v_glass .pro .tx,.st-v_glass .pro li,.st-v_glass .pro .num{text-shadow:0 2px 12px rgba(0,0,0,.55),0 1px 2px rgba(0,0,0,.4)}
 .st-v_frost .pro{background:linear-gradient(140deg,color-mix(in srgb,var(--c) 46%,rgba(22,22,28,.5)),color-mix(in srgb,var(--c) 18%,rgba(22,22,28,.62)));
      border:1.5px solid rgba(255,255,255,.26);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.3)}
 .st-v_frost .pro .hl.on{-webkit-text-fill-color:#fff;color:#fff;box-shadow:inset 0 -0.16em 0 0 rgba(255,255,255,.85)}
@@ -1144,14 +1166,14 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
      background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60' preserveAspectRatio='none'><path d='M10 32 C 8 6, 190 2, 192 28 C 194 58, 14 60, 8 34 C 6 22, 60 8, 120 8' fill='none' stroke='%23ff4d4d' stroke-width='3.2' stroke-linecap='round'/></svg>") center/118% 128% no-repeat;
      padding:0 .12em}
 /* ---- основные стили, общая разметка: иконка типа слева, подпись над текстом, выделение ключевого слова ---- */
-.pro .row{display:flex;align-items:center;gap:26px}
-.pro .ico{flex:none;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font:900 46px/1 'Manr','Onest',sans-serif;
+.pro .row{display:flex;align-items:center;gap:20px}
+.pro .ico{flex:none;width:66px;height:66px;border-radius:50%;display:grid;place-items:center;font:900 46px/1 'Manr','Onest',sans-serif;
      background:#fff;color:#111}
 .pro .ico svg{width:46px;height:46px}
 .pro .k-warning-ico{background:#ffd23f;color:#141008}
-.pro.k-question .ico,.pro.k-warning .ico{width:118px;height:118px;font-size:72px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-.pro.k-question .row,.pro.k-warning .row{gap:30px}
-.pro.k-question,.pro.k-warning{padding-left:26px}
+.pro.k-question .ico,.pro.k-warning .ico{width:84px;height:84px;font-size:54px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.pro.k-question .row,.pro.k-warning .row{gap:22px}
+.pro.k-question,.pro.k-warning{padding-left:20px}
 .pro .k-myth-ico{background:rgba(255,255,255,.16);color:#fff}
 .pro .k-cta-ico{background:var(--c);color:#111}
 .pro .lab.pill{display:inline-block;background:#fff;color:#111;padding:5px 14px 4px;border-radius:8px;letter-spacing:.12em;font-size:19px;font-weight:800}
@@ -1178,16 +1200,16 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .st-v_light .pro .op{background:#15161a;color:#fff}.st-v_light .pro .lab.pill{background:#15161a;color:#fff}
 .st-v_light .pro .cap{background:#15161a;color:#fff}
 .st-v_light .pro li{color:rgba(20,22,26,.45)}.st-v_light .pro li.on{color:#15161a}.st-v_light .pro li .box{border-color:rgba(20,22,26,.4)}
-.st-v_ink .pro{background:rgba(8,10,14,.62);border:1px solid rgba(255,255,255,.14);border-radius:30px;
+.st-v_ink .pro{background:rgba(8,10,14,.42);border:1px solid rgba(255,255,255,.14);border-radius:30px;
      box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 16px 40px rgba(0,0,0,.35)}
 .st-v_ink .pro .ico{background:var(--c);color:#111}
 .st-v_marker .pro .ico{background:none;border:4px solid #fff;color:#fff;width:70px;height:70px;transform:rotate(-4deg)}
 .st-v_marker .pro .chip{background:none;border:3px dashed rgba(255,255,255,.8);text-shadow:0 3px 12px rgba(0,0,0,.7)}
 /* ---- виды с полями: тема, термин, теги, оценка ---- */
-.pro .uline{display:block;height:5px;width:132px;border-radius:3px;background:var(--c);margin:12px 0 2px}
-.pro .sub{font-size:31px;font-weight:600;line-height:1.25;color:rgba(255,255,255,.62);margin-top:10px;max-width:640px}
+.pro .uline{display:block;height:4px;width:110px;border-radius:3px;background:var(--c);margin:8px 0 0}
+.pro .sub{font-size:31px;font-weight:600;line-height:1.25;color:rgba(255,255,255,.7);margin-top:6px;max-width:640px}
 .pro .body{font-size:34px;font-weight:600;line-height:1.28;color:rgba(255,255,255,.9);margin-top:12px;max-width:660px}
-.pro .k-topic-ico{border-radius:24px;width:104px;height:104px;font-size:62px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.pro .k-topic-ico{border-radius:20px;width:80px;height:80px;font-size:50px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .pro .labi{display:flex;align-items:center;gap:12px}
 .pro .labi .mini{flex:none;width:40px;height:40px;border-radius:50%;background:#fff;color:#111;display:grid;place-items:center}
 .pro .labi .mini svg{width:25px;height:25px}
@@ -1249,7 +1271,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .pro.k-warning .hl.on{--hl:#ffd23f}
 .st-v_light .pro.k-question .hl.on{--hl:#15161a;-webkit-text-fill-color:#fff;color:#fff}
 /* ---- призыв в комментарии: столбик кнопок как в Reels, касание на комментарии и всплывающее слово ---- */
-.pro.k-cta{display:flex;align-items:center;gap:28px;padding:24px 30px}
+.pro.k-cta{display:flex;align-items:center;gap:24px;padding:16px 22px}
 .pro .rail{display:flex;flex-direction:column;align-items:center;gap:20px;padding:22px 14px;border-radius:999px;background:rgba(0,0,0,.32);
      border:1.5px solid rgba(255,255,255,.22)}
 .pro .rail span{display:flex;flex-direction:column;align-items:center;gap:4px;font:700 22px/1 'Manr',sans-serif;color:#fff}
@@ -1267,12 +1289,12 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .anim .pro .bub{animation:bub-in .32s cubic-bezier(.3,1.5,.5,1) 1.35s both}
 @keyframes bub-in{from{opacity:0;transform:translateX(-30px) scale(.6)}}
 /* ---- диаграмма ---- */
-.pro .chart{display:flex;align-items:flex-end;gap:22px;height:300px;padding-top:6px}
-.pro .bc{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:86px}
-.pro .bv{font-size:32px;font-weight:800;margin-bottom:8px;white-space:nowrap}
-.pro .bar{width:86px;border-radius:14px 14px 6px 6px;background:rgba(255,255,255,.32)}
+.pro .chart{display:flex;align-items:flex-end;gap:12px;height:200px;padding-top:6px}
+.pro .bc{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:58px}
+.pro .bv{font-size:25px;font-weight:800;margin-bottom:6px;white-space:nowrap}
+.pro .bar{width:34px;border-radius:8px 8px 3px 3px;background:rgba(255,255,255,.32)}
 .pro .bc.last .bar{background:var(--c)}.pro .bc.last .bv{color:var(--c)}
-.pro .bl{margin-top:10px;font-size:22px;padding:0 4px;font-weight:600;color:rgba(255,255,255,.7);white-space:nowrap}
+.pro .bl{margin-top:8px;font-size:20px;padding:0 4px;font-weight:600;color:rgba(255,255,255,.7);white-space:nowrap}
 .pro .trend{display:inline-flex;align-items:center;gap:10px;margin-top:16px;padding:8px 20px 8px 10px;border-radius:999px;
      background:rgba(255,255,255,.14);font-size:34px;font-weight:800}
 .pro .trend i{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:26px;background:#35d07f;color:#08130c}
@@ -1305,6 +1327,84 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .st-v_light .pro .bc.last .bar{background:var(--c)}
 .st-v_marker .pro .bv,.st-v_marker .pro .bl{color:#fff;font-size:34px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
 .st-v_marker .pro .trend{color:#fff;font-size:44px}
+/* ---- формы плашек (2026-11-19): поверх любого основного стиля; размер считается по готовой картинке, как у всех ---- */
+.pro.sh-pill{border-radius:999px;padding:12px 38px 14px 14px;max-width:none}
+.pro.sh-chip .ico,.pro.sh-plain .ico{display:none}
+.pro.sh-pill .row{gap:16px}.pro.sh-pill .ico,.pro.k-question.sh-pill .ico,.pro.k-warning.sh-pill .ico,.pro.k-topic.sh-pill .ico{width:64px;height:64px;font-size:40px;border-radius:50%}
+.pro.sh-pill .tx{font-size:48px;white-space:nowrap}
+.pro.sh-chip{border-radius:999px;padding:12px 36px 14px;background:#fff !important;border:none !important;box-shadow:0 10px 28px rgba(0,0,0,.3) !important;max-width:none}
+.pro.sh-chip::before{display:none}.pro.sh-chip .tx{font-size:50px;font-weight:800;color:#111 !important;text-shadow:none !important;white-space:nowrap}
+.pro.sh-chip .hl.on{background-image:linear-gradient(var(--c),var(--c));-webkit-text-fill-color:#111;color:#111}
+.pro.sh-square{width:430px;max-width:430px;padding:22px 28px 26px;border-radius:36px}
+.pro.sh-square .row{flex-direction:column;align-items:flex-start;gap:12px}
+.pro.sh-square .ico,.pro.k-question.sh-square .ico,.pro.k-warning.sh-square .ico{width:56px;height:56px;font-size:34px}
+.pro.sh-square .ico svg{width:34px;height:34px}.pro.sh-square .tx{font-size:56px;line-height:1.1}
+.pro.sh-bubble{border-radius:40px 40px 40px 8px;padding-left:22px}
+.pro.sh-tab{border-radius:10px 34px 34px 10px;padding-left:30px}
+.pro.sh-tab::after{content:'';position:absolute;left:0;top:0;bottom:0;width:14px;background:var(--c);border-radius:10px 0 0 10px}
+.pro.sh-sticker{background:#f7f1de !important;border:none !important;border-radius:6px 6px 14px 6px;transform:rotate(-2.2deg);
+     padding:34px 34px 20px;overflow:visible;box-shadow:inset 0 -6px 0 rgba(0,0,0,.07),0 10px 22px rgba(0,0,0,.28) !important}
+.pro.sh-sticker::before{content:'';display:block;position:absolute;left:50%;right:auto;top:8px;bottom:auto;width:22px;height:22px;margin-left:-11px;border-radius:50%;
+     background:radial-gradient(circle at 35% 30%,#ffb3b3 0 14%,#e0283a 42%,#9d101d 100%);box-shadow:2px 5px 6px rgba(0,0,0,.38);pointer-events:none}
+.pro.sh-sticker .tx,.pro.sh-sticker .num,.pro.sh-sticker .cap,.pro.sh-sticker .sub{color:#23201a !important;text-shadow:none !important}
+.pro.sh-sticker .tx{font-weight:800}
+.pro.sh-sticker .ico{background:#23201a;color:#f7f1de}
+.pro.sh-sticker .hl.on{background-image:linear-gradient(var(--c),var(--c));-webkit-text-fill-color:#111;color:#111}
+.pro.sh-sticker .cap{background:#23201a;color:#f7f1de !important}
+.pro.sh-circle{border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+     min-width:260px;min-height:260px;padding:26px 36px}
+.pro.sh-circle .num{font-size:124px}.pro.sh-circle .cap{margin-top:8px}
+.pro.sh-plain{background:none !important;border:none !important;box-shadow:none !important;border-radius:0;padding:8px 8px 10px}
+.pro.sh-plain::before{display:none}
+.pro.sh-plain .row{gap:0}.pro.sh-plain .tx{font-size:62px;font-weight:800;color:#fff !important;
+     text-shadow:0 3px 18px rgba(0,0,0,.85),0 1px 3px rgba(0,0,0,.9) !important}
+.pro.sh-plain .hl.on{padding:0 .14em}
+.pro.k-cta.sh-dm{padding:12px 32px 12px 12px;border-radius:999px;gap:18px}
+.pro .dmic{flex:none;width:78px;height:78px;border-radius:50%;background:var(--c);color:#111;display:grid;place-items:center}
+.pro .dmic svg{width:42px;height:42px}
+.pro .dmtx small{display:block;font:700 22px/1.2 'Manr',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:4px}
+.pro .dmtx .word{margin-top:0;font-size:58px;line-height:1.05}
+.st-v_light .pro.sh-dm .dmtx small{color:rgba(20,22,26,.55)}
+.pro.k-cta.sh-vrail{flex-direction:column;padding:18px 20px 22px;border-radius:44px;gap:14px;align-items:center}
+.pro.sh-vrail .rail{flex-direction:row;gap:22px;padding:12px 22px;background:rgba(0,0,0,.28)}
+.pro.sh-vrail .bub{padding:12px 22px;border-radius:22px;text-align:center}.pro.sh-vrail .bub small{font-size:17px}.pro.sh-vrail .bub b{font-size:50px}
+.anim .pro.sh-sticker{animation:sh-slap .3s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes sh-slap{from{opacity:0;transform:rotate(-2.2deg) scale(1.6)}}
+.anim .pro.sh-pill{animation:sh-pill .34s cubic-bezier(.3,1.2,.5,1) both}
+@keyframes sh-pill{from{opacity:0;clip-path:inset(0 100% 0 0 round 999px)}to{clip-path:inset(0 0 0 0 round 999px)}}
+.anim .pro.sh-chip,.anim .pro.sh-circle{animation:sh-grow .36s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes sh-grow{from{opacity:0;transform:scale(.4)}}
+.anim .pro.sh-square,.anim .pro.sh-bubble{animation:sh-rise .34s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes sh-rise{from{opacity:0;transform:translateY(46px) scale(.92)}}
+.anim .pro.sh-tab,.anim .pro.sh-dm{animation:sh-left .34s cubic-bezier(.3,1.2,.5,1) both}
+@keyframes sh-left{from{opacity:0;transform:translateX(-70px)}}
+.anim .pro.sh-plain{animation:none}
+/* подписи над текстом («Цифра», «Вопрос», «Ключевая мысль») убраны: владелец 2026-11-19 — нелогично */
+.card .lab,.pro .lab,.pro .labi{display:none !important}
+/* ---- графики: линия роста, сравнение «было → стало», число со знаком ---- */
+.pro svg.line{display:block;overflow:visible;margin-top:6px}
+.pro .lp{fill:none;stroke:var(--c);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0}
+.pro .area{fill:var(--c);fill-opacity:.12;stroke:none}.pro .ax{stroke:rgba(255,255,255,.3);stroke-width:2}
+.pro .dot{fill:#fff;stroke:var(--c);stroke-width:3;transform-box:fill-box;transform-origin:center}.pro .dot.last{fill:var(--c);stroke:#fff}
+.pro .lv{font:800 24px 'Manr','Onest',sans-serif;fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:4px}.pro .lv.last{fill:var(--c)}
+.pro .ll{font:600 21px 'Manr','Onest',sans-serif;fill:rgba(255,255,255,.72)}
+.anim .pro .lp{animation:ln-draw .95s ease-out .35s both}@keyframes ln-draw{from{stroke-dashoffset:1}}
+.anim .pro .area{animation:ar-in .5s ease-out 1s both}@keyframes ar-in{from{fill-opacity:0}}
+.anim .pro .dot{animation:dot-in .25s cubic-bezier(.3,1.7,.5,1) both;animation-delay:calc(.35s + var(--i) * .2s)}
+@keyframes dot-in{from{opacity:0;transform:scale(.2)}}
+.anim .pro .lv{animation:fade-up .3s ease-out both;animation-delay:calc(.5s + var(--i) * .2s)}
+.st-v_light .pro .ax{stroke:rgba(20,22,26,.3)}.st-v_light .pro .lv{fill:#15161a;stroke:rgba(255,255,255,.6)}.st-v_light .pro .lv.last{fill:#15161a}
+.st-v_light .pro .ll{fill:rgba(20,22,26,.65)}.st-v_light .pro .dot{fill:#fff}
+.pro .chart.cmp{gap:34px;height:200px}.pro .chart.cmp .bc{min-width:100px}.pro .chart.cmp .bar{width:58px;border-radius:10px 10px 4px 4px}.pro .chart.cmp .bv{font-size:34px}.pro .chart.cmp .bl{font-size:24px}
+.pro .num.up .live{color:#35d07f}.pro .num.down .live{color:#ff5a5a}
+.st-v_glass .pro.k-chart,.st-v_ink .pro.k-chart{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(10,12,18,.58))}
+.pro.k-chart .ll,.pro.k-chart .bl{paint-order:stroke;stroke:rgba(0,0,0,.45);stroke-width:4px;text-shadow:0 2px 8px rgba(0,0,0,.7)}
+.pro.k-chart .ll{fill:rgba(255,255,255,.92)}.pro.k-chart .bl{color:rgba(255,255,255,.92)}
+.st-v_light .pro.k-chart .ll,.st-v_light .pro.k-chart .bl{stroke:none;text-shadow:none;fill:rgba(20,22,26,.8);color:rgba(20,22,26,.8)}
+.st-v_glass .pro .bar,.st-v_ink .pro .bar,.st-v_frost .pro .bar{background:rgba(255,255,255,.55)}
+.st-v_glass .pro .bc.last .bar,.st-v_ink .pro .bc.last .bar,.st-v_frost .pro .bc.last .bar{background:var(--c)}
+.st-v_glass .pro .bc.last .bv,.st-v_ink .pro .bc.last .bv,.st-v_frost .pro .bc.last .bv{color:var(--c)}
+.st-v_light .pro .bar{background:rgba(20,22,26,.3)}
 .stamp{position:absolute;right:26px;top:-24px;transform:rotate(8deg);border:6px solid #ff4d6d;color:#ff4d6d;padding:4px 20px;
        font-weight:800;font-size:44px;border-radius:12px;background:rgba(16,18,32,.9)}
 
@@ -2158,6 +2258,39 @@ function ftiles(box, head, items, kind, canAdd, foot, addFn){ const h=document.c
   box.appendChild(g);
   if(foot) lfoot(box,foot); return; }
 loadState(); tplLoad();
+
+/* Правка готового ролика (2026-11-19): слова по строкам (сомнительные — жёлтым), заголовок, плашки. Бесплатно, до трёх раз. */
+let EDJ=null, ED={words:{},cards:{},drop:{},hook:null};
+function edClose(){ $('#edov').classList.remove('on'); EDJ=null; }
+async function edOpen(jid){ EDJ=jid; ED={words:{},cards:{},drop:{},hook:null};
+  let ov=$('#edov'); if(!ov){ ov=document.createElement('div'); ov.id='edov'; document.body.appendChild(ov); }
+  ov.innerHTML='<div class="eh"><b>Править ролик</b><button id="edx">Закрыть</button></div><div class="eb"><div class="empty">Загружаю…</div></div>'; ov.classList.add('on');
+  $('#edx').onclick=edClose;
+  let d; try{ d=await api('/api/edit/'+jid); }catch(e){ ov.querySelector('.eb').innerHTML='<div class="empty">Не получилось открыть правку: '+esc(e.message)+'</div>'; return; }
+  const eb=ov.querySelector('.eb');
+  if(!d.editable){ eb.innerHTML='<div class="empty">'+esc(d.why||'Этот ролик править нельзя.')+'</div>'; return; }
+  const low=d.lines.reduce((n,l)=>n+l.words.filter(w=>w.low).length,0);
+  let h='<p class="hint">Коснитесь слова, чтобы исправить его в субтитрах. '+(low?'Жёлтым отмечены слова, в которых программа не уверена.':'')+'</p><div class="eh2">Текст</div>';
+  d.lines.forEach(l=>{ h+='<div class="eln"><small>'+fmmss(l.t)+'</small><div class="ewd">'+l.words.map(w=>'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'" data-w="'+esc(w.w)+'">'+esc(w.w)+'</span>').join('')+'</div></div>'; });
+  h+='<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(d.hook||'')+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">';
+  if(d.cards.length){ h+='<div class="eh2">Плашки</div><p class="hint">Черта | отделяет главное от подписи, например «25 | минут».</p>'; d.cards.forEach(c=>{ h+='<div class="ecd" data-c="'+c.i+'"><input class="fld" value="'+esc(c.text)+'" maxlength="120"><button class="dc" title="Убрать плашку">✕</button></div>'; }); }
+  eb.innerHTML=h;
+  const upd=()=>{ const n=Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0); $('#edgo').disabled=!n; $('#edgo').style.opacity=n?1:.45; };
+  eb.querySelectorAll('.w').forEach(w=>w.onclick=()=>{ if(w.querySelector('input')) return; const old=w.dataset.w, cur=ED.words[w.dataset.i]||old;
+    w.innerHTML='<input value="'+esc(cur)+'">'; const inp=w.querySelector('input'); inp.focus(); inp.select();
+    const done=()=>{ const v=inp.value.trim(); if(v&&v!==old){ ED.words[w.dataset.i]=v; w.classList.add('chg'); w.textContent=v; } else { delete ED.words[w.dataset.i]; w.classList.remove('chg'); w.textContent=old; } upd(); };
+    inp.onblur=done; inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); }; });
+  $('#edhook').oninput=e=>{ ED.hook=e.target.value; if(ED.hook===(d.hook||'')) ED.hook=null; upd(); };
+  eb.querySelectorAll('.ecd').forEach(r=>{ const i=r.dataset.c, inp=r.querySelector('input'), orig=inp.value;
+    inp.oninput=()=>{ if(inp.value.trim()&&inp.value!==orig) ED.cards[i]=inp.value; else delete ED.cards[i]; upd(); };
+    r.querySelector('.dc').onclick=()=>{ ED.drop[i]=!ED.drop[i]; r.classList.toggle('off',ED.drop[i]); upd(); }; });
+  const f=document.createElement('div'); f.className='ef'; f.innerHTML='<button id="edgo">Пересобрать бесплатно</button><small>Осталось правок: '+d.left+'. Новый ролик придёт в чат.</small>'; ov.appendChild(f);
+  $('#edgo').onclick=async()=>{ const b=$('#edgo'); b.disabled=true; b.textContent='Отправляю…';
+    const edits={}; if(Object.keys(ED.words).length) edits.words=ED.words; if(Object.keys(ED.cards).length) edits.cards=ED.cards;
+    const dr=Object.keys(ED.drop).filter(k=>ED.drop[k]).map(Number); if(dr.length) edits.drop_cards=dr; if(ED.hook!==null) edits.hook=ED.hook;
+    try{ await api('/api/edit/'+EDJ,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}); toast('Правка принята — новый ролик придёт в чат'); edClose(); }
+    catch(e){ b.disabled=false; b.textContent='Пересобрать бесплатно'; toast(e.message); } };
+  upd(); }
 /* Вкладка «Ролики»: готовые ролики смотреть и скачивать прямо здесь (владелец 2026-11-16); в чате они тоже остаются */
 async function renderJobsApi(){ const box=$('#jobs'); box.innerHTML='<div class="empty">Загружаю ролики…</div>';
   let d; try{ d=await api('/api/jobs'); }catch(e){ box.innerHTML='<div class="empty">Не получилось загрузить ролики. Они есть в чате.</div>'; return; }
@@ -2172,7 +2305,9 @@ async function renderJobsApi(){ const box=$('#jobs'); box.innerHTML='<div class=
       dl.onclick=()=>{ const u=API+j.url; try{ if(tg&&tg.downloadFile){ tg.downloadFile({url:u,file_name:`chikchik_${j.id}.mp4`}); return; } }catch(e){} window.open(u,'_blank'); };
       const ch=document.createElement('button'); ch.textContent='Прислать в чат';
       ch.onclick=async()=>{ ch.textContent='Отправляю…'; try{ await api('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({j:j.id})}); ch.textContent='Отправлено ✓'; }catch(e){ ch.textContent='Не вышло'; toast(e.message); } };
-      bb.appendChild(dl); bb.appendChild(ch); c.appendChild(bb); }
+      bb.appendChild(dl); bb.appendChild(ch);
+      if(j.edit){ const ed=document.createElement('button'); ed.className='edb'; ed.textContent='✏️ Править'; ed.onclick=()=>edOpen(j.id); bb.appendChild(ed); }
+      c.appendChild(bb); }
     box.appendChild(c); }); }
 
 // ---------- разделы: Ролики, Бонусы, Баланс (данные приходят от бота в адресе, после #) ----------
