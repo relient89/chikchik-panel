@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='361b4e33a6';
+(function(){ var B='a51d4559ba';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1391,6 +1391,20 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
 .anim .pro.sh-circle.ring::after{animation:ring-fill 1.1s .25s cubic-bezier(.2,.8,.2,1) both}
 @keyframes ring-fill{from{--pg:0}}
+/* Список отдельными капсулами: пункты выезжают по одному, общей подложки нет (как у конкурента, 2026-11-20) */
+.pro.sh-stack{background:none !important;border:none !important;box-shadow:none !important;padding:0 !important;border-radius:0 !important}
+.pro.sh-stack .lab,.pro.sh-stack .plab{display:none}
+.pro.sh-stack ul{margin:0}
+.pro.sh-stack li{width:fit-content;margin:0 0 14px;padding:12px 30px 12px 14px;border-radius:999px;gap:16px;font-size:40px;
+     background:#15171c;border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 26px rgba(0,0,0,.34)}
+.pro.sh-stack li:last-child{margin-bottom:0}
+.pro.sh-stack li:not(.on){opacity:0}
+.st-v_light .pro.sh-stack li{background:rgba(255,255,255,.95);color:#15161a;border-color:rgba(0,0,0,.06)}
+/* Владелец 2026-11-20: на прозрачном стекле — просто шрифт, без цветной подложки под словом */
+.st-v_glass .pro:not(.sh-sticker) .hl,.st-v_glass .pro:not(.sh-sticker) .hl.on,
+.st-liquid .hl,.st-liquid_tint .hl,.st-liquid_dark .hl,.st-liquid_pill .hl,.st-liquid_rim .hl,.st-liquid_mini .hl{
+     background:none !important;background-image:none !important;-webkit-text-fill-color:currentColor !important;color:inherit !important;
+     padding:0 !important;box-shadow:none !important;border-radius:0 !important}
 .pro.sh-plain{background:none !important;border:none !important;box-shadow:none !important;border-radius:0;padding:8px 8px 10px}
 .pro.sh-plain::before{display:none}
 .pro.sh-plain .row{gap:0}.pro.sh-plain .tx{font-size:58px;font-weight:700;color:#fff !important;
