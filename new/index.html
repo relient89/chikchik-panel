@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='9bc2a6ac89';
+(function(){ var B='96610ddc9a';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -590,9 +590,9 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .s-tri .t1{font-family:Osw;font-weight:600;font-size:200px;letter-spacing:-.005em;text-transform:uppercase;color:var(--a,#EE5F3A);
            text-shadow:0 4px 18px rgba(0,0,0,.35)}
 .s-tri .t2{font-family:Osw;font-weight:600;font-size:118px;text-transform:uppercase;color:var(--m,#fff);
-           text-shadow:0 3px 14px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.5)}
-.s-tri .t3{font-family:Jost;font-weight:400;font-size:74px;color:var(--m,#fff);text-transform:lowercase;
-           text-shadow:0 2px 10px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.6)}
+           text-shadow:0 0 18px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.6),0 1px 2px rgba(0,0,0,.6)}
+.s-tri .t3{font-family:Jost;font-weight:500;font-size:88px;color:var(--m,#fff);text-transform:lowercase;
+           text-shadow:0 0 16px rgba(0,0,0,.7),0 0 6px rgba(0,0,0,.6),0 1px 2px rgba(0,0,0,.7)}
 .s-tri2 .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 20px;line-height:1}
 .s-tri2 .t1{font-family:Unb;font-weight:900;font-size:118px;text-transform:uppercase;color:var(--a,#b6ff3c);
            text-shadow:0 6px 24px rgba(0,0,0,.5)}
@@ -887,9 +887,9 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .tinted.s-tri .t1{font-family:Osw;font-weight:600;font-size:200px;letter-spacing:-.005em;text-transform:uppercase;color:var(--a,var(--a));
            text-shadow:0 4px 18px rgba(0,0,0,.35)}
 .tinted.s-tri .t2{font-family:Osw;font-weight:600;font-size:118px;text-transform:uppercase;color:var(--m,#fff);
-           text-shadow:0 3px 14px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.5)}
-.tinted.s-tri .t3{font-family:Jost;font-weight:400;font-size:74px;color:var(--m,#fff);text-transform:lowercase;
-           text-shadow:0 2px 10px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.6)}
+           text-shadow:0 0 18px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.6),0 1px 2px rgba(0,0,0,.6)}
+.tinted.s-tri .t3{font-family:Jost;font-weight:500;font-size:88px;color:var(--m,#fff);text-transform:lowercase;
+           text-shadow:0 0 16px rgba(0,0,0,.7),0 0 6px rgba(0,0,0,.6),0 1px 2px rgba(0,0,0,.7)}
 .tinted.s-tri2 .cap{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 20px;line-height:1}
 .tinted.s-tri2 .t1{font-family:Unb;font-weight:900;font-size:118px;text-transform:uppercase;color:var(--a,color-mix(in srgb,var(--a) 45%,#fff));
            text-shadow:0 6px 24px rgba(0,0,0,.5)}
@@ -2247,9 +2247,9 @@ const OPTS=[
   {id:'prof',name:'Площадка',ic:'phone',vals:D.profiles.map(id=>[PROF[id],'']),get:()=>D.profiles.indexOf(P.profile),set:v=>{P.profile=D.profiles[v];}}];
 const FMT=[['head','Чистая речь','Вырезаю паузы между фразами'],['raw','Как снято','Ничего не вырезаю, только оформляю']];
 /* Нарезка в три режима (2026-11-21, как у конкурента): хранится в fmt/pauses/fillers/filler_words */
-const CUT=[['smart','Умная','вырезаю паузы, «э-э», «м-м» и слова-паразиты — ролик плотнее'],['light','Лёгкая','паузы оставляю, убираю только «э-э», «м-м» и паразитов'],['none','Без нарезки','ничего не вырезаю, только оформляю']];
+const CUT=[['smart','Умная','вырезаю паузы и «э-э», «м-м» — ролик плотнее'],['light','Лёгкая','паузы оставляю, убираю только «э-э», «м-м»'],['none','Без нарезки','ничего не вырезаю, только оформляю']];
 function cutMode(){ return !P.fmt?'':P.fmt==='raw'?'none':(P.pauses?'smart':'light'); }
-function setCut(m){ fmtTouched=true; if(m==='none'){ P.fmt='raw'; return; } P.fmt='head'; P.pauses=(m==='smart'); P.fillers=true; if('filler_words' in P) P.filler_words=true; }
+function setCut(m){ fmtTouched=true; if(m==='none'){ P.fmt='raw'; return; } P.fmt='head'; P.pauses=(m==='smart'); P.fillers=true; if('filler_words' in P) P.filler_words=false; }
 function cutName(){ const c=CUT.find(x=>x[0]===cutMode()); return c?c[1]:''; }
 function popup(anchor, title, items, cur, on){ const p=$('#pop'); p.innerHTML=`<h4>${title}</h4>`; items.forEach((it,i)=>{ const b=document.createElement('button'); b.className=i===cur?'on':'';
   b.innerHTML=`<span class="rd"></span><span>${it[0]}${it[1]?`<small>${it[1]}</small>`:''}</span>`; b.onclick=e=>{ e.stopPropagation(); on(i); hidePop(); render(); if(sheet) renderSheet(); }; p.appendChild(b); });
