@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='e7d2680993';
+(function(){ var B='e56e69e108';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -310,6 +310,15 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #edov .ef small{display:block;text-align:center;color:var(--mut);margin-top:6px;font-size:12px}
 #edov .hint{color:var(--mut);font-size:13px;margin:0 2px 6px}
 #edov .evw{padding:10px 16px 0;display:flex;justify-content:center}
+#edov .etl{display:flex;gap:3px;margin:12px 0 6px;height:8px}
+#edov .etl i{min-width:4px;border-radius:4px;background:rgba(255,255,255,.18);cursor:pointer}
+#edov .etl i.ch{background:rgba(182,255,60,.45)}#edov .etl i.on{background:var(--acc)}
+#edov .enav{display:flex;align-items:center;gap:8px;margin:6px 0 10px}
+#edov .enav b{flex:1;text-align:center;font-size:16px}#edov .enav b small{color:var(--mut);font-weight:500}
+#edov .enav button{min-width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.08);color:var(--txt);font-size:20px;font-weight:700}
+#edov .enav #egen{font-size:14px;padding:0 14px}#edov .enav #egen.on{background:var(--acc);color:#111}
+#edov .escard{border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:4px 12px 12px}
+#edov .escard .ewd{display:flex;flex-wrap:wrap;gap:6px}
 #edov .evw video{max-height:30vh;border-radius:14px;background:#000}
 #edov .w.del{opacity:.4;text-decoration:line-through;background:rgba(255,255,255,.04)}
 #edov .w.key{box-shadow:inset 0 -2px 0 #ff9a3c}
@@ -2440,7 +2449,7 @@ loadState(); tplLoad();
 /* Правка готового ролика (2026-11-19): слова по строкам (сомнительные — жёлтым), заголовок, плашки. Бесплатно, до трёх раз. */
 let EDJ=null, ED={words:{},cards:{},drop:{},hook:null};
 function edClose(){ $('#edov').classList.remove('on'); EDJ=null; }
-async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{}}); ED=fresh(); let HIST=[];
+async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{}}); ED=fresh(); let HIST=[], SC=0, GEN=false;
   let ov=$('#edov'); if(!ov){ ov=document.createElement('div'); ov.id='edov'; document.body.appendChild(ov); }
   ov.innerHTML='<div class="eh"><b>Править ролик</b><button id="edx">Закрыть</button></div><div class="eb"><div class="empty">Загружаю…</div></div>'; ov.classList.add('on');
   $('#edx').onclick=edClose;
@@ -2458,15 +2467,24 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
   const dsec=()=>Object.keys(ED.cut).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.restore).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.rest).reduce((a,r)=>a+(R[r].d||0),0);
   const fsec=x=>Math.abs(x)<0.05?'':(x>0?'−':'+')+Math.abs(x).toFixed(1).replace('.',',')+' с';
   let selEl=null, bar=null;
-  const build=()=>{
-    ov.innerHTML='<div class="eh"><b>Править ролик</b><button class="undo" id="edun" title="Шаг назад">↶</button><button id="edx">Закрыть</button></div><div class="eb"></div>';
+  const build=()=>{ const keepV0=$('#edv'); if(keepV0) keepV0.remove();      // тот же ролик — без перезагрузки
+    ov.innerHTML='<div class="eh"><b>Редактирование</b><button class="undo" id="edun" title="Шаг назад">↶</button><button id="edx">Закрыть</button></div><div class="eb"></div>';
     $('#edx').onclick=edClose; const eb=ov.querySelector('.eb');
     let h=(d.url?'<div class="evw"><video id="edv" controls playsinline preload="metadata" src="'+API+d.url+'"></video></div>':'')
-         +'<p class="hint">Коснитесь слова: исправить, убрать из ролика или сделать ключевым. '+(low?'Жёлтым отмечены слова, в которых программа не уверена. ':'')+(restN?'Пунктиром показано то, что убрал автомонтаж (паузы, запинки): коснитесь, чтобы вернуть.':'')+'</p><div class="eh2">Текст</div>';
-    d.lines.forEach(l=>{ h+='<div class="eln"><small>'+fmmss(l.t)+'</small><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; });
-    h+='<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">';
+         +'<p class="hint">Коснитесь слова, чтобы исправить, убрать или сделать главным.'+(low?' Жёлтые — программа не уверена.':'')+(restN?' Пунктир — вырезанное автомонтажом, коснитесь, чтобы вернуть.':'')+'</p>';
+    { const N=d.lines.length; if(SC>=N) SC=N-1; if(SC<0) SC=0;
+      const t0=l=>{ const w=l.words.find(x=>x.t!=null); return w?w.t:l.t; }, ends=d.lines.map((l,k)=>k+1<N?t0(d.lines[k+1]):(t0(l)+l.words.reduce((a,x)=>a+(x.d||0),0)+0.3));
+      const tot=Math.max(0.1,ends[N-1]-t0(d.lines[0]));
+      h+='<div class="etl" id="etl">'+d.lines.map((l,k)=>'<i data-sc="'+k+'" class="'+(k===SC&&!GEN?'on':'')+(l.words.some(w=>w.i!=null&&(ED.cut[w.i]||ED.words[w.i]!==undefined||ED.kon[w.i]||ED.koff[w.i]))||l.words.some(w=>w.r&&ED.rest[w.r])?' ch':'')+'" style="flex:'+Math.max(0.2,ends[k]-t0(l)).toFixed(2)+'"></i>').join('')+'</div>';
+      h+='<div class="enav"><button id="escp" aria-label="Предыдущая сцена">‹</button><b>'+(GEN?'Общие настройки':'Сцена '+(SC+1)+' <small>из '+N+'</small>')+'</b><button id="escn" aria-label="Следующая сцена">›</button><button id="egen" class="'+(GEN?'on':'')+'">Общие</button></div>';
+      if(!GEN){ const l=d.lines[SC];
+        h+='<div class="escard" id="escard"><div class="eh2">Текст сцены · '+fmmss(t0(l))+'</div><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; } }
+    h+='<div id="edgen" style="display:'+(GEN?'block':'none')+'">'+'<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">';
     if(d.cards.length){ h+='<div class="eh2">Плашки</div><p class="hint">Черта | отделяет главное от подписи, например «25 | минут».</p>'; d.cards.forEach(c=>{ h+='<div class="ecd'+(ED.drop[c.i]?' off':'')+'" data-c="'+c.i+'"><input class="fld" value="'+esc(ED.cards[c.i]!==undefined?ED.cards[c.i]:c.text)+'" maxlength="120"><button class="dc" title="Убрать плашку">✕</button></div>'; }); }
+    h+='</div>';
+    const keepV=keepV0;
     eb.innerHTML=h;
+    if(keepV){ const nv=eb.querySelector('#edv'); if(nv) nv.replaceWith(keepV); }
     bar=document.createElement('div'); bar.className='wbar'; ov.appendChild(bar); selEl=null;
     const f=document.createElement('div'); f.className='ef'; f.innerHTML='<button id="edgo"></button><small>Осталось правок на этот ролик: '+d.left+'. Новый ролик придёт в чат.</small>'; ov.appendChild(f);
     const upd=()=>{ const n=cnt(), b=$('#edgo'); b.disabled=!n; b.style.opacity=n?1:.45;
@@ -2513,6 +2531,13 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       const rw=Object.keys(ED.rest).filter(r=>r[0]==='g').map(r=>+r.slice(1)), rp=Object.keys(ED.rest).filter(r=>r[0]==='p').map(r=>+r.slice(1)); if(rw.length) edits.restore_words=rw; if(rp.length) edits.restore_pauses=rp;
       try{ await api('/api/edit/'+EDJ,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}); toast('Правка принята — новый ролик придёт в чат'); edClose(); }
       catch(e){ b.disabled=false; upd(); toast(e.message); } };
+    const goSc=k=>{ GEN=false; SC=Math.max(0,Math.min(d.lines.length-1,k)); build();
+      const v=$('#edv'), l=d.lines[SC], w=l&&l.words.find(x=>x.t!=null); if(v&&w){ try{ v.currentTime=w.t; }catch(e){} } };
+    $('#escp').onclick=()=>GEN?goSc(SC):goSc(SC-1); $('#escn').onclick=()=>GEN?goSc(SC):goSc(SC+1);
+    $('#egen').onclick=()=>{ GEN=!GEN; build(); };
+    eb.querySelectorAll('#etl i').forEach(x=>x.onclick=()=>goSc(+x.dataset.sc));
+    const card=$('#escard'); if(card){ let sx=null; card.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; },{passive:true});
+      card.addEventListener('touchend',e=>{ if(sx==null) return; const dx=e.changedTouches[0].clientX-sx; sx=null; if(Math.abs(dx)>60) goSc(SC+(dx<0?1:-1)); }); }
     upd(); };
   build(); }
 
