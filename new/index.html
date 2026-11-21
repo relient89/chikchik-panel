@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='717dee71ce';
+(function(){ var B='195c432b77';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -542,6 +542,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .tplname{display:flex;gap:8px;margin:0 0 16px}
 .tplname input{flex:1;min-width:0;min-height:46px;padding:0 14px;border-radius:14px;border:1px solid var(--rim);background:rgba(0,0,0,.25);color:#fff;font:inherit;font-size:15px}
 .tplname button{min-height:46px;padding:0 16px;border-radius:14px;background:var(--acc);color:var(--onacc);font-weight:800}
+.lrow.tsel{box-shadow:inset 0 0 0 2px var(--acc);border-radius:14px}
 .lrow .tdel{flex:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--mut);font-size:16px}
 .strip3 .sc.add2 .th{background:rgba(255,255,255,.9);color:#111318}
 .strip3 .sc.add2{color:#fff;border-style:dashed}
@@ -1821,17 +1822,22 @@ let TPL=[]; const TPL_MAX=20;
 function tplLoad(){ const ok=v=>{ try{ const a=JSON.parse(v||'[]'); if(Array.isArray(a)) TPL=a.filter(x=>x&&x.n&&x.c).slice(0,TPL_MAX); }catch(e){} renderTools3(); if(sheet==='tpl3') renderSheet(); };
   if(cloud){ try{ cloud.getItem('tpls',(e,v)=>{ if(!e) ok(v); }); return; }catch(e){} } try{ ok(localStorage.getItem('chik_tpls')); }catch(e){} }
 function tplSave(){ const v=JSON.stringify(TPL); if(cloud){ try{ cloud.setItem('tpls',v); }catch(e){} } try{ localStorage.setItem('chik_tpls',v); }catch(e){} renderTools3(); }
-function tplApply(t){ const keep=P.fmt; if(readCode(t.c)){ P.fmt=keep; P.auto=false; render(); renderSheet(); toast('Применён стиль «'+t.n+'»'); } }
+let TPL_SEL=''; try{ TPL_SEL=localStorage.getItem('chik_tpl_sel')||''; }catch(e){}
+function tplSel(n){ TPL_SEL=n||''; try{ localStorage.setItem('chik_tpl_sel',TPL_SEL); }catch(e){} }
+function tplApply(t){ const keep=P.fmt; if(readCode(t.c)){ P.fmt=keep; P.auto=false; tplSel(t.n); render(); renderSheet(); toast('Применён стиль «'+t.n+'»'); } }
 function tplSheet(b){ ltop(b,'Сохраните оформление под своим названием — для разных рубрик или разных людей. Потом выберите его одним нажатием и монтируйте.');
   const row=document.createElement('div'); row.className='tplname'; const inp=document.createElement('input'); inp.maxLength=30; inp.placeholder='Название, например «Рилс про еду»';
   const sv=document.createElement('button'); sv.textContent='Сохранить'; row.append(inp,sv); b.appendChild(row);
-  sv.onclick=()=>{ const n=inp.value.trim(); if(!n){ inp.focus(); toast('Напишите название стиля.'); return; }
+  if(TPL_SEL && TPL.some(x=>x.n===TPL_SEL)) inp.placeholder='Новое название — или пусто, чтобы пересохранить «'+TPL_SEL+'»';
+  sv.onclick=()=>{ let n=inp.value.trim();
+    if(!n && TPL_SEL && TPL.some(x=>x.n===TPL_SEL)){ if(!confirm('Пересохранить стиль «'+TPL_SEL+'» текущими настройками?')) return; n=TPL_SEL; }
+    if(!n){ inp.focus(); toast('Напишите название стиля.'); return; }
     const c=prefsCode(), i=TPL.findIndex(x=>x.n.toLowerCase()===n.toLowerCase());
     if(i>=0){ if(TPL[i].c!==c && !confirm('Стиль «'+TPL[i].n+'» уже есть. Пересохранить его текущими настройками?')) return; TPL[i].c=c; } else { if(TPL.length>=TPL_MAX){ toast('Можно хранить до 20 стилей — удалите ненужный.'); return; } TPL.unshift({n,c}); }
-    tplSave(); renderSheet(); toast('Стиль «'+n+'» сохранён'); };
+    tplSel(n); tplSave(); renderSheet(); toast('Стиль «'+n+'» сохранён'); };
   if(!TPL.length){ lfoot(b,'Пока нет сохранённых стилей. Настройте оформление в панели снизу и сохраните его здесь.'); return; }
   const cur=prefsCode();
-  lgroup(b,`Сохранённые · ${TPL.length} из ${TPL_MAX}`,TPL.map((t,i)=>{ const r=crow('',esc(t.n),'',codeSame(t.c,cur),()=>tplApply(t));
+  lgroup(b,`Сохранённые · ${TPL.length} из ${TPL_MAX}`,TPL.map((t,i)=>{ const r=crow('',esc(t.n),t.n===TPL_SEL?'выбран сейчас':'',codeSame(t.c,cur),()=>tplApply(t)); if(t.n===TPL_SEL) r.classList.add('tsel');
     const x=document.createElement('span'); x.className='tdel'; x.textContent='✕'; x.setAttribute('role','button'); x.setAttribute('aria-label','Удалить «'+t.n+'»');
     x.onclick=e=>{ e.stopPropagation(); if(!confirm('Удалить стиль «'+t.n+'»?')) return; TPL.splice(i,1); tplSave(); renderSheet(); };
     const rs=document.createElement('span'); rs.className='tdel tres'; rs.textContent='↻'; rs.setAttribute('role','button'); rs.setAttribute('aria-label','Пересохранить «'+t.n+'»'); rs.title='Пересохранить текущими настройками';

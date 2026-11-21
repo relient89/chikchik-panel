@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='46af96e161';
+(function(){ var B='e0769502c5';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -254,11 +254,12 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .pane[data-only=main] > #accColor,.pane[data-only=main] > #accFont{display:none}
 .pane[data-only=col] #accColor > .acch,.pane[data-only=fnt] #accFont > .acch{pointer-events:none}
 .pane[data-only=col] #accColor > .acch .chev,.pane[data-only=fnt] .acch .chev{display:none}
+.fsrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fsrow .fontsel{min-width:0;flex-direction:column;align-items:flex-start;gap:2px;position:relative;padding:10px 30px 10px 14px}.fsrow .fl{font-size:12px;color:var(--mut);font-weight:600}.fsrow .fa{position:absolute;right:12px;top:50%;translate:0 -50%}.fsrow .fv{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fontsel{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:14px 16px;border-radius:18px;
   background:rgba(255,255,255,.06);border:1px solid var(--rim);color:var(--txt);text-align:left}
 .fontsel .fl{font-weight:700;font-size:15px}.fontsel .fv{flex:1;text-align:right;font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fontsel .fa{color:var(--mut)}
-.pane[data-only=col] > .fontsel,.pane[data-only=fnt] > .fontsel{display:none}
+.pane[data-only=col] > .fontsel,.pane[data-only=fnt] > .fontsel,.pane[data-only=col] > .fsrow,.pane[data-only=fnt] > .fsrow{display:none}
 #pop .fsec{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:10px 4px 4px}
 #pop{max-height:70vh;overflow-y:auto}
 .vjob{border-radius:22px;padding:12px;margin-bottom:12px}
@@ -488,6 +489,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .tplname{display:flex;gap:8px;margin:0 0 16px}
 .tplname input{flex:1;min-width:0;min-height:46px;padding:0 14px;border-radius:14px;border:1px solid var(--rim);background:rgba(0,0,0,.25);color:#fff;font:inherit;font-size:15px}
 .tplname button{min-height:46px;padding:0 16px;border-radius:14px;background:var(--acc);color:var(--onacc);font-weight:800}
+.lrow.tsel{box-shadow:inset 0 0 0 2px var(--acc);border-radius:14px}
 .lrow .tdel{flex:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--mut);font-size:16px}
 .strip3 .sc.add2 .th{background:rgba(255,255,255,.9);color:#111318}
 .strip3 .sc.add2{color:#fff;border-style:dashed}
@@ -1638,8 +1640,9 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
           <div class="cgrp"><div class="cgh"><span class="cgt">Цветовые пары<small>главное слово + остальной текст, уже подобраны</small></span></div><div class="pals" id="cpairs"></div></div>
           <div class="cgrp"><div class="cgh"><span class="cgt">Тройки<small>три цвета: главное слово · текст · мелкие слова или подложка</small></span></div><div class="pals" id="pals"></div></div>
           <div class="note">Однотонные — весь текст одним цветом. Пары подобраны как у дизайнеров: спокойная база и один яркий акцент. «Цвета стиля» — у каждого стиля субтитров из списка ниже (Фокус, Журнал, Неон…) свои цвета; этот вариант их не меняет.</div></div></div>
-      <button class="fontsel" id="fontSel" type="button"><span class="fl">Шрифт</span><span class="fv" id="fontSelV"></span><span class="fa">▾</span></button>
-      <div class="acc" id="accSize"><button class="acch" data-acc="accSize"><span class="ri">Аа</span><span class="rt">Размер субтитров<small id="sizeSub"></small></span><span class="chev"></span></button>
+      <div class="fsrow"><button class="fontsel" id="fontSel" type="button"><span class="fl">Шрифт</span><span class="fv" id="fontSelV"></span><span class="fa">▾</span></button>
+        <button class="fontsel" id="frameSel" type="button"><span class="fl">Обводка</span><span class="fv" id="frameSelV"></span><span class="fa">▾</span></button></div>
+      <div class="acc" id="accSize" style="display:none"><button class="acch" data-acc="accSize"><span class="ri">Аа</span><span class="rt">Размер субтитров<small id="sizeSub"></small></span><span class="chev"></span></button>
         <div class="accb"><div class="duo"><div class="stepbox"><button data-size="-1">−</button><div><span>Размер</span><b id="sizeV"></b></div><button data-size="1">+</button></div>
           <button class="pick" id="wordsBtn"><small>Слов на экране за раз</small><span id="wordsV"></span></button></div>
           <div class="duo" style="margin-top:8px"><button class="pick" id="placesBtn"><small>Места субтитров</small><span id="placesV"></span></button></div>
@@ -1647,7 +1650,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
       <div class="acc" id="accFont" style="display:none"><button class="acch" data-acc="accFont"><span class="ri">Ff</span><span class="rt">Свой шрифт<small id="fontSub">загрузите файл шрифта</small></span><span class="chev"></span></button>
         <div class="accb"><button class="pick" id="fontBtn" style="width:100%;display:none"><small id="fontName"></small><span id="fontV"></span></button>
           <div class="note" style="margin-top:8px">Пришлите файл шрифта (.ttf, .otf или .woff, до 5 МБ) в чат с ботом как документ. Он станет основным шрифтом в любом стиле, который вы выберете ниже. Загружая шрифт, вы подтверждаете право на его использование.</div></div></div>
-      <div class="acc" id="accFrame"><button class="acch" data-acc="accFrame"><span class="ri">◎</span><span class="rt">Обводка и тень<small id="frameSub"></small></span><span class="chev"></span></button>
+      <div class="acc" id="accFrame" style="display:none"><button class="acch" data-acc="accFrame"><span class="ri">◎</span><span class="rt">Обводка и тень<small id="frameSub"></small></span><span class="chev"></span></button>
         <div class="accb"><div class="frames" id="frames"></div>
           <h3>Цвет обводки и тени</h3><div class="duo" id="capcolors"></div></div></div>
       <h3>Стиль субтитров</h3><div class="grid" id="sgroups"></div>
@@ -1760,17 +1763,22 @@ let TPL=[]; const TPL_MAX=20;
 function tplLoad(){ const ok=v=>{ try{ const a=JSON.parse(v||'[]'); if(Array.isArray(a)) TPL=a.filter(x=>x&&x.n&&x.c).slice(0,TPL_MAX); }catch(e){} renderTools3(); if(sheet==='tpl3') renderSheet(); };
   if(cloud){ try{ cloud.getItem('tpls',(e,v)=>{ if(!e) ok(v); }); return; }catch(e){} } try{ ok(localStorage.getItem('chik_tpls')); }catch(e){} }
 function tplSave(){ const v=JSON.stringify(TPL); if(cloud){ try{ cloud.setItem('tpls',v); }catch(e){} } try{ localStorage.setItem('chik_tpls',v); }catch(e){} renderTools3(); }
-function tplApply(t){ const keep=P.fmt; if(readCode(t.c)){ P.fmt=keep; P.auto=false; render(); renderSheet(); toast('Применён стиль «'+t.n+'»'); } }
+let TPL_SEL=''; try{ TPL_SEL=localStorage.getItem('chik_tpl_sel')||''; }catch(e){}
+function tplSel(n){ TPL_SEL=n||''; try{ localStorage.setItem('chik_tpl_sel',TPL_SEL); }catch(e){} }
+function tplApply(t){ const keep=P.fmt; if(readCode(t.c)){ P.fmt=keep; P.auto=false; tplSel(t.n); render(); renderSheet(); toast('Применён стиль «'+t.n+'»'); } }
 function tplSheet(b){ ltop(b,'Сохраните оформление под своим названием — для разных рубрик или разных людей. Потом выберите его одним нажатием и монтируйте.');
   const row=document.createElement('div'); row.className='tplname'; const inp=document.createElement('input'); inp.maxLength=30; inp.placeholder='Название, например «Рилс про еду»';
   const sv=document.createElement('button'); sv.textContent='Сохранить'; row.append(inp,sv); b.appendChild(row);
-  sv.onclick=()=>{ const n=inp.value.trim(); if(!n){ inp.focus(); toast('Напишите название стиля.'); return; }
+  if(TPL_SEL && TPL.some(x=>x.n===TPL_SEL)) inp.placeholder='Новое название — или пусто, чтобы пересохранить «'+TPL_SEL+'»';
+  sv.onclick=()=>{ let n=inp.value.trim();
+    if(!n && TPL_SEL && TPL.some(x=>x.n===TPL_SEL)){ if(!confirm('Пересохранить стиль «'+TPL_SEL+'» текущими настройками?')) return; n=TPL_SEL; }
+    if(!n){ inp.focus(); toast('Напишите название стиля.'); return; }
     const c=prefsCode(), i=TPL.findIndex(x=>x.n.toLowerCase()===n.toLowerCase());
     if(i>=0){ if(TPL[i].c!==c && !confirm('Стиль «'+TPL[i].n+'» уже есть. Пересохранить его текущими настройками?')) return; TPL[i].c=c; } else { if(TPL.length>=TPL_MAX){ toast('Можно хранить до 20 стилей — удалите ненужный.'); return; } TPL.unshift({n,c}); }
-    tplSave(); renderSheet(); toast('Стиль «'+n+'» сохранён'); };
+    tplSel(n); tplSave(); renderSheet(); toast('Стиль «'+n+'» сохранён'); };
   if(!TPL.length){ lfoot(b,'Пока нет сохранённых стилей. Настройте оформление в панели снизу и сохраните его здесь.'); return; }
   const cur=prefsCode();
-  lgroup(b,`Сохранённые · ${TPL.length} из ${TPL_MAX}`,TPL.map((t,i)=>{ const r=crow('',esc(t.n),'',codeSame(t.c,cur),()=>tplApply(t));
+  lgroup(b,`Сохранённые · ${TPL.length} из ${TPL_MAX}`,TPL.map((t,i)=>{ const r=crow('',esc(t.n),t.n===TPL_SEL?'выбран сейчас':'',codeSame(t.c,cur),()=>tplApply(t)); if(t.n===TPL_SEL) r.classList.add('tsel');
     const x=document.createElement('span'); x.className='tdel'; x.textContent='✕'; x.setAttribute('role','button'); x.setAttribute('aria-label','Удалить «'+t.n+'»');
     x.onclick=e=>{ e.stopPropagation(); if(!confirm('Удалить стиль «'+t.n+'»?')) return; TPL.splice(i,1); tplSave(); renderSheet(); };
     const rs=document.createElement('span'); rs.className='tdel tres'; rs.textContent='↻'; rs.setAttribute('role','button'); rs.setAttribute('aria-label','Пересохранить «'+t.n+'»'); rs.title='Пересохранить текущими настройками';
@@ -2114,6 +2122,10 @@ function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').
       $('#fontSelV').textContent=fontName(); $('#fontSelV').style.fontFamily=f?`'${f.id}'`:(cp?`'${cp.main}'`:''); fs.onclick=e=>fontPick(e.currentTarget); } $('#placesV').textContent=P.cap_places==='one'?'на одном месте':'как у стиля'; $('#sizeV').textContent=P.cap_size+' %'; $('#wordsV').textContent=P.cap_words||'авто'; 
     /* владелец 2026-11-16: «Как в стиле» с пояснением, дальше «Нет» и по нарастающей, по 3 в ряд; цвет — только там,
        где он есть. Названия как в CapCut и InShot: обводка, тень, свечение, фон */
+    { const FR=[['default','Как в стиле','обводка или тень, задуманные стилем'],['none','Без обводки','чистый текст'],['outline','Обводка','чёрный контур вокруг букв'],
+        ['shadow','Тень','мягкая тень под текстом'],['plate','Тёмный фон','полупрозрачная подложка'],['plate_glass','Стекло','светлое стекло под текстом']];
+      const cur=FR.findIndex(x=>x[0]===P.cap_frame); $('#frameSelV').textContent=cur>=0?FR[cur][1]:((D.frames.find(f=>f.id===P.cap_frame)||{name:'Как в стиле'}).name);
+      $('#frameSel').onclick=e=>popup(e.currentTarget,'Обводка и тень',FR.map(x=>[x[1],x[2]]),cur,i=>{ P.cap_frame=FR[i][0]; P.auto=false; renderSheet(); applyLook(); }); }
     const fb=$('#frames'); fb.innerHTML='';
     const ftile=(id,name,sub,wide)=>{ const b=document.createElement('button'); b.className='fr'+(id===P.cap_frame?' on':'')+(wide?' wide':'');
       b.innerHTML=`<span class="aa"><span class="frs"><span class="s-onest${id!=='default'?' fr-'+id:''}"><span class="cap"><span class="w t1">Аа</span></span></span></span></span><span>${name}${sub?`<small>${sub}</small>`:''}</span>`;
