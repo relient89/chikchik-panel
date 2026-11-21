@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='8c0545b931';
+(function(){ var B='d5fc0c900e';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1636,7 +1636,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 </div>
 
 <div class="view" data-view="jobs"><div class="page">
-  <h1>Ролики</h1><div class="note" style="margin:0 4px">Готовые ролики хранятся 48 часов, исходники и вставки удаляются сразу после монтажа. В чате ролики остаются навсегда.</div>
+  <h1>Результаты</h1><div class="note" style="margin:0 4px">Готовые ролики хранятся 48 часов, исходники и вставки удаляются сразу после монтажа. В чате ролики остаются навсегда.</div>
   <div id="jobs" style="margin-top:12px"></div>
 </div></div>
 
@@ -2698,7 +2698,7 @@ function fillPages(){
   $('#jobs').innerHTML=(U.jobs||[]).map(j=>`<div class="job glass"><div>${esc(j.when)}<small>${esc(j.info||'')}</small></div><span class="badge ${esc(j.status)}">${SN[j.status]||esc(j.status)}</span></div>`).join('') || '<div class="empty">Пока пусто. Пришлите видео в чат с ботом, и ролик появится здесь.</div>';
 }
 $('#copyref').onclick=async e=>{ if(!U.ref) return; try{ await navigator.clipboard.writeText(U.ref); e.target.textContent='Скопировано'; }catch(_){ e.target.textContent='Не вышло'; } };
-const NAV=[['edit','cut','Монтаж'],['jobs','play','Ролики'],['bonus','gift','Бонусы'],['pay','wallet','Баланс']]; let curView='edit';
+const NAV=[['edit','cut','Монтаж'],['jobs','play','Результаты'],['bonus','gift','Бонусы'],['pay','wallet','Баланс']]; let curView='edit';
 function go(id){ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); render(); } else fillPages(); }
 function paintAutoTg(){ const a=$('#autoTg'); if(!a) return; a.className='autotg'+(P.auto?' on':'')+(curView==='edit'?'':' off');
   a.setAttribute('aria-checked',!!P.auto); a.setAttribute('aria-label','Сделай красиво: '+(P.auto?'включено':'выключено'));
