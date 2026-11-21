@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='bc2a7e7039';
+(function(){ var B='9b82bbaee4';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -271,6 +271,10 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #edov .eh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--rim)}
 #edov .eh b{flex:1;font-size:17px}#edov .eh button{padding:8px 14px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt);font-weight:700}
 #edov .eb{flex:1;overflow-y:auto;padding:14px 16px 110px}
+.jprog{height:6px;border-radius:3px;background:rgba(255,255,255,.12);margin:10px 0 6px;overflow:hidden}
+.jprog i{display:block;height:100%;border-radius:3px;background:var(--acc);transition:width .6s;animation:jpulse 1.6s ease-in-out infinite}
+@keyframes jpulse{50%{opacity:.55}}
+.jstage{font-size:13px;color:var(--mut)}
 #edov .eh2{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:16px 2px 8px}
 #edov .eln{display:flex;gap:10px;align-items:baseline;margin:6px 0}#edov .eln>small{flex:none;width:34px;color:var(--mut);font-size:11px}
 #edov .ewd{display:flex;flex-wrap:wrap;gap:6px 6px}
@@ -2411,13 +2415,20 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
   build(); }
 
 /* Вкладка «Ролики»: готовые ролики смотреть и скачивать прямо здесь (владелец 2026-11-16); в чате они тоже остаются */
-async function renderJobsApi(){ const box=$('#jobs'); box.innerHTML='<div class="empty">Загружаю ролики…</div>';
+let JOBT=null;
+async function renderJobsApi(quiet){ const box=$('#jobs'); if(!quiet) box.innerHTML='<div class="empty">Загружаю ролики…</div>'; clearTimeout(JOBT);
   let d; try{ d=await api('/api/jobs'); }catch(e){ box.innerHTML='<div class="empty">Не получилось загрузить ролики. Они есть в чате.</div>'; return; }
   if(!d.jobs.length){ box.innerHTML='<div class="empty">Готовых роликов пока нет. Смонтируйте первый — он появится здесь.</div>'; return; }
+  if(quiet && box.querySelector('video') && [...box.querySelectorAll('video')].some(v=>!v.paused)) { JOBT=setTimeout(()=>{ if(curView==='jobs') renderJobsApi(true); },5000); return; }
   box.innerHTML='';
+  /* идёт монтаж или ролик в очереди: список сам обновляется раз в 5 с, пока открыта вкладка */
+  if(d.jobs.some(j=>!j.url)) JOBT=setTimeout(()=>{ if(curView==='jobs') renderJobsApi(true); },5000);
   d.jobs.forEach(j=>{ const c=document.createElement('div'); c.className='vjob glass';
-    const st=j.url?(j.left!=null?`ещё ${j.left} ч`:''):(j.status==='running'?'монтируется…':'в очереди');
-    c.innerHTML=`<div class="vh"><b>${esc(j.when)}</b><small>${esc(j.info||'')}${j.info&&st?' · ':''}${esc(st)}</small></div>`;
+    const sg=j.stage, mmss=x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0');
+    const st=j.url?(j.left!=null?`ещё ${j.left} ч`:''):(j.status==='running'?(sg?`шаг ${sg.n} из ${sg.of} · ${mmss(sg.sec)}`:'монтируется…'):'в очереди');
+    c.innerHTML=`<div class="vh"><b>${esc(j.when)}</b><small>${esc(j.info||'')}${j.info&&st?' · ':''}${esc(st)}</small></div>`
+      +(j.status==='running'?`<div class="jprog"><i style="width:${sg?Math.round(100*(sg.n-0.5)/sg.of):12}%"></i></div><div class="jstage">${esc(sg?sg.name+'…':'Готовлю ролик…')}</div>`:'')
+      +(j.status==='queued'||j.status==='starting'?'<div class="jstage">Ждёт своей очереди. Начнётся сам.</div>':'');
     if(j.url){ const v=document.createElement('video'); v.controls=true; v.playsInline=true; v.preload='metadata'; v.src=API+j.url; c.appendChild(v);
       const bb=document.createElement('div'); bb.className='vb';
       const dl=document.createElement('button'); dl.className='pri'; dl.textContent='Скачать';
