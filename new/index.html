@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='96610ddc9a';
+(function(){ var B='8c0545b931';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -414,6 +414,32 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .ui3 .top3 .go3{min-height:40px;padding:0 18px;border-radius:999px;background:var(--acc);color:var(--onacc);font-weight:800;font-size:15px;box-shadow:0 6px 20px var(--acc-a2)}
 .ui3 .app:has(#edit.on) .hdr,.ui3 #modeSeg,.ui3 .autotext,.ui3 #autoFx,.ui3 .manual,.ui3 #insbox,.ui3 #fmtSide,.ui3 #plusBtn{display:none !important}
 .ui3 .dock{display:none !important}
+/* Вид 4 (2026-11-21): один лист, стрелки в строках, одна кнопка внизу */
+.look4,.go4{display:none}
+.ui4 .tabbar{grid-template-columns:repeat(4,1fr) !important}
+.ui4 .look4{display:block;padding:4px 16px calc(170px + env(safe-area-inset-bottom))}
+.ui4 #tools3,.ui4 .steps4,.ui4 .top3 .go3{display:none !important}
+.ui4 .go4{display:block;position:fixed;left:16px;right:16px;max-width:448px;margin:0 auto;bottom:calc(90px + env(safe-area-inset-bottom));z-index:25;
+  min-height:56px;border-radius:999px;background:var(--acc);color:var(--onacc);font-size:17px;font-weight:800;box-shadow:0 10px 30px var(--acc-a2)}
+.ui4 .go4[data-s="vid"],.ui4 .go4[data-s="fmt"],.ui4 .go4[data-s="up"]{background:rgba(30,32,40,.92);color:var(--txt);border:1px solid var(--acc);box-shadow:none}
+.sh3 .go4{display:none !important}
+.look4 .h4{margin:18px 4px 8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.look4 .seg4{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:4px;border-radius:16px;background:rgba(255,255,255,.06)}
+.look4 .seg4 button{min-height:44px;border-radius:12px;font-weight:700;font-size:15px;color:var(--txt)}
+.look4 .seg4 button.on{background:var(--acc);color:var(--onacc)}
+.look4 .d4{margin:6px 6px 0;font-size:13px;color:var(--mut)}
+.look4 .card4{border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.look4 .r4{display:flex;align-items:center;gap:8px;min-height:54px;padding:4px 10px 4px 14px;border-top:1px solid rgba(255,255,255,.07)}
+.look4 .r4:first-child{border-top:0}
+.look4 .r4 .n{flex:1;min-width:0;font-size:15px;font-weight:600}
+.look4 .r4 .q{width:22px;height:22px;border-radius:50%;margin-left:6px;font-size:12px;font-weight:800;background:rgba(255,255,255,.12);color:var(--mut);vertical-align:1px}
+.look4 .r4 .ar{flex:none;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);color:var(--txt);font-size:18px;font-weight:700}
+.look4 .r4 .v{flex:none;width:128px;text-align:center;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding:8px 4px;border-radius:10px;color:var(--txt)}
+.look4 .r4 .sw4{flex:none;width:50px;height:30px;border-radius:15px;background:rgba(255,255,255,.18);position:relative;transition:background .15s}
+.look4 .r4 .sw4::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s}
+.look4 .r4 .sw4.on{background:var(--acc)}.look4 .r4 .sw4.on::after{transform:translateX(20px);background:#111318}
+.look4 .more4{width:100%;margin-top:8px;min-height:50px;border-radius:16px;background:rgba(255,255,255,.06);color:var(--txt);font-weight:700}
 /* Версия 4 (2026-11-21): шаги сверху и одна кнопка-состояние — видно, что сделано и что дальше */
 .steps4{display:none}
 .ui3 .steps4{display:flex;gap:6px;padding:8px 16px 2px}
@@ -1589,6 +1615,8 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
     </div><button class="plus glass" id="plusBtn"><i>+</i>Добавить ролик</button><button class="play3" id="play3" aria-label="Пауза"></button></div>
     <button class="side r" id="fmtSide"><i class="svgi" id="fmtSideI"></i><span>Формат<small id="fmtSideV"></small></span></button></div>
   <div class="strip3" id="strip3"></div>
+  <div class="look4" id="look4"></div>
+  <button class="go4" id="go4" type="button">Смонтировать</button>
   <div class="tools3" id="tools3" role="toolbar" aria-label="Настройки ролика"></div>
   <div class="seg glass" id="modeSeg"><i class="segknob"></i><button data-auto="1">Сделай красиво</button><button data-auto="0">Настрою сам</button></div>
   <div class="autotext glass">Цвет, заголовок, субтитры и плашки подберу под ваш ролик. Понравится стиль — следующие сделаю так же.</div>
@@ -1735,6 +1763,8 @@ const IC = {
 const UI2 = Q.get('ui')!=='1';      // владелец 2026-11-15: вторая версия — основная; прежняя открывается с ?ui=1
 if(UI2){ document.body.classList.add('ui2'); const pb=document.getElementById('plusBtn'); if(pb && pb.lastChild) pb.lastChild.textContent='Добавить'; }   // узкое превью: кружок «+» не сжимается в овал
 const UI3 = !['1','2'].includes(Q.get('ui'));      /* 2026-11-16: версия 3 — основная; ?ui=2 и ?ui=1 открывают прежние */ //      // владелец 2026-11-16: версия 3 «как CapCut», только внешний вид, открывается ссылкой с ?ui=3
+const UI4 = UI3 && Q.get('ui')!=='3';      /* вид 4 (2026-11-21) — основной в новой версии; ?ui=3 открывает прежний */
+if(UI4) document.body.classList.add('ui4');
 if(UI3) document.body.classList.add('ui3');
 Object.assign(IC,{frm:I('<rect x="3.500" y="6.500" width="17" height="11" rx="3.500"/><path d="M8 12h8"/>'),
   note:I('<path d="M9 18V6l10-2v12"/><circle cx="6.500" cy="18" r="2.500"/><circle cx="16.500" cy="16" r="2.500"/>'),
@@ -1987,7 +2017,9 @@ const stage=$('#stage'), wrap=$('#wrap'); let capin=$('#capin'), capbox=$('#capb
 function freshCap(){ const nb=capbox.cloneNode(true), ni=nb.querySelector('#capin'); ni.innerHTML=''; capbox.replaceWith(nb); capbox=nb; capin=ni; }
 function fitStage(){ if(UI3) return fitStage3(); const h=Math.max(170, Math.min(window.innerHeight*(UI2&&!P.auto?0.29:0.36), 380)), w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
 /* версия 3: превью занимает всё место между верхом и полоской состава; при открытой шторке — место над ней */
-function fitStage3(){ const H=window.innerHeight, top=wrap.getBoundingClientRect().top+window.scrollY, sh=document.body.classList.contains('sh3');
+function fitStage4(){ const h=Math.max(170,Math.min(window.innerHeight*(document.body.classList.contains('sh3')?0.4:0.34),330)), w=h*9/16;
+  wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; }
+function fitStage3(){ if(UI4) return fitStage4(); const H=window.innerHeight, top=wrap.getBoundingClientRect().top+window.scrollY, sh=document.body.classList.contains('sh3');
   const tb=(UI3&&P.auto)?$('#tabbar'):$('#tools3'), st=$('#strip3'), toolsTop = tb.children.length ? tb.getBoundingClientRect().top-(P.auto?8:0) : H-180;
   const bottom = sh ? H*0.44-10 : toolsTop-Math.max(st.offsetHeight,64)-10;
   const set=h=>{ h=Math.max(150, Math.min(h, H*0.64, 640)); const w=h*9/16; wrap.style.width=w+'px'; wrap.style.height=h+'px'; stage.style.transform=`scale(${w/1080})`; return h; };
@@ -2287,6 +2319,7 @@ function goState(){
   return ['go','Смонтировать']; }
 function paintSteps4(){ if(!UI3) return; const b=$('#go3'), box=$('#steps4'); if(!b||!box) return; const [st,txt]=goState();
   const hold=Date.now()-goArmed<4000 || /…|✓/.test(b.textContent); if(!hold || st!=='go') b.textContent=txt; b.dataset.s=st;
+  const g4=$('#go4'); if(g4){ g4.textContent=b.textContent; g4.dataset.s=st; }
   const has=vidCount()>0, key=(has?1:0)+st+(P.auto?'a':'m'); if(box.dataset.k===key) return; box.dataset.k=key; box.innerHTML='';
   [['Видео',has?'done':'cur',()=>openSheet('parts')],
    ['Оформление',has?'cur':'',()=>{ if(P.auto) return openSheet('auto3'); const t=$('#tools3'); t.classList.remove('flash4'); void t.offsetWidth; t.classList.add('flash4'); toast('Ниже — всё оформление: субтитры, плашки, заголовок, музыка.'); }],
@@ -2294,8 +2327,49 @@ function paintSteps4(){ if(!UI3) return; const b=$('#go3'), box=$('#steps4'); if
     x.innerHTML='<i>'+(cls==='done'?'✓':(i+1))+'</i>'+name; x.onclick=fn; box.appendChild(x); }); }
 function paintHelp4(){ const b=$('#sHelp'), box=$('#helpBox'); if(!b||!box) return; const h=sheet&&HELP4[sheet]; b.classList.toggle('has',!!h&&!deep); b.classList.remove('on'); box.classList.remove('on');
   b.onclick=()=>{ const on=!box.classList.contains('on'); if(on) box.innerHTML=esc(h[0])+(h[1]?'<small>'+esc(h[1])+'</small>':''); box.classList.toggle('on',on); b.classList.toggle('on',on); }; }
+/* ---------- Вид 4: оформление одним листом ---------- */
+const COL4=['','scarlet','orange','red','lime','green','yellow','periwinkle','raspberry','powder_blue','white'];
+const MU4=[['off','Без музыки'],['auto','Подберу сам'],['energetic','Энергичная'],['calm','Спокойная'],['inspiring','Вдохновляющая'],['playful','Игривая'],['sad','Грустная']];
+const HELP4R={auto:'Подберу шрифт, цвет, плашки и заголовок под ваш ролик. Выключите — настроите сами.',
+  hook:'Крупная фраза в первые секунды: о чём ролик.',memes:'Короткая смешная вставка к месту, не чаще раза в минуту.',
+  camera:'Плавный наезд камеры на лицо вместо статичного кадра.',sfx:'Тихий звук, когда появляется плашка.'};
+function cyc4(list,cur,d){ const i=list.indexOf(cur); return list[((i<0?0:i)+d+list.length)%list.length]; }
+function styles4(){ return D.groups.flatMap(g=>g.ids).filter(id=>ST[id]); }
+function cardSet4(){ const sets=cardSets(); const i=sets.findIndex(g=>g.ids.includes(P.card_style)); return [sets,i]; }
+function render4(){ if(!UI4) return; const box=$('#look4'); if(!box) return;
+  const cm=cutMode(), cdesc=(CUT.find(c=>c[0]===cm)||[0,0,'Выберите, что вырезать из речи'])[2];
+  const accN=P.cap_accent?((D.accents.find(x=>x.id===P.cap_accent)||{}).name||'свой'):'как в стиле';
+  const [sets,si]=cardSet4(), cardN=!P.cards?'без плашек':(si>=0?sets[si].name:'стандарт');
+  const musN=(MU4.find(x=>x[0]===(P.music||'off'))||MU4[0])[1];
+  const ar=(k,label,val,help)=>`<div class="r4" data-k="${k}"><span class="n">${label}${help?`<button class="q" data-h="${k}" aria-label="Что это">?</button>`:''}</span>`+
+    `<button class="ar" data-d="-1" aria-label="Предыдущий">‹</button><button class="v" data-open="${k}">${esc(val)}</button><button class="ar" data-d="1" aria-label="Следующий">›</button></div>`;
+  const sw=(k,label,on)=>`<div class="r4" data-k="${k}"><span class="n">${label}<button class="q" data-h="${k}" aria-label="Что это">?</button></span><button class="sw4${on?' on':''}" data-sw="${k}" role="switch" aria-checked="${on}" aria-label="${label}"></button></div>`;
+  let h=`<div class="h4">Нарезка</div><div class="seg4">${CUT.map(c=>`<button data-cut="${c[0]}" class="${cm===c[0]?'on':''}">${c[1]}</button>`).join('')}</div><div class="d4">${esc(cdesc)}</div>`;
+  h+=`<div class="h4">Оформление</div><div class="card4">`+sw('auto','Сделай красиво',!!P.auto);
+  if(!P.auto){ h+=ar('style','Субтитры',P.captions?(ST[P.style]||{}).name||'':'выкл')+ar('color','Цвет слова',accN)+ar('cards','Плашки',cardN); }
+  h+=ar('music','Музыка',musN)+sw('hook','Заголовок',!!P.hook)+sw('memes','Мемы',!!P.memes&&P.memes!=='off')+sw('camera','Движение камеры',P.camera&&P.camera!=='off')+sw('sfx','Звук плашек',P.sfx&&P.sfx!=='off')+`</div>`;
+  h+=`<button class="more4" id="more4">Ещё настройки ›</button>`;
+  box.innerHTML=h;
+  box.querySelectorAll('[data-cut]').forEach(b=>b.onclick=()=>{ setCut(b.dataset.cut); render(); });
+  box.querySelectorAll('[data-h]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); toast(HELP4R[b.dataset.h]||(HELP4[{style:'sub',color:'subcol',cards:'card',music:'mus'}[b.dataset.h]]||[''])[0]); });
+  box.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{ const k=b.dataset.sw;
+    if(k==='auto') return toggleAuto();
+    if(k==='hook') P.hook=!P.hook; if(k==='memes') P.memes=(P.memes&&P.memes!=='off')?'off':'clean';
+    if(k==='camera') P.camera=(P.camera&&P.camera!=='off')?'off':'zoom'; if(k==='sfx') P.sfx=(P.sfx&&P.sfx!=='off')?'off':'normal';
+    render(); });
+  box.querySelectorAll('.r4 .ar').forEach(b=>b.onclick=()=>{ const k=b.closest('.r4').dataset.k, d=+b.dataset.d;
+    if(k==='style'){ P.captions=true; P.style=cyc4(styles4(),P.style,d); P.auto=false; }
+    if(k==='color'){ P.cap_accent=cyc4(COL4,P.cap_accent||'',d); if(P.cap_accent) P.cap_main=''; P.auto=false; }
+    if(k==='cards'){ const [sets,i]=cardSet4(), opts=[-1].concat(sets.map((_,n)=>n)), cur=P.cards?(i<0?0:i):-1, nx=cyc4(opts,cur,d);
+      if(nx<0) P.cards=false; else { P.cards=true; P.card_style=sets[nx].ids[0]; } P.auto=false; }
+    if(k==='music') P.music=cyc4(MU4.map(x=>x[0]),P.music||'off',d);
+    applyLook(); render(); });
+  box.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openSheet({style:'sub',color:'subcol',cards:'card',music:'mus'}[b.dataset.open]));
+  $('#more4').onclick=e=>popup(e.currentTarget,'Ещё настройки',TOOLS3.filter(t=>!['sub','subcol','card','music','memes'].includes(t[0])).map(t=>[t[1],'']),-1,i=>{
+    const t=TOOLS3.filter(t=>!['sub','subcol','card','music','memes'].includes(t[0]))[i]; if(t) openSheet(t[3]); });
+  $('#go4').onclick=()=>$('#go3').click(); }
 function render(){
-  paintSteps4();
+  paintSteps4(); render4();
   $('#edit').classList.toggle('auto',P.auto); fitStage(); renderAfmt(); 
   const f=FMT.find(x=>x[0]===P.fmt); $('#tag').textContent = FR.some(Boolean) ? 'Ваше видео' : (P.fmt==='raw' ? 'Пример · без резки' : 'Пример'); loadFrames();
   const st=ST[P.style]||ST.focus, a=accentHex()||'var(--acc)', cs=(D.cardStyles.find(x=>x.id===P.card_style)||{}).name||'';
@@ -2633,7 +2707,7 @@ function toggleAuto(){ P.auto=!P.auto; if(P.auto && !P.fmt){ P.fmt='head'; fmtTo
   if(sheet) closeSheet(); render(); paintAutoTg(); toast(P.auto?'Сделай красиво включено: оформление подберу сам.':'Сделай красиво выключено: настройки снова в панели.'); }
 function nav(){ const tb=$('#tabbar'); tb.innerHTML=''; NAV.forEach(([id,ic,nm])=>{ const b=document.createElement('button'); b.className=id===curView?'on':'';
   b.innerHTML=IC[ic].replace(/width="\d+" height="\d+"/,'width="22" height="22"')+nm; b.onclick=()=>go(id); tb.appendChild(b);
-    if(UI3 && id==='jobs'){ const a=document.createElement('button'); a.id='autoTg'; a.type='button'; a.setAttribute('role','switch');
+    if(UI3 && !UI4 && id==='jobs'){ const a=document.createElement('button'); a.id='autoTg'; a.type='button'; a.setAttribute('role','switch');
       a.innerHTML=`<i class="ai" aria-hidden="true">${IC.magic}</i><span>Сделай<br>красиво</span><b class="msw" aria-hidden="true"></b>`; a.onclick=toggleAuto; tb.appendChild(a); } });
   paintAutoTg();
   const bal=+U.balance||0; $('#balPill').innerHTML = knowBalance ? `${IC.wallet.replace(/width="\d+" height="\d+"/,'width="16" height="16"')}${bal<0?'Безлимит':bal+' '+plural(bal,'монтаж','монтажа','монтажей')}` : 'Баланс';
