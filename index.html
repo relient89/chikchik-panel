@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='34982ae590';
+(function(){ var B='4f2b32c229';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -263,6 +263,23 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #pop .fsec{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:10px 4px 4px}
 #pop{max-height:70vh;overflow-y:auto}
 .vjob{border-radius:22px;padding:12px;margin-bottom:12px}
+.jday{margin:16px 4px 8px;font-size:13px;font-weight:700;color:var(--mut)}
+.jrow{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;border-radius:20px;margin-bottom:8px;cursor:pointer}
+.jrow .jth{flex:none;width:52px;height:80px;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.08);display:grid;place-items:center}
+.jrow .jth video{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.jrow .jsp{width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:var(--acc);animation:jspin 1s linear infinite}
+@keyframes jspin{to{transform:rotate(360deg)}}
+.jrow .jtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.jrow .jtx b{font-size:16px}.jrow .jtx small{font-size:13px;color:var(--mut)}
+.jrow .jtx .jprog{display:block;margin:6px 0 2px}
+.jrow .jb{flex:none;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:transparent;color:var(--txt);font-size:20px;font-weight:700}
+#vpl{position:fixed;inset:0;z-index:90;background:#0b0c10;display:none;flex-direction:column;padding:calc(10px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom))}
+#vpl.on{display:flex}
+#vpl .vph{display:flex;align-items:center;gap:8px;margin-bottom:10px}#vpl .vph b{flex:1}
+#vpl .vph button{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.1);color:var(--txt);font-weight:700}
+#vpl video{flex:1;min-height:0;width:100%;border-radius:16px;background:#000}
+#vpl .vpb{display:flex;gap:8px;margin-top:10px}#vpl .vpb button{flex:1;padding:13px 8px;border-radius:14px;font-weight:700;background:rgba(255,255,255,.08);color:var(--txt)}
+#vpl .vpb button.pri{background:var(--acc);color:#111}
 .vjob video{width:100%;max-height:62vh;border-radius:16px;background:#000;display:block}
 .vjob .vh{display:flex;align-items:center;gap:8px;margin:0 2px 10px}.vjob .vh b{flex:1;font-size:15px}.vjob .vh small{color:var(--mut);font-size:12px}
 .vjob .vb{display:flex;gap:8px;margin-top:10px}.vjob .vb button{flex:1;padding:12px;border-radius:14px;font-weight:700;background:rgba(255,255,255,.08);color:var(--txt)}
@@ -2505,22 +2522,27 @@ async function renderJobsApi(quiet){ const box=$('#jobs'); if(!quiet) box.innerH
   box.innerHTML='';
   /* идёт монтаж или ролик в очереди: список сам обновляется раз в 5 с, пока открыта вкладка */
   if(d.jobs.some(j=>!j.url)) JOBT=setTimeout(()=>{ if(curView==='jobs') renderJobsApi(true); },5000);
-  d.jobs.forEach(j=>{ const c=document.createElement('div'); c.className='vjob glass';
-    const sg=j.stage, mmss=x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0');
-    const st=j.url?(j.left!=null?`ещё ${j.left} ч`:''):(j.status==='running'?(sg?`${sg.pct!=null?sg.pct+' % · ':''}шаг ${sg.n} из ${sg.of} · ${mmss(sg.sec)}`:'монтируется…'):'в очереди');
-    c.innerHTML=`<div class="vh"><b>${esc(j.when)}</b><small>${esc(j.info||'')}${j.info&&st?' · ':''}${esc(st)}</small></div>`
-      +(j.status==='running'?`<div class="jprog"><i style="width:${sg?(sg.pct!=null?sg.pct:Math.round(100*(sg.n-0.5)/sg.of)):12}%"></i></div><div class="jstage">${esc(sg?sg.name+'…':'Готовлю ролик…')}</div>`:'')
-      +(j.status==='queued'||j.status==='starting'?'<div class="jstage">Ждёт своей очереди. Начнётся сам.</div>':'');
-    if(j.url){ const v=document.createElement('video'); v.controls=true; v.playsInline=true; v.preload='metadata'; v.src=API+j.url; c.appendChild(v);
-      const bb=document.createElement('div'); bb.className='vb';
-      const dl=document.createElement('button'); dl.className='pri'; dl.textContent='Скачать';
-      dl.onclick=()=>{ const u=API+j.url; try{ if(tg&&tg.downloadFile){ tg.downloadFile({url:u,file_name:`chikchik_${j.id}.mp4`}); return; } }catch(e){} window.open(u,'_blank'); };
-      const ch=document.createElement('button'); ch.textContent='Прислать в чат';
-      ch.onclick=async()=>{ ch.textContent='Отправляю…'; try{ await api('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({j:j.id})}); ch.textContent='Отправлено ✓'; }catch(e){ ch.textContent='Не вышло'; toast(e.message); } };
-      bb.appendChild(dl); bb.appendChild(ch);
-      if(j.edit){ const ed=document.createElement('button'); ed.className='edb'; ed.textContent='✏️ Править'; ed.onclick=()=>edOpen(j.id); bb.appendChild(ed); }
-      c.appendChild(bb); }
+  const today=new Date(), dd=String(today.getDate()).padStart(2,'0')+'.'+String(today.getMonth()+1).padStart(2,'0'); let lastDay='';
+  d.jobs.forEach(j=>{ const day=(j.when||'').slice(0,5); if(day!==lastDay){ lastDay=day; const hh=document.createElement('div'); hh.className='jday'; hh.textContent=day===dd?'Сегодня':day; box.appendChild(hh); }
+    const c=document.createElement('div'); c.className='jrow glass';
+    const sg=j.stage, mmss=x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0'), tm=(j.when||'').slice(6);
+    const st=j.url?(j.left!=null?`хранится ещё ${j.left} ч`:''):(j.status==='running'?(sg?`${sg.pct!=null?sg.pct+' % · ':''}${mmss(sg.sec)}`:'монтируется…'):'в очереди');
+    c.innerHTML=`<span class="jth">${j.url?`<video muted playsinline preload="metadata" src="${API+j.url}#t=0.5"></video>`:'<i class="jsp"></i>'}</span>`
+      +`<span class="jtx"><b>${j.url?'Ролик':j.status==='running'?'Монтируется':'В очереди'}</b><small>${esc(tm)}${st?' · '+esc(st):''}</small>`
+      +(j.status==='running'?`<span class="jprog"><i style="width:${sg?(sg.pct!=null?sg.pct:Math.round(100*(sg.n-0.5)/sg.of)):12}%"></i></span><span class="jstage">${esc(sg?sg.name+'…':'Готовлю ролик…')}</span>`:'')
+      +(j.status==='queued'||j.status==='starting'?'<span class="jstage">Начнётся сам</span>':'')+`</span>`
+      +(j.url&&j.edit?'<button class="jb" data-a="ed" aria-label="Править">✎</button>':'')+(j.url?'<button class="jb" data-a="dl" aria-label="Скачать">⤓</button>':'');
+    const dl=()=>{ const u=API+j.url; try{ if(tg&&tg.downloadFile){ tg.downloadFile({url:u,file_name:`chikchik_${j.id}.mp4`}); return; } }catch(e){} window.open(u,'_blank'); };
+    if(j.url){ c.onclick=e=>{ const a=e.target.closest('[data-a]'); if(a){ e.stopPropagation(); return a.dataset.a==='ed'?edOpen(j.id):dl(); } jobView(j,dl); }; }
     box.appendChild(c); }); }
+/* просмотр готового ролика во весь экран: видео и кнопки */
+function jobView(j,dl){ let ov=$('#vpl'); if(!ov){ ov=document.createElement('div'); ov.id='vpl'; document.body.appendChild(ov); }
+  ov.innerHTML=`<div class="vph"><b>Ролик · ${esc(j.when||'')}</b><button id="vpx">Закрыть</button></div><video controls playsinline autoplay src="${API+j.url}"></video>`
+    +`<div class="vpb"><button class="pri" id="vpd">Скачать</button><button id="vps">В чат</button>${j.edit?'<button id="vpe">✎ Править</button>':''}</div>`;
+  ov.classList.add('on'); const close=()=>{ const v=ov.querySelector('video'); if(v) v.pause(); ov.classList.remove('on'); ov.innerHTML=''; };
+  $('#vpx').onclick=close; $('#vpd').onclick=dl;
+  $('#vps').onclick=async e=>{ const b=e.currentTarget; b.textContent='Отправляю…'; try{ await api('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({j:j.id})}); b.textContent='Отправлено ✓'; }catch(er){ b.textContent='Не вышло'; toast(er.message); } };
+  if(j.edit) $('#vpe').onclick=()=>{ close(); edOpen(j.id); }; }
 
 // ---------- разделы: Ролики, Бонусы, Баланс (данные приходят от бота в адресе, после #) ----------
 let U = {};
