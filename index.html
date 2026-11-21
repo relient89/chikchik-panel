@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='a7d9ff0ce0';
+(function(){ var B='46af96e161';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1601,7 +1601,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 </div></div>
 
 <div class="view" data-view="bonus"><div class="page">
-  <h1>Бонусы</h1>
+  <h1>Пригласить</h1>
   <div class="box glass"><h4>Ссылка для друзей</h4><div class="note" style="margin:0 0 12px" id="bFriend"></div>
     <div class="linkrow"><span id="reflink">Откройте приложение из бота</span><button class="pill" id="copyref">Копировать</button></div></div>
   <div class="box glass"><h4>По вашей ссылке</h4><div class="stat"><div><b id="invited">0</b><span>пришли</span></div><div><b id="earned">+0</b><span>монтажей вам</span></div></div>
@@ -1610,7 +1610,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 </div></div>
 
 <div class="view" data-view="pay"><div class="page">
-  <h1>Баланс</h1><div class="note" style="margin:0 4px"><b style="color:var(--txt);font-size:17px" id="bal">0</b> <span id="balW">монтажей</span></div>
+  <h1>Профиль</h1><div class="note" style="margin:0 4px"><b style="color:var(--txt);font-size:17px" id="bal">0</b> <span id="balW">монтажей</span></div>
   <!-- цены и пакеты скрыты до подключения оплаты (владелец 2026-11-19); вернуть — убрать hidden у трёх блоков -->
   <h3 hidden>Пакеты монтажей</h3><div id="plans" hidden></div>
   <button class="paybtn glass" id="payBtn" hidden>Оплату подключаем, скоро заработает</button>
@@ -2558,7 +2558,7 @@ function fillPages(){
   $('#jobs').innerHTML=(U.jobs||[]).map(j=>`<div class="job glass"><div>${esc(j.when)}<small>${esc(j.info||'')}</small></div><span class="badge ${esc(j.status)}">${SN[j.status]||esc(j.status)}</span></div>`).join('') || '<div class="empty">Пока пусто. Пришлите видео в чат с ботом, и ролик появится здесь.</div>';
 }
 $('#copyref').onclick=async e=>{ if(!U.ref) return; try{ await navigator.clipboard.writeText(U.ref); e.target.textContent='Скопировано'; }catch(_){ e.target.textContent='Не вышло'; } };
-const NAV=[['edit','cut','Монтаж'],['jobs','play','Результаты'],['bonus','gift','Бонусы'],['pay','wallet','Баланс']]; let curView='edit';
+const NAV=[['edit','cut','Монтаж'],['jobs','play','Результаты'],['bonus','gift','Пригласить'],['pay','wallet','Профиль']]; let curView='edit';
 function go(id){ curView=id; $$('.view').forEach(v=>v.classList.toggle('on',v.dataset.view===id)); window.scrollTo(0,0); nav(); if(id==='edit'){ fitStage(); render(); } else fillPages(); }
 function paintAutoTg(){ const a=$('#autoTg'); if(!a) return; a.className='autotg'+(P.auto?' on':'')+(curView==='edit'?'':' off');
   a.setAttribute('aria-checked',!!P.auto); a.setAttribute('aria-label','Сделай красиво: '+(P.auto?'включено':'выключено'));
