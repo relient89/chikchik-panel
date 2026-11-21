@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='9f2f0fed22';
+(function(){ var B='a7d9ff0ce0';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -254,12 +254,11 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .pane[data-only=main] > #accColor,.pane[data-only=main] > #accFont{display:none}
 .pane[data-only=col] #accColor > .acch,.pane[data-only=fnt] #accFont > .acch{pointer-events:none}
 .pane[data-only=col] #accColor > .acch .chev,.pane[data-only=fnt] .acch .chev{display:none}
-.fsrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fsrow .fontsel{min-width:0;flex-direction:column;align-items:flex-start;gap:2px;position:relative;padding:10px 30px 10px 14px}.fsrow .fl{font-size:12px;color:var(--mut);font-weight:600}.fsrow .fa{position:absolute;right:12px;top:50%;translate:0 -50%}.fsrow .fv{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fontsel{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:14px 16px;border-radius:18px;
   background:rgba(255,255,255,.06);border:1px solid var(--rim);color:var(--txt);text-align:left}
 .fontsel .fl{font-weight:700;font-size:15px}.fontsel .fv{flex:1;text-align:right;font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fontsel .fa{color:var(--mut)}
-.pane[data-only=col] > .fontsel,.pane[data-only=fnt] > .fontsel,.pane[data-only=col] > .fsrow,.pane[data-only=fnt] > .fsrow{display:none}
+.pane[data-only=col] > .fontsel,.pane[data-only=fnt] > .fontsel{display:none}
 #pop .fsec{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:10px 4px 4px}
 #pop{max-height:70vh;overflow-y:auto}
 .vjob{border-radius:22px;padding:12px;margin-bottom:12px}
@@ -1639,9 +1638,8 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
           <div class="cgrp"><div class="cgh"><span class="cgt">Цветовые пары<small>главное слово + остальной текст, уже подобраны</small></span></div><div class="pals" id="cpairs"></div></div>
           <div class="cgrp"><div class="cgh"><span class="cgt">Тройки<small>три цвета: главное слово · текст · мелкие слова или подложка</small></span></div><div class="pals" id="pals"></div></div>
           <div class="note">Однотонные — весь текст одним цветом. Пары подобраны как у дизайнеров: спокойная база и один яркий акцент. «Цвета стиля» — у каждого стиля субтитров из списка ниже (Фокус, Журнал, Неон…) свои цвета; этот вариант их не меняет.</div></div></div>
-      <div class="fsrow"><button class="fontsel" id="fontSel" type="button"><span class="fl">Шрифт</span><span class="fv" id="fontSelV"></span><span class="fa">▾</span></button>
-        <button class="fontsel" id="frameSel" type="button"><span class="fl">Обводка</span><span class="fv" id="frameSelV"></span><span class="fa">▾</span></button></div>
-      <div class="acc" id="accSize" style="display:none"><button class="acch" data-acc="accSize"><span class="ri">Аа</span><span class="rt">Размер субтитров<small id="sizeSub"></small></span><span class="chev"></span></button>
+      <button class="fontsel" id="fontSel" type="button"><span class="fl">Шрифт</span><span class="fv" id="fontSelV"></span><span class="fa">▾</span></button>
+      <div class="acc" id="accSize"><button class="acch" data-acc="accSize"><span class="ri">Аа</span><span class="rt">Размер субтитров<small id="sizeSub"></small></span><span class="chev"></span></button>
         <div class="accb"><div class="duo"><div class="stepbox"><button data-size="-1">−</button><div><span>Размер</span><b id="sizeV"></b></div><button data-size="1">+</button></div>
           <button class="pick" id="wordsBtn"><small>Слов на экране за раз</small><span id="wordsV"></span></button></div>
           <div class="duo" style="margin-top:8px"><button class="pick" id="placesBtn"><small>Места субтитров</small><span id="placesV"></span></button></div>
@@ -1649,7 +1647,7 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
       <div class="acc" id="accFont" style="display:none"><button class="acch" data-acc="accFont"><span class="ri">Ff</span><span class="rt">Свой шрифт<small id="fontSub">загрузите файл шрифта</small></span><span class="chev"></span></button>
         <div class="accb"><button class="pick" id="fontBtn" style="width:100%;display:none"><small id="fontName"></small><span id="fontV"></span></button>
           <div class="note" style="margin-top:8px">Пришлите файл шрифта (.ttf, .otf или .woff, до 5 МБ) в чат с ботом как документ. Он станет основным шрифтом в любом стиле, который вы выберете ниже. Загружая шрифт, вы подтверждаете право на его использование.</div></div></div>
-      <div class="acc" id="accFrame" style="display:none"><button class="acch" data-acc="accFrame"><span class="ri">◎</span><span class="rt">Обводка и тень<small id="frameSub"></small></span><span class="chev"></span></button>
+      <div class="acc" id="accFrame"><button class="acch" data-acc="accFrame"><span class="ri">◎</span><span class="rt">Обводка и тень<small id="frameSub"></small></span><span class="chev"></span></button>
         <div class="accb"><div class="frames" id="frames"></div>
           <h3>Цвет обводки и тени</h3><div class="duo" id="capcolors"></div></div></div>
       <h3>Стиль субтитров</h3><div class="grid" id="sgroups"></div>
@@ -1732,7 +1730,7 @@ Object.assign(IC,{frm:I('<rect x="3.500" y="6.500" width="17" height="11" rx="3.
 /* панель инструментов: [id, подпись, иконка, шторка, «включено»] — порядок по частоте использования */
 let retTouched=false; const RETOUCH=true;   /* ретушь убрана 2026-11-18 (тяжёлая: +4 мин на минуту ролика); true — вернуть во все версии */
 const TOOLS3=[
-  ['format','Нарезка',()=>IC[P.fmt==='raw'?'raw':'head'],'vid',()=>!!P.fmt],
+  ['format','Формат',()=>IC[P.fmt==='raw'?'raw':'head'],'vid',()=>!!P.fmt],
   ['tpl','Мои стили',()=>IC.star,'tpl3',()=>TPL.length>0],
   ['subcol','Цвет',()=>IC.pal,'subcol',()=>!!(P.cap_accent||P.cap_main)],
   ['sub','Субтитры',()=>IC.sub,'sub',()=>!!P.captions],
@@ -1821,7 +1819,9 @@ function swRow(o){ const v=Math.max(0,o.get()), dis=o.off&&o.off(); return lrow(
 const OPT=id=>OPTS.find(o=>o.id===id);
 function restoreMoved(){ const w=$('#wish'), h=$('#hookTxt'); if(w && w.parentNode.id==='lstBody') $('.insbody').appendChild(w); if(h && h.parentNode.id==='lstBody') $('#rowsOpts').after(h); }
 const LST={
-  vid(b){ radios(b,'Нарезка',CUT.map(x=>[x[1],x[2]]),CUT.findIndex(x=>x[0]===cutMode()),i=>{ setCut(CUT[i][0]); });
+  vid(b){ radios(b,'Формат',FMT.map(x=>[x[1],x[2]]),FMT.findIndex(x=>x[0]===P.fmt),i=>{ P.fmt=FMT[i][0]; fmtTouched=true; if(P.fmt==='head') P.pauses=true; });
+    const o=OPT('fill'), v=Math.max(0,o.get()), dis=o.off&&o.off();
+    lgroup(b,'Чистка речи',[lrow(IC.mic,'Вырезать «э-э», «м-м»',dis?'в формате «Как снято» ничего не режу':o.vals[v][1],'',()=>{ if(dis) return; o.set(v?0:1); renderSheet(); render(); },{sw:v===1,dis})]);
     const po=OPT('prof'), PD=['подпись и кнопки Reels не закроют текст','кнопки TikTok справа и снизу','кнопки Shorts справа','с запасом под любую площадку'];
     radios(b,'Где выйдет ролик',po.vals.map((v,i)=>[v[0],PD[i]||'']),Math.max(0,po.get()),i=>po.set(i),'Подписи и плашки не попадут под кнопки и описание площадки.');
     if(!UI3) langRows(b); },
@@ -2114,10 +2114,6 @@ function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').
       $('#fontSelV').textContent=fontName(); $('#fontSelV').style.fontFamily=f?`'${f.id}'`:(cp?`'${cp.main}'`:''); fs.onclick=e=>fontPick(e.currentTarget); } $('#placesV').textContent=P.cap_places==='one'?'на одном месте':'как у стиля'; $('#sizeV').textContent=P.cap_size+' %'; $('#wordsV').textContent=P.cap_words||'авто'; 
     /* владелец 2026-11-16: «Как в стиле» с пояснением, дальше «Нет» и по нарастающей, по 3 в ряд; цвет — только там,
        где он есть. Названия как в CapCut и InShot: обводка, тень, свечение, фон */
-    { const FR=[['default','Как в стиле','обводка или тень, задуманные стилем'],['none','Без обводки','чистый текст'],['outline','Обводка','чёрный контур вокруг букв'],
-        ['shadow','Тень','мягкая тень под текстом'],['plate','Тёмный фон','полупрозрачная подложка'],['plate_glass','Стекло','светлое стекло под текстом']];
-      const cur=FR.findIndex(x=>x[0]===P.cap_frame); $('#frameSelV').textContent=cur>=0?FR[cur][1]:((D.frames.find(f=>f.id===P.cap_frame)||{name:'Как в стиле'}).name);
-      $('#frameSel').onclick=e=>popup(e.currentTarget,'Обводка и тень',FR.map(x=>[x[1],x[2]]),cur,i=>{ P.cap_frame=FR[i][0]; P.auto=false; renderSheet(); applyLook(); }); }
     const fb=$('#frames'); fb.innerHTML='';
     const ftile=(id,name,sub,wide)=>{ const b=document.createElement('button'); b.className='fr'+(id===P.cap_frame?' on':'')+(wide?' wide':'');
       b.innerHTML=`<span class="aa"><span class="frs"><span class="s-onest${id!=='default'?' fr-'+id:''}"><span class="cap"><span class="w t1">Аа</span></span></span></span></span><span>${name}${sub?`<small>${sub}</small>`:''}</span>`;
@@ -2233,11 +2229,6 @@ const OPTS=[
 
   {id:'prof',name:'Площадка',ic:'phone',vals:D.profiles.map(id=>[PROF[id],'']),get:()=>D.profiles.indexOf(P.profile),set:v=>{P.profile=D.profiles[v];}}];
 const FMT=[['head','Чистая речь','Вырезаю паузы между фразами'],['raw','Как снято','Ничего не вырезаю, только оформляю']];
-/* Нарезка в три режима (2026-11-21, как у конкурента): хранится в fmt/pauses/fillers/filler_words */
-const CUT=[['smart','Умная','вырезаю паузы и «э-э», «м-м» — ролик плотнее'],['light','Лёгкая','паузы оставляю, убираю только «э-э», «м-м»'],['none','Без нарезки','ничего не вырезаю, только оформляю']];
-function cutMode(){ return !P.fmt?'':P.fmt==='raw'?'none':(P.pauses?'smart':'light'); }
-function setCut(m){ fmtTouched=true; if(m==='none'){ P.fmt='raw'; return; } P.fmt='head'; P.pauses=(m==='smart'); P.fillers=true; if('filler_words' in P) P.filler_words=P.filler_words; }
-function cutName(){ const c=CUT.find(x=>x[0]===cutMode()); return c?c[1]:''; }
 function popup(anchor, title, items, cur, on){ const p=$('#pop'); p.innerHTML=`<h4>${title}</h4>`; items.forEach((it,i)=>{ const b=document.createElement('button'); b.className=i===cur?'on':'';
   b.innerHTML=`<span class="rd"></span><span>${it[0]}${it[1]?`<small>${it[1]}</small>`:''}</span>`; b.onclick=e=>{ e.stopPropagation(); on(i); hidePop(); render(); if(sheet) renderSheet(); }; p.appendChild(b); });
   p.classList.add('on'); const r=anchor.getBoundingClientRect(), w=p.offsetWidth, h=p.offsetHeight;
@@ -2329,7 +2320,7 @@ function sendPrefs(go, btn, action){ const ht=($('#hookTxt').value||'').trim();
   if(go && !API && Q.get('d')==='0'){ toast('Сначала пришлите видео в чат с ботом. Когда оно загрузится, нажмите на карточке «Настроить и смонтировать».'); return; }
   if(go && Date.now()-goArmed>4000){ goArmed=Date.now(); btn.textContent='Нажмите ещё раз: спишется 1 монтаж'; setTimeout(()=>{ if(Date.now()-goArmed>=3900) btn.textContent='Смонтировать'; },4000); return; }
   if(!tg){ btn.textContent='Открыто не в Telegram'; return; }
-  if(go && !P.fmt){ toast('Сначала выберите нарезку: умная, лёгкая или без нарезки.'); return; }
+  if(go && !P.fmt){ toast('Сначала выберите формат: вырезать паузы или оставить ролик как снят.'); return; }
   if(API){ /* приложение говорит с ботом напрямую (туннель): без перехода в чат */
     if(go && !(AS&&AS.main)){ toast('Сначала добавьте видео в «Части ролика».'); openSheet('parts'); btn.textContent='Смонтировать'; return; }
     if(upBusy){ toast('Дождитесь окончания загрузки файлов.'); return; }
