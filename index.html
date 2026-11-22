@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='f5a0a675e0';
+(function(){ var B='77524ae63a';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -266,7 +266,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .jday{margin:16px 4px 8px;font-size:13px;font-weight:700;color:var(--mut)}
 .jrow{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;border-radius:20px;margin-bottom:8px;cursor:pointer}
 .jrow .jth{flex:none;width:52px;height:80px;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.08);display:grid;place-items:center}
-.jrow .jth video{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.jrow .jth video,.jrow .jth img{width:100%;height:100%;object-fit:cover;pointer-events:none}
 .jrow .jsp{width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:var(--acc);animation:jspin 1s linear infinite}
 @keyframes jspin{to{transform:rotate(360deg)}}
 .jrow .jtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
@@ -290,7 +290,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #edov .eh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--rim);
   padding-top:calc(14px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px))}   /* не под часами и кнопками Telegram (2026-11-22) */
 #edov .eh b{flex:1;font-size:17px}#edov .eh button{padding:8px 14px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt);font-weight:700}
-#edov .eb{flex:1;overflow-y:auto;padding:14px 16px 110px}
+#edov .eb{flex:1;overflow-y:auto;padding:14px 16px 240px}
 .jprog{height:6px;border-radius:3px;background:rgba(255,255,255,.12);margin:10px 0 6px;overflow:hidden}
 .jprog i{display:block;height:100%;border-radius:3px;background:var(--acc);transition:width .6s;animation:jpulse 1.6s ease-in-out infinite}
 @keyframes jpulse{50%{opacity:.55}}
@@ -2611,6 +2611,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       let h='<div class="row2"><button data-a="fix">Исправить</button><button data-a="del">'+(dl?'Вернуть':'Удалить')+'</button><button data-a="key">'+(ky?'Не ключевое':'Ключевое')+'</button><button class="x" data-a="x">✕</button></div>';
       if(changed) h+='<div class="row2">'+(n>1?'<button data-a="all" class="'+(ED.all[i]?'on':'')+'">Везде ('+n+')</button>':'')+'<button data-a="learn" class="'+(ED.learn[i]?'on':'')+'">Запомнить для новых роликов</button></div>';
       bar.innerHTML=h; bar.classList.add('on');
+      { const ef=ov.querySelector('.ef'); bar.style.bottom=((ef?ef.offsetHeight:96)+8)+'px'; }   // над «Пересобрать», не поверх (2026-11-22)
       bar.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const a=b.dataset.a;
         if(a==='x') return closeBar();
         if(a==='fix') return wordEdit(el);
@@ -2662,7 +2663,7 @@ async function renderJobsApi(quiet){ const box=$('#jobs'); if(!quiet) box.innerH
     const c=document.createElement('div'); c.className='jrow glass';
     const sg=j.stage, mmss=x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0'), tm=(j.when||'').slice(6);
     const st=j.url?(j.left!=null?`хранится ещё ${j.left} ч`:''):(j.status==='running'?(sg?`${sg.pct!=null?sg.pct+' % · ':''}${mmss(sg.sec)}`:'монтируется…'):'в очереди');
-    c.innerHTML=`<span class="jth">${j.url?`<video muted playsinline preload="metadata" src="${API+j.url}#t=0.5"></video>`:'<i class="jsp"></i>'}</span>`
+    c.innerHTML=`<span class="jth">${j.thumb?`<img loading="lazy" alt="" src="${API+j.thumb}">`:j.url?`<video muted playsinline preload="none" src="${API+j.url}#t=0.5"></video>`:'<i class="jsp"></i>'}</span>`
       +`<span class="jtx"><b>${j.url?'Ролик':j.status==='running'?'Монтируется':'В очереди'}</b><small>${esc(tm)}${st?' · '+esc(st):''}</small>`
       +(j.status==='running'?`<span class="jprog"><i style="width:${sg?(sg.pct!=null?sg.pct:Math.round(100*(sg.n-0.5)/sg.of)):12}%"></i></span><span class="jstage">${esc(sg?sg.name+'…':'Готовлю ролик…')}</span>`:'')
       +(j.status==='queued'||j.status==='starting'?'<span class="jstage">Начнётся сам</span>':'')+`</span>`
