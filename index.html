@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='1fc35cea63';
+(function(){ var B='f5a0a675e0';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -273,7 +273,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .jrow .jtx b{font-size:16px}.jrow .jtx small{font-size:13px;color:var(--mut)}
 .jrow .jtx .jprog{display:block;margin:6px 0 2px}
 .jrow .jb{flex:none;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:transparent;color:var(--txt);font-size:20px;font-weight:700}
-#vpl{position:fixed;inset:0;z-index:90;background:#0b0c10;display:none;flex-direction:column;padding:calc(10px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom))}
+#vpl{position:fixed;inset:0;z-index:90;background:#0b0c10;display:none;flex-direction:column;padding:calc(10px + env(safe-area-inset-top) + var(--tg-content-safe-area-inset-top,0px)) 14px calc(14px + env(safe-area-inset-bottom))}
 #vpl.on{display:flex}
 #vpl .vph{display:flex;align-items:center;gap:8px;margin-bottom:10px}#vpl .vph b{flex:1}
 #vpl .vph button{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.1);color:var(--txt);font-weight:700}
@@ -287,7 +287,8 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .vjob .vb button.edb{flex:none;padding:12px 16px}
 #edov{position:fixed;inset:0;z-index:60;background:var(--bg,#0b0d12);display:none;flex-direction:column}
 #edov.on{display:flex}
-#edov .eh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--rim)}
+#edov .eh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--rim);
+  padding-top:calc(14px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px))}   /* не под часами и кнопками Telegram (2026-11-22) */
 #edov .eh b{flex:1;font-size:17px}#edov .eh button{padding:8px 14px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt);font-weight:700}
 #edov .eb{flex:1;overflow-y:auto;padding:14px 16px 110px}
 .jprog{height:6px;border-radius:3px;background:rgba(255,255,255,.12);margin:10px 0 6px;overflow:hidden}
