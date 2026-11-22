@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='113833217b';
+(function(){ var B='fe77393558';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2509,8 +2509,13 @@ function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.creat
   inp.addEventListener('change',go); inp.addEventListener('input',go); inp.click();
 }
 /* файл одним запросом с ходом загрузки (быстрее кусков); не вышло — запасной путь кусками ниже */
-function upWhole(kind,f,onp,pr){ return new Promise((ok,bad)=>{ const x=new XMLHttpRequest(); if(pr) pr.xhr=x;
-  x.open('POST',(API||API0)+`/api/upfile?kind=${kind}&size=${f.size}&name=${encodeURIComponent(f.name)}&j=${encodeURIComponent(JID()||'')}`);
+function upRid(){ let r=''; try{ const a=new Uint8Array(16); crypto.getRandomValues(a); r=[...a].map(b=>b.toString(16).padStart(2,'0')).join(''); }catch(e){}
+  while(r.length<32) r+=Math.floor(Math.random()*16).toString(16); return r.slice(0,32); }
+/* свернули Telegram — телефон замораживает приложение; ждём возврата, попытки при этом не тратятся (владелец 2026-11-22) */
+function upVisible(){ return new Promise(z=>{ if(!document.hidden) return z(); const f=()=>{ if(document.hidden) return; document.removeEventListener('visibilitychange',f); z(); };
+  document.addEventListener('visibilitychange',f); }); }
+function upWhole(kind,f,onp,pr,rid){ return new Promise((ok,bad)=>{ const x=new XMLHttpRequest(); if(pr) pr.xhr=x;
+  x.open('POST',(API||API0)+`/api/upfile?kind=${kind}&size=${f.size}&name=${encodeURIComponent(f.name)}&j=${encodeURIComponent(JID()||'')}&rid=${rid||''}`);
   x.setRequestHeader('X-Tg',tg?tg.initData:''); x.setRequestHeader('Content-Type','application/octet-stream');
   x.upload.onprogress=e=>{ if(e.lengthComputable) onp(e.loaded/e.total); };
   x.onload=()=>{ let d={}; try{ d=JSON.parse(x.responseText); }catch(e){} if(x.status===200) ok(d); else bad(Object.assign(new Error(d.error||('Ошибка '+x.status)),{final:x.status>=400&&x.status<500})); };
@@ -2519,14 +2524,22 @@ function upTile(name){ return [...document.querySelectorAll('[data-up]')].find(x
 function upSay(pr,txt){ if(!upTile(pr.name)) toast(txt); }      /* проценты одним местом: плитка, а без неё — строка сверху */
 async function upOne(kind,f,pre){ const pr=pre||{name:f.name,kind,p:0}; pr.q=0; if(!pre){ upBusy++; UPS.push(pr); } if(sheet) renderSheet(); drawUps();
   const CANCEL=new Error('отменено');      /* крестик на загружаемом файле (владелец 2026-11-18) */
-  try{ try{ const st=await upWhole(kind,f,v=>{ pr.p=v; drawUps(); upSay(pr,v<1?`Загружаю${pr.of>1?' '+pr.n+' из '+pr.of:''} «${f.name}» · ${Math.round(v*100)} %`:'Обрабатываю видео…'); },pr);
+  const rid=upRid();
+  try{ try{ const st=await upWhole(kind,f,v=>{ pr.p=v; drawUps(); upSay(pr,v<1?`Загружаю${pr.of>1?' '+pr.n+' из '+pr.of:''} «${f.name}» · ${Math.round(v*100)} %`:'Обрабатываю видео…'); },pr,rid);
       if(pr.cancelled) throw CANCEL;
       AS=st; API=API||API0; toast(kind==='insert'?'✓ Вставка добавлена':'✓ Видео добавлено'); return; }
-    catch(e){ if(pr.cancelled) throw CANCEL; if(e.final) throw e; toast('Связь прервалась, загружаю по частям…'); }
-    const s=await api('/api/up',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,name:f.name,size:f.size,j:JID()})});
-    let off=0, tries=0;
+    catch(e){ if(pr.cancelled) throw CANCEL; if(e.final) throw e; }
+    /* обрыв: дошедшая часть осталась на сервере под тем же номером — догружаем с этого места, а не с нуля
+       (владелец 2026-11-22: «когда захожу потом, файл заново начинает качаться») */
+    await upVisible(); if(pr.cancelled) throw CANCEL;
+    let s=null, off=0, tries=0;
+    for(let k=0;k<3&&!s;k++){ try{ const r=await api(`/api/up/${rid}?off=-1`,{method:'PUT',body:new Blob([])}); if(typeof r.got==='number'){ s={id:rid,chunk:r.chunk||2097152}; off=r.got; } }
+      catch(e){ if(/не найдена/.test(e.message||'')) break; await new Promise(z=>setTimeout(z,1500)); } }
+    if(s&&off>0) toast(`Продолжаю загрузку с ${Math.round(off/f.size*100)} %…`); else toast('Связь прервалась, загружаю по частям…');
+    if(!s){ s=await api('/api/up',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,name:f.name,size:f.size,j:JID()})}); off=0; }
     while(off<f.size){ if(pr.cancelled) throw CANCEL; try{ const r=await api(`/api/up/${s.id}?off=${off}`,{method:'PUT',body:f.slice(off,off+s.chunk)}); off=r.got; tries=0; }
-      catch(e){ if(++tries>8) throw new Error('связь с сервером обрывается, попробуйте ещё раз ('+e.message+')');
+      catch(e){ if(document.hidden){ await upVisible(); }       /* свёрнуто — не считаем за попытку, ждём возврата */
+        else if(++tries>8) throw new Error('связь с сервером обрывается, попробуйте ещё раз ('+e.message+')');
         toast(`Связь прервалась, повторяю… (${tries} из 8)`); await new Promise(z=>setTimeout(z,Math.min(10000,1500*tries)));
         try{ const r=await api(`/api/up/${s.id}?off=-1`,{method:'PUT',body:new Blob([])}); if(typeof r.got==='number') off=r.got; }catch(_){} }   /* сколько уже дошло — продолжаем с этого места */
       pr.p=off/f.size; drawUps(); upSay(pr,`Загружаю${pr.of>1?' '+pr.n+' из '+pr.of:''} «${f.name}» · ${Math.round(pr.p*100)} %`); }      /* ход загрузки виден всегда (владелец 2026-11-18) */
