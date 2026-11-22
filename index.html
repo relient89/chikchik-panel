@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='be8900970c';
+(function(){ var B='113833217b';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2342,7 +2342,8 @@ $$('.acch').forEach(b=>b.onclick=()=>{ $('#'+b.dataset.acc).classList.toggle('op
 let hookOwn=false;
 function showHookTxt(){ const el=$('#hookTxt'); if(!el) return; el.style.display=hookOwn&&P.hook?'block':'none'; if(hookOwn&&P.hook) setTimeout(()=>el.focus(),50); }
 const RET=['off','subtle','light','mid','strong'];
-function timeNote(){ const n=$('#note2'); $('#note2t').textContent='Ретушь значительно увеличит время монтажа: примерно +4 минуты на каждую минуту ролика. Без неё ролик будет готов намного быстрее.'; n.classList.add('on'); }
+function timeNote(){ const n=$('#note2'); $('#note2t').textContent='Ретушь значительно увеличит время монтажа: примерно +4 минуты на каждую минуту ролика. Без неё ролик будет готов намного быстрее.'; n.classList.add('on');
+  clearTimeout(timeNote.t); timeNote.t=setTimeout(()=>n.classList.remove('on'),6000); }   // само исчезает через 6 с (2026-11-22)
 const OPTS=[
   {id:'fill',name:'Запинки «э-э», «м-м»',ic:'mic',vals:[['Оставить','ничего не вырезаю'],['Вырезать','убираю «э-э», «м-м» и подобные звуки']],get:()=>P.fillers?1:0,set:v=>{P.fillers=!!v;P.filler_words=false;},off:()=>P.fmt==='raw'},
   {id:'hook',name:'Заголовок в начале',ic:'cam',vals:[['Выкл','ролик начинается без заголовка'],['Придумаю сам','заголовок по смыслу ролика'],['Свой текст','напишете заголовок сами']],get:()=>P.hook?(hookOwn?2:1):0,set:v=>{P.hook=v>0;hookOwn=v===2;showHookTxt();}},
