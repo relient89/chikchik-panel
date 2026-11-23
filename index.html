@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='275467fae9';
+(function(){ var B='fd248ad6eb';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2182,13 +2182,19 @@ function colPrev(){ const el=$('#colCap'); if(!el) return; const st=ST[P.style]|
 /* масштаб подписи без CSS zoom: на iPhone zoom раскладывает слова под одним размером, а рисует под другим */
 function zs(el,z){ el.style.transform = z===1 ? '' : `scale(${z})`; }
 let last=-2;
-function drawMain(t){ const st=ST[P.style]||ST.focus, tl=tlOf(st.id, P.cap_words), i = P.captions ? stateAt(tl,t) : -1;
+/* Подпись в примере — ниже настоящего низа плашки (владелец 2026-11-23: высокая плашка «от руки» наезжала на субтитры),
+   как в готовом ролике: субтитры под плашкой. Низ меряется по экрану с учётом масштаба плашки. */
+function capTop(base){ if(!P.cards) return base; const z=$('#cardzoom'); if(!z||!z.firstElementChild) return base;
+  const r=z.getBoundingClientRect(), sr=stage.getBoundingClientRect(); if(!r.height||!sr.height) return base;
+  const cb=$('#cardbox'), k=sr.height/1920, bot=cb.offsetTop + r.height/k;   /* верх коробки — без сдвига появления */
+  return Math.round(Math.max(base, Math.min(bot+90, 1600))); }
+function drawMain(t){const st=ST[P.style]||ST.focus, tl=tlOf(st.id, P.cap_words), i = P.captions ? stateAt(tl,t) : -1;
   $('#cardbox').classList.toggle('on', P.cards && t>0.5 && t<3.6);
   if(i===last) return; last=i; if(i<0){ freshCap(); return; }
   if(tl[i].line) freshCap();
   const s=tl[i]; if(!s.exit){ capin.innerHTML=s.html; const z0=P.cap_size/100;
   const maxW=(1080-220)*0.86, w=capin.scrollWidth*z0; zs(capin, w>maxW ? z0*maxW/w*0.98 : z0);
-  capbox.style.top = (s.zone? 1080 : 1200)+'px'; }
+  capbox.style.top = capTop(s.zone? 1080 : 1200)+'px'; }
   anim(capin, s); }
 
 // ---------- плитки с живым примером ----------
