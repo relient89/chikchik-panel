@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='10f035e23d';
+(function(){ var B='422237b0bb';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2613,11 +2613,18 @@ function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.creat
      «фото и видео» iPhone открывал только на фото (владелец 2026-11-18) */
   inp.accept=orig==='image'?'image/*':'video/*,.mp4,.mov,.m4v,.webm,.mkv';
   inp.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';
-  document.body.appendChild(inp); let done=false, prep=null;
+  document.body.appendChild(inp); let done=false, prep=null, prepT=0;
+  /* Выбор отменили (крестик в галерее, владелец 2026-11-23: «ничего не выбрал — а ему кажется, что видео выбрано»):
+     плашка «телефон готовит видео» убирается, поле выбора — тоже */
+  const dropPrep=()=>{ clearTimeout(prepT); if(prep){ const i=UPS.indexOf(prep); if(i>=0){ UPS.splice(i,1); upBusy--; } prep=null; if(sheet) renderSheet(); render(); } };
+  const cancelPick=()=>{ if(done) return; done=true; window.removeEventListener('focus',back); dropPrep(); inp.remove(); if(PICK===inp) PICK=null; };
   /* iPhone после «Выбрать» сначала сам готовит видео (до минуты) и только потом отдаёт файлы — показываем это сразу */
   const back=()=>{ window.removeEventListener('focus',back); setTimeout(()=>{ if(done||prep) return;
-      prep={name:'Готовлю видео',kind,p:0,prep:1}; UPS.push(prep); upBusy++; if(sheet) renderSheet(); render(); upSay(prep,'Телефон готовит видео…'); },400); };
+      prep={name:'Готовлю видео',kind,p:0,prep:1,drop:cancelPick}; UPS.push(prep); upBusy++; if(sheet) renderSheet(); render(); upSay(prep,'Телефон готовит видео…');
+      // старые телефоны не сообщают об отмене: файл так и не пришёл — значит, ничего не выбрали
+      prepT=setTimeout(()=>{ if(!done&&!(inp.files&&inp.files.length)){ cancelPick(); toast('Видео не выбрано'); } },90000); },400); };
   window.addEventListener('focus',back);
+  inp.addEventListener('cancel',cancelPick);
   const go=async()=>{ if(done) return; const fs=[...(inp.files||[])]; if(!fs.length) return; done=true;
     if(prep){ UPS.splice(UPS.indexOf(prep),1); upBusy--; prep=null; }
     const list=fs.map((f,i)=>({name:f.name,kind,p:0,q:i>0?1:0,n:i+1,of:fs.length}));      /* все файлы видны сразу, по очереди */
@@ -2680,7 +2687,9 @@ function ftiles(box, head, items, kind, canAdd, foot, addFn){ const h=document.c
     t.querySelector('.fn').textContent=it.name; if(it.del) t.querySelector('.fx').onclick=it.del; g.appendChild(t); });
   UPS.filter(u=>u.kind===kind).forEach(u=>{ const t=document.createElement('div'); t.className='ftile'; t.dataset.up=u.name;
     t.innerHTML=`<span class="fi">${IC.raw}</span><span class="fn"></span><span class="fd">${upLabel(u)}</span><span class="bar"><i style="width:${Math.round(u.p*100)}%"></i></span><button class="fx" aria-label="Отменить загрузку">✕</button>`;
-    t.querySelector('.fn').textContent=u.name; t.querySelector('.fx').onclick=()=>{ u.cancelled=true; try{ u.xhr&&u.xhr.abort(); }catch(e){} toast('Отменяю загрузку…'); }; g.appendChild(t); });
+    t.querySelector('.fn').textContent=u.name; t.querySelector('.fx').onclick=()=>{ u.cancelled=true;
+      if(u.prep&&u.drop){ u.drop(); return; }          // «телефон готовит видео» — просто убрать
+      try{ u.xhr&&u.xhr.abort(); }catch(e){} toast('Отменяю загрузку…'); }; g.appendChild(t); });
   if(canAdd && kind==='insert' && !addFn){ [['Видео','video'],['Фото','image']].forEach(([nm,md])=>{ const a=document.createElement('button'); a.className='ftile add'; a.dataset.media=md; a.innerHTML='<b>＋</b>'+nm; a.onclick=()=>pickFiles(kind,md); g.appendChild(a); }); }
   else if(canAdd){ const a=document.createElement('button'); a.className='ftile add'; a.innerHTML='<b>＋</b>Добавить'; a.onclick=addFn||(()=>pickFiles(kind)); g.appendChild(a); }
   box.appendChild(g);
