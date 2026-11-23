@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='ea96d138db';
+(function(){ var B='1cab55b2fb';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -329,10 +329,18 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #edov .plb.hook{border-color:rgba(255,200,60,.95)}
 /* лента кадров как в CapCut (владелец 2026-11-23): кадры ролика, поверх — сцены по фразам субтитров и мемы;
    полоса едет под пальцем плавно, черта посередине — текущий момент, видео идёт следом */
-#edov .fsb{position:relative;margin:14px -16px 2px;max-width:none}
+#edov .fsb{position:relative;margin:8px -16px 2px;max-width:none}
+/* видео и лента всегда на экране (владелец 2026-11-23: «бегунок слишком внизу, картинку не видно, верхние субтитры
+   не подвинуть»): шапка закреплена, текст сцены и настройки прокручиваются под ней */
+#edov .estk{position:sticky;top:-14px;z-index:6;background:var(--bg,#0b0d12);margin:-14px -16px 0;padding:10px 16px 4px;box-shadow:0 8px 14px -10px rgba(0,0,0,.8)}
+#edov .estk .evw{padding:0}
+#edov .estk .evw video{max-height:34vh}#edov .estk .evw.mv video{max-height:44vh}
+#edov .fsf{position:absolute;top:0;bottom:0;background-repeat:no-repeat;max-width:none;pointer-events:none}
+#edov .fst{overflow:hidden}
 #edov .fs{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;max-width:none}
 #edov .fs::-webkit-scrollbar{display:none}
 #edov .fsr{display:flex;align-items:stretch;height:72px;padding:4px 0;max-width:none;width:max-content}
+#edov .fs.zoom .fst{box-shadow:0 0 0 2px var(--acc)}
 #edov .fsp{flex:none;height:1px}
 #edov .fst{flex:none;position:relative;height:64px;max-width:none;border-radius:8px;background:#1b1e26 no-repeat 0 0}
 #edov .fsg{position:absolute;top:0;bottom:0;border:2px solid rgba(255,255,255,.5);border-radius:7px;overflow:hidden;
@@ -2655,7 +2663,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
   const build=()=>{ const keepV0=$('#edv'); if(keepV0) keepV0.remove();      // тот же ролик — без перезагрузки
     ov.innerHTML='<div class="eh"><b>Редактирование</b><button class="undo" id="edun" title="Шаг назад">↶</button><button id="edx">Закрыть</button></div><div class="eb"></div>';
     $('#edx').onclick=edClose; const eb=ov.querySelector('.eb');
-    let h=(d.url?'<div class="evw'+(MV?' mv':'')+'"><div class="evbox"><video id="edv" controls playsinline preload="metadata" src="'+(API||API0)+d.url+'"></video><div class="etc" id="etc">0:00,0</div><div class="epl" id="epl"></div></div></div>'
+    let h=(d.url?'<div class="estk"><div class="evw'+(MV?' mv':'')+'"><div class="evbox"><video id="edv" controls playsinline preload="auto" src="'+(API||API0)+d.url+'"></video><div class="etc" id="etc">0:00,0</div><div class="epl" id="epl"></div></div></div><!--STRIP--></div>'
          +(d.layout?'<div class="evt"><button id="edmv" class="'+(MV?'on':'')+'">✥ '+(MV?'Готово':'Двигать подписи, плашки, заголовок')+'</button></div>'
            +(MV?'<p class="hint">Поставьте видео на паузу: подписи, плашки и заголовок этого момента обведены рамкой — перетащите пальцем, куда нужно (заголовок — выше или ниже). ✕ — вернуть место на выбор программы.</p>':''):''):'')
          +'<p class="hint">Коснитесь слова, чтобы исправить, убрать или сделать главным.'+(low?' Жёлтые — программа не уверена.':'')+(restN?' Пунктир — вырезанное автомонтажом, коснитесь, чтобы вернуть.':'')+'</p>';
@@ -2663,11 +2671,12 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       const t0=l=>{ const w=l.words.find(x=>x.t!=null); return w?w.t:l.t; }, ends=d.lines.map((l,k)=>k+1<N?t0(d.lines[k+1]):(t0(l)+l.words.reduce((a,x)=>a+(x.d||0),0)+0.3));
       const tot=Math.max(0.1,ends[N-1]-t0(d.lines[0]));
       const ltxt=l=>l.words.filter(w=>w.i!=null&&!isDel(w.i)).map(w=>ED.words[w.i]!==undefined?ED.words[w.i]:w.w).join(' ');
-      h+='<div class="fsb"><div class="fs" id="fs"><div class="fsr"><i class="fsp"></i><div class="fst" id="fst"'+(d.strip?' style="background-image:url(\''+(API||API0)+d.strip+'\')"':'')+'>'
+      let sh='<div class="fsb"><div class="fs" id="fs"><div class="fsr"><i class="fsp"></i><div class="fst" id="fst">'
         +d.lines.map((l,k)=>'<i class="fsg'+(k===SC&&!GEN?' on':'')+(l.words.some(w=>w.i!=null&&(ED.cut[w.i]||ED.words[w.i]!==undefined||ED.kon[w.i]||ED.koff[w.i]))||l.words.some(w=>w.r&&ED.rest[w.r])?' ch':'')+'" data-sc="'+k+'" data-a="'+t0(l)+'" data-b="'+ends[k]+'"><b>'+esc(ltxt(l))+'</b></i>').join('')
         +(d.memes||[]).map(m=>'<i class="fsm'+(ED.mdrop[m.k]?' off':'')+'" data-a="'+m.t+'" data-b="'+(m.t+m.d)+'" data-mm="'+m.k+'">МЕМ</i>').join('')
         +'</div><i class="fsp"></i></div></div><i class="fsc"></i></div>'
         +'<div class="etime"><span id="etnow">0:00,0</span><span id="etdur"></span></div>';
+      h=h.indexOf('<!--STRIP-->')>=0?h.replace('<!--STRIP-->',sh):h+sh;
       h+='<div class="enav"><button id="escp" aria-label="Предыдущая сцена">‹</button><b>'+(GEN?'Общие настройки':'Сцена '+(SC+1)+' <small>из '+N+'</small>')+'</b><button id="escn" aria-label="Следующая сцена">›</button><button id="egen" class="'+(GEN?'on':'')+'">Общие</button></div>';
       if(!GEN){ const l=d.lines[SC];
         h+='<div class="escard" id="escard"><div class="eh2">Текст сцены · '+fsec2(t0(l))+'</div><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; } }
@@ -2766,36 +2775,64 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
     function tlSetup(){ const v=$('#edv'), fs=$('#fs'), tr=$('#fst'); if(!v||!fs||!tr) return;
       const segs=[...tr.querySelectorAll('[data-a]')];
       const dur=()=>(isFinite(v.duration)&&v.duration>0)?v.duration:Math.max(1,...segs.map(x=>+x.dataset.b||0));
-      let PPS=36;                                           // точек на секунду: кадр 36×64 на шаг полосы
-      const lay=()=>{ const D_=dur(), step=Math.max(1,D_/240); PPS=36/step;
-        tr.style.width=(D_*PPS)+'px'; tr.style.backgroundSize=(D_*PPS)+'px 100%';
+      let PPS=36, Z=1, frames=[], SPN=0;
+      const ZOOM=2.4;                                        // под пальцем лента шире: кадр можно выбрать точно
+      const SURL=d.strip?(API||API0)+d.strip:'';
+      if(SURL){ const im=new Image(); im.onload=()=>{ SPN=Math.max(1,Math.round(im.naturalWidth/54));
+          tr.insertAdjacentHTML('afterbegin',Array.from({length:SPN},()=>'<i class="fsf"></i>').join('')); frames=[...tr.querySelectorAll('.fsf')];
+          frames.forEach(f=>f.style.backgroundImage="url('"+SURL+"')"); lay(); }; im.src=SURL; }
+      const lay=()=>{ const D_=dur(), base=36/Math.max(1,D_/240); PPS=base*Z; const W_=D_*PPS;
+        tr.style.width=W_+'px';
         fs.querySelectorAll('.fsp').forEach(x=>x.style.width=(fs.clientWidth/2)+'px');
+        if(SPN&&frames.length){ const fw=W_/SPN, sc=Math.max(1,fw/36);       // кадр «по ширине клетки», без растяжения
+          frames.forEach((f,i)=>{ f.style.left=(i*fw)+'px'; f.style.width=(fw+0.5)+'px';
+            f.style.backgroundSize=(SPN*36*sc)+'px '+(64*sc)+'px'; f.style.backgroundPosition=(-(i*36*sc)-(36*sc-fw)/2)+'px '+(-(64*sc-64)/2)+'px'; }); }
         segs.forEach(x=>{ const a=+x.dataset.a, b=Math.max(+x.dataset.b,a+0.15); x.style.left=(a*PPS+1)+'px'; x.style.width=Math.max(6,(b-a)*PPS-2)+'px'; });
         const e=$('#etdur'); if(e) e.textContent=fsec2(D_); };
       const starts=d.lines.map((l,j)=>{ const x=tr.querySelector('.fsg[data-sc="'+j+'"]'); return x?+x.dataset.a:0; });
       const sceneAt=t=>{ let k=0; starts.forEach((a,j)=>{ if(a<=t+0.05) k=j; }); return k; };
+      const nearest=t=>{ let k=sceneAt(t); if(k+1<starts.length&&Math.abs(starts[k+1]-t)<Math.abs(t-starts[k])) k++; return k; };
       const label=t=>{ const a=$('#etc'); if(a) a.textContent=fsec2(t); const b=$('#etnow'); if(b) b.textContent=fsec2(t); };
-      let lastSet=-1, touching=false, raf2=0;
+      const tick=()=>{ try{ if(tg&&tg.HapticFeedback) tg.HapticFeedback.selectionChanged(); }catch(er){} };
+      let lastSet=-1, touching=false, raf2=0, lastK=-1, snapT=0, zoomT=0, anim=0;
       const roll=t=>{ lastSet=Math.round(t*PPS); fs.scrollLeft=lastSet; };     // полоса под черту, не считается движением пальца
-      v._tl=()=>{ lay(); const t=v.currentTime||0; label(t); if(!touching) roll(t); };
+      const glide=t=>{ cancelAnimationFrame(anim); const from=fs.scrollLeft, to=Math.round(t*PPS), t0=performance.now();   // плавно докатить до сцены
+        const go=now=>{ const k=Math.min(1,(now-t0)/160), e=1-Math.pow(1-k,3); lastSet=Math.round(from+(to-from)*e); fs.scrollLeft=lastSet; if(k<1) anim=requestAnimationFrame(go); };
+        anim=requestAnimationFrame(go); };
+      const zoom=(on,t)=>{ const nz=on?ZOOM:1; if(nz===Z) return; Z=nz; fs.classList.toggle('zoom',on); lay(); roll(t); };
+      v._tl=()=>{ lay(); const t=v.currentTime||0; label(t); if(!touching&&!v._scrub) roll(t); };
       if(!v._tlOn){ v._tlOn=1; let raf=0;
         const loop=()=>{ if(v._tl) v._tl(); if(!v.paused) raf=requestAnimationFrame(loop); };
         v.addEventListener('play',()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(loop); });
         ['loadedmetadata','durationchange','seeked','timeupdate','pause'].forEach(e=>v.addEventListener(e,()=>{ if(v._tl) v._tl(); if(e==='timeupdate'&&v._follow) v._follow(); })); }
       v._follow=()=>{ if(GEN||v._scrub) return; const ae=document.activeElement; if(ae&&ae.tagName==='INPUT') return; if(bar&&bar.classList.contains('on')) return;
         const k=sceneAt(v.currentTime||0); if(k!==SC){ SC=k; showScene(); } };
-      // палец двигает полосу: видео перематывается следом, плавно (и по инерции после отпускания)
-      fs.addEventListener('scroll',()=>{ if(Math.abs(fs.scrollLeft-lastSet)<1) return; v._scrub=1;
-        if(!v.paused){ try{ v.pause(); }catch(er){} }
+      // палец на ленте: лента увеличивается вокруг этого места
+      /* iPhone не показывает кадры при перемотке, пока видео ни разу не запускали (владелец 2026-11-23: «двигаю — ничего
+         не двигается, пока не нажму play»). Первое касание ленты на миг беззвучно запускает видео и ставит на паузу. */
+      const prime=()=>{ if(v._primed) return; v._primed=1; const was=v.muted, t=v.currentTime||0; v.muted=true;
+        try{ const pr=v.play(); if(pr&&pr.then) pr.then(()=>{ if(touching||v._scrub){ v.pause(); } v.muted=was; }).catch(()=>{ v.muted=was; v._primed=0; }); else v.muted=was; }
+        catch(er){ v.muted=was; v._primed=0; } };
+      fs.addEventListener('pointerdown',()=>{ touching=true; clearTimeout(zoomT); clearTimeout(snapT); cancelAnimationFrame(anim); v._scrub=1;
+        const wasPlaying=!v.paused; prime(); if(wasPlaying){ try{ v.pause(); }catch(er){} } zoom(true,v.currentTime||0); lastK=sceneAt(v.currentTime||0); },{passive:true});
+      fs.addEventListener('touchstart',prime,{passive:true});
+      const release=()=>{ touching=false; arm(); };
+      ['pointerup','pointercancel','touchend'].forEach(e=>fs.addEventListener(e,release,{passive:true}));
+      // после остановки: черта прилипает к началу ближайшей сцены (ступенькой), потом лента возвращается к обычному размеру
+      const arm=()=>{ clearTimeout(snapT); snapT=setTimeout(()=>{ if(touching) return;
+          const t=Math.max(0,Math.min(dur(),fs.scrollLeft/PPS)), k=nearest(t), st=starts[k]+0.02;
+          glide(st); try{ v.currentTime=st; }catch(er){} label(st);
+          if(k!==SC&&!GEN){ SC=k; showScene(); }
+          clearTimeout(zoomT); zoomT=setTimeout(()=>{ if(touching) return; v._scrub=0; zoom(false,v.currentTime||st); },900); },160); };
+      fs.addEventListener('scroll',()=>{ if(Math.abs(fs.scrollLeft-lastSet)<1) return;
         cancelAnimationFrame(raf2); raf2=requestAnimationFrame(()=>{ const t=Math.max(0,Math.min(dur(),fs.scrollLeft/PPS)); lastSet=fs.scrollLeft;
           try{ if(v.fastSeek) v.fastSeek(t); else v.currentTime=t; }catch(er){} label(t);
-          clearTimeout(fs._st); fs._st=setTimeout(()=>{ v._scrub=0; if(!touching&&!GEN){ const k=sceneAt(t); if(k!==SC){ SC=k; showScene(); } } },180); }); },{passive:true});
-      fs.addEventListener('pointerdown',()=>{ touching=true; },{passive:true});
-      ['pointerup','pointercancel','touchend'].forEach(e=>fs.addEventListener(e,()=>{ touching=false; },{passive:true}));
-      // касание кадра — сюда и перемотка; касание мема — «Общие», там «Убрать»
+          const k=sceneAt(t); if(k!==lastK){ lastK=k; tick(); $$('#fst .fsg').forEach(x=>x.classList.toggle('on',+x.dataset.sc===k)); }
+          if(!touching) arm(); }); },{passive:true});
+      // касание кадра — сюда; касание мема — «Общие», там «Убрать»
       tr.addEventListener('click',e=>{ const mm=e.target.closest('.fsm'); if(mm){ GEN=true; build(); return; }
-        const r=tr.getBoundingClientRect(), t=Math.max(0,Math.min(dur(),(e.clientX-r.left)/PPS));
-        try{ v.currentTime=t; }catch(er){} roll(t); label(t); if(!GEN){ const k=sceneAt(t); if(k!==SC){ SC=k; showScene(); } } });
+        const r=tr.getBoundingClientRect(), t=Math.max(0,Math.min(dur(),(e.clientX-r.left)/PPS)), k=sceneAt(t), st=starts[k]+0.02;
+        try{ v.currentTime=st; }catch(er){} glide(st); label(st); if(!GEN&&k!==SC){ SC=k; showScene(); } });
       lay(); roll(v.currentTime||0); label(v.currentTime||0); }
     /* только карточка сцены и навигация: видео не трогаем (иначе оно встаёт на паузу) */
     function showScene(){ const old=$('#escard'); if(!old||GEN) return;
