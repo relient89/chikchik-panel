@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='b08cf2ff38';
+(function(){ var B='10f035e23d';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -350,6 +350,31 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #edov .emv{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
 #edov .emv video{max-width:86vw;max-height:70vh;border-radius:14px;background:#000}
 #edov .emv button{padding:12px 22px;border-radius:14px;background:rgba(255,255,255,.12);color:#fff;font-weight:700}
+/* ===== компактный редактор (владелец 2026-11-23): кнопки — кнопками с обводкой, ничего не сливается ===== */
+#edov .estk{padding:8px 16px 2px}
+#edov .evt{padding:8px 0 0}
+#edov .evt button{padding:9px 16px;border-radius:12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.38);
+  color:var(--txt);font-weight:700;font-size:14px}
+#edov .evt button.on{background:var(--acc);border-color:var(--acc);color:#111}
+#edov .enav{margin:4px 0 8px;gap:8px}
+#edov .enav button{min-width:42px;height:40px;border-radius:12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.38);font-size:19px}
+#edov .enav #egen{font-size:14px;font-weight:800;padding:0 14px;border-color:var(--acc);color:var(--acc)}
+#edov .enav #egen.on{background:var(--acc);color:#111}
+#edov .enav b{font-size:15px}
+#edov .fsb{margin:6px -16px 0}
+#edov .etime{margin:0 0 2px;font-size:11px}
+#edov .hint1{margin:4px 2px 6px}
+#edov .escard{padding:8px 10px 10px}
+#edov .eb{padding:14px 16px 150px}
+#edov .ef{padding:8px 16px calc(10px + env(safe-area-inset-bottom))}
+#edov .ef button{padding:11px;border-radius:14px;font-size:15px}
+#edov .ef button small{font-size:11px;margin-top:1px}
+#edov .ef small{margin-top:4px;font-size:11px}
+/* «Общие»: ленты нет, видео не закреплено и меньше — поля плашек и заголовка не убегают при вводе */
+#edov.gen .fsb,#edov.gen .etime{display:none}
+#edov.gen .estk{position:static;box-shadow:none;margin-bottom:4px}
+#edov.gen .estk .evw video{max-height:24vh}
+#edov.typing .estk{display:block}
 /* лента кадров как в CapCut (владелец 2026-11-23): кадры ролика, поверх — сцены по фразам субтитров и мемы;
    полоса едет под пальцем плавно, черта посередине — текущий момент, видео идёт следом */
 #edov .fsb{position:relative;margin:8px -16px 2px;max-width:none}
@@ -2685,9 +2710,9 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
   let selEl=null, bar=null;
   const build=()=>{ const keepV0=$('#edv'); if(keepV0) keepV0.remove();      // тот же ролик — без перезагрузки
     ov.innerHTML='<div class="eh"><b>Редактирование</b><button class="undo" id="edun" title="Шаг назад">↶</button><button id="edx">Закрыть</button></div><div class="eb"></div>';
-    $('#edx').onclick=edClose; const eb=ov.querySelector('.eb');
+    $('#edx').onclick=edClose; const eb=ov.querySelector('.eb'); ov.classList.toggle('gen',!!GEN); ov.classList.remove('typing');
     let h=(d.url?'<div class="estk"><div class="evw'+(MV?' mv':'')+'"><div class="evbox"><video id="edv" controls playsinline preload="auto" src="'+(API||API0)+d.url+'"></video><div class="etc" id="etc">0:00,0</div><div class="epl" id="epl"></div></div></div><!--STRIP--></div>'
-         +(d.layout?'<div class="evt"><button id="edmv" class="'+(MV?'on':'')+'">✥ '+(MV?'Готово':'Двигать подписи, плашки, заголовок')+'</button></div>'
+         +(d.layout?'<div class="evt"><button id="edmv" class="'+(MV?'on':'')+'">'+(MV?'Готово':'Двигать подписи, плашки, заголовок')+'</button></div>'
            +(MV?'<p class="hint">Поставьте видео на паузу: подписи, плашки и заголовок этого момента обведены рамкой — перетащите пальцем, куда нужно (заголовок — выше или ниже). ✕ — вернуть место на выбор программы.</p>':''):''):'')
          +'<p class="hint hint1">Коснитесь слова: исправить, убрать, выделить'+(low?' · жёлтые — сомнительные':'')+(restN?' · пунктир — вырезанное':'')+'</p>';
     { const N=d.lines.length; if(SC>=N) SC=N-1; if(SC<0) SC=0;
@@ -2811,7 +2836,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       const segs=[...tr.querySelectorAll('[data-a]')];
       const dur=()=>(isFinite(v.duration)&&v.duration>0)?v.duration:Math.max(1,...segs.map(x=>+x.dataset.b||0));
       let PPS=36, Z=1, frames=[], SPN=0;
-      const ZOOM=2.4;                                        // под пальцем лента шире: кадр можно выбрать точно
+      const ZOOM=1;                                          // увеличение под пальцем убрано (владелец 2026-11-23)
       const SURL=d.strip?(API||API0)+d.strip:'';
       if(SURL){ const im=new Image(); im.onload=()=>{ SPN=Math.max(1,Math.round(im.naturalWidth/54));
           tr.insertAdjacentHTML('afterbegin',Array.from({length:SPN},()=>'<i class="fsf"></i>').join('')); frames=[...tr.querySelectorAll('.fsf')];
