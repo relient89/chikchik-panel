@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='1cab55b2fb';
+(function(){ var B='b08cf2ff38';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -327,6 +327,29 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #edov .emr span{flex:1;min-width:0}#edov .emr small{color:var(--mut)}#edov .emr.off span{opacity:.4;text-decoration:line-through}
 #edov .emr button{flex:none;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt)}
 #edov .plb.hook{border-color:rgba(255,200,60,.95)}
+/* подсказка в одну строку (владелец 2026-11-23: «место расширить») */
+#edov .hint1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;margin:6px 2px 8px}
+/* «Пересобрать» всегда яркая: серая выглядела неактивной */
+#edov .ef button{opacity:1!important}#edov .ef button.idle{box-shadow:none}
+/* исправление слова — окно наверху: клавиатура снизу его не закрывает, сохранить — кнопкой */
+#edov .ews{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.6);display:flex;flex-direction:column}
+#edov .ews-in{background:#151922;border-bottom:1px solid var(--rim);padding:calc(16px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px)) 16px 14px}
+#edov .ews-in small{display:block;color:var(--mut);font-size:13px;margin-bottom:8px}
+#edov .ews-in input{width:100%;box-sizing:border-box;font:600 22px/1.2 system-ui;padding:12px 14px;border-radius:14px;border:2px solid var(--acc);background:rgba(255,255,255,.06);color:var(--txt);outline:0}
+#edov .ews-b{display:flex;gap:10px;margin-top:12px}#edov .ews-b button{flex:1;padding:13px;border-radius:14px;font-weight:800;font-size:16px;background:rgba(255,255,255,.1);color:var(--txt)}
+#edov .ews-b button.pri{background:var(--acc);color:#111}
+/* печатают в поле (заголовок, плашка): видео сворачивается, чтобы поле было над клавиатурой */
+#edov.typing .estk{display:none}
+/* замена мема: варианты под строкой мема */
+#edov .emalt{margin:-2px 0 10px;padding:8px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,150,40,.25)}
+#edov .emalt .ea{display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+#edov .emalt .ea:last-child{border-bottom:0}#edov .emalt .ea span{flex:1;min-width:0;font-size:14px}#edov .emalt .ea small{color:var(--mut)}
+#edov .emalt .ea button{flex:none;padding:7px 11px;border-radius:11px;background:rgba(255,255,255,.08);color:var(--txt)}
+#edov .emalt .ea button.pri{background:var(--acc);color:#111;font-weight:800}
+#edov .emr.sw span{color:var(--acc)}
+#edov .emv{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+#edov .emv video{max-width:86vw;max-height:70vh;border-radius:14px;background:#000}
+#edov .emv button{padding:12px 22px;border-radius:14px;background:rgba(255,255,255,.12);color:#fff;font-weight:700}
 /* лента кадров как в CapCut (владелец 2026-11-23): кадры ролика, поверх — сцены по фразам субтитров и мемы;
    полоса едет под пальцем плавно, черта посередине — текущий момент, видео идёт следом */
 #edov .fsb{position:relative;margin:8px -16px 2px;max-width:none}
@@ -2641,8 +2664,8 @@ loadState(); tplLoad();
 
 /* Правка готового ролика (2026-11-19): слова по строкам (сомнительные — жёлтым), заголовок, плашки. Бесплатно, до трёх раз. */
 let EDJ=null, ED={words:{},cards:{},drop:{},hook:null};
-function edClose(){ $('#edov').classList.remove('on'); EDJ=null; }
-async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{},pl:{cap:{},card:{},hook:{}},mdrop:{}}); ED=fresh(); let HIST=[], SC=0, GEN=false, MV=false;
+function edClose(){ $('#edov').classList.remove('on','typing'); EDJ=null; }
+async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{},pl:{cap:{},card:{},hook:{}},mdrop:{},mswap:{}}); ED=fresh(); let HIST=[], SC=0, GEN=false, MV=false;
   let ov=$('#edov'); if(!ov){ ov=document.createElement('div'); ov.id='edov'; document.body.appendChild(ov); }
   ov.innerHTML='<div class="eh"><b>Править ролик</b><button id="edx">Закрыть</button></div><div class="eb"><div class="empty">Загружаю…</div></div>'; ov.classList.add('on');
   $('#edx').onclick=edClose;
@@ -2656,7 +2679,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
   const low=d.lines.reduce((n,l)=>n+l.words.filter(w=>w.low).length,0);
   const restN=Object.keys(R).length;
   const snap=()=>{ HIST.push(JSON.stringify(ED)); if(HIST.length>60) HIST.shift(); };
-  const cnt=()=>Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0)+Object.keys(ED.cut).length+Object.keys(ED.restore).length+Object.keys(ED.kon).length+Object.keys(ED.koff).length+Object.keys(ED.rest).length+Object.keys(ED.pl.cap).length+Object.keys(ED.pl.card).length+Object.keys(ED.pl.hook||{}).length+Object.keys(ED.mdrop||{}).length;
+  const cnt=()=>Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0)+Object.keys(ED.cut).length+Object.keys(ED.restore).length+Object.keys(ED.kon).length+Object.keys(ED.koff).length+Object.keys(ED.rest).length+Object.keys(ED.pl.cap).length+Object.keys(ED.pl.card).length+Object.keys(ED.pl.hook||{}).length+Object.keys(ED.mdrop||{}).length+Object.keys(ED.mswap||{}).length;
   const dsec=()=>Object.keys(ED.cut).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.restore).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.rest).reduce((a,r)=>a+(R[r].d||0),0);
   const fsec=x=>Math.abs(x)<0.05?'':(x>0?'−':'+')+Math.abs(x).toFixed(1).replace('.',',')+' с';
   let selEl=null, bar=null;
@@ -2666,7 +2689,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
     let h=(d.url?'<div class="estk"><div class="evw'+(MV?' mv':'')+'"><div class="evbox"><video id="edv" controls playsinline preload="auto" src="'+(API||API0)+d.url+'"></video><div class="etc" id="etc">0:00,0</div><div class="epl" id="epl"></div></div></div><!--STRIP--></div>'
          +(d.layout?'<div class="evt"><button id="edmv" class="'+(MV?'on':'')+'">✥ '+(MV?'Готово':'Двигать подписи, плашки, заголовок')+'</button></div>'
            +(MV?'<p class="hint">Поставьте видео на паузу: подписи, плашки и заголовок этого момента обведены рамкой — перетащите пальцем, куда нужно (заголовок — выше или ниже). ✕ — вернуть место на выбор программы.</p>':''):''):'')
-         +'<p class="hint">Коснитесь слова, чтобы исправить, убрать или сделать главным.'+(low?' Жёлтые — программа не уверена.':'')+(restN?' Пунктир — вырезанное автомонтажом, коснитесь, чтобы вернуть.':'')+'</p>';
+         +'<p class="hint hint1">Коснитесь слова: исправить, убрать, выделить'+(low?' · жёлтые — сомнительные':'')+(restN?' · пунктир — вырезанное':'')+'</p>';
     { const N=d.lines.length; if(SC>=N) SC=N-1; if(SC<0) SC=0;
       const t0=l=>{ const w=l.words.find(x=>x.t!=null); return w?w.t:l.t; }, ends=d.lines.map((l,k)=>k+1<N?t0(d.lines[k+1]):(t0(l)+l.words.reduce((a,x)=>a+(x.d||0),0)+0.3));
       const tot=Math.max(0.1,ends[N-1]-t0(d.lines[0]));
@@ -2679,20 +2702,24 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       h=h.indexOf('<!--STRIP-->')>=0?h.replace('<!--STRIP-->',sh):h+sh;
       h+='<div class="enav"><button id="escp" aria-label="Предыдущая сцена">‹</button><b>'+(GEN?'Общие настройки':'Сцена '+(SC+1)+' <small>из '+N+'</small>')+'</b><button id="escn" aria-label="Следующая сцена">›</button><button id="egen" class="'+(GEN?'on':'')+'">Общие</button></div>';
       if(!GEN){ const l=d.lines[SC];
-        h+='<div class="escard" id="escard"><div class="eh2">Текст сцены · '+fsec2(t0(l))+'</div><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; } }
+        h+='<div class="escard" id="escard"><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; } }
     h+='<div id="edgen" style="display:'+(GEN?'block':'none')+'">'+'<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">'
       +((d.hook_alts||[]).length?'<p class="hint">Режиссёр предлагает ещё (коснитесь — подставить):</p><div class="ewd" id="edhalts">'+d.hook_alts.map((a,k)=>'<span class="w" data-ha="'+k+'">'+esc(a)+'</span>').join('')+'</div>':'');
     if((d.memes||[]).length){ h+='<div class="eh2">Мемы</div><p class="hint">Оранжевые отрезки на ленте — мемы. Убранный мем не вернётся при пересборке.</p>';
-      d.memes.forEach(m=>{ h+='<div class="emr'+(ED.mdrop[m.k]?' off':'')+'" data-mk="'+m.k+'"><span>'+esc(m.title||'Мем')+' <small>· '+fsec2(m.t)+'</small></span><button data-mg="1">▶</button><button data-mx="1">'+(ED.mdrop[m.k]?'Вернуть':'Убрать')+'</button></div>'; }); }
+      d.memes.forEach(m=>{ const sw=ED.mswap[m.k];
+        h+='<div class="emr'+(ED.mdrop[m.k]?' off':'')+(sw?' sw':'')+'" data-mk="'+m.k+'"><span>'+(sw?'«'+esc(m.title||'Мем')+'» → «'+esc(sw.title)+'»':esc(m.title||'Мем'))+' <small>· '+fsec2(m.t)+'</small></span><button data-mg="1">▶</button>'
+          +(ED.mdrop[m.k]?'':'<button data-ms="1">'+(sw?'Как было':'Заменить')+'</button>')+'<button data-mx="1">'+(ED.mdrop[m.k]?'Вернуть':'Убрать')+'</button></div><div class="emalt" id="emalt'+m.k+'" style="display:none"></div>'; }); }
     if(d.cards.length){ h+='<div class="eh2">Плашки</div><p class="hint">Черта | отделяет главное от подписи, например «25 | минут».</p>'; d.cards.forEach(c=>{ h+='<div class="ecd'+(ED.drop[c.i]?' off':'')+'" data-c="'+c.i+'"><input class="fld" value="'+esc(ED.cards[c.i]!==undefined?ED.cards[c.i]:c.text)+'" maxlength="120"><button class="dc" title="Убрать плашку">✕</button></div>'; }); }
     h+='</div>';
     const keepV=keepV0;
+    if(!ov._typing){ ov._typing=1; ov.addEventListener('focusin',e=>{ if(e.target.matches('.fld')) ov.classList.add('typing'); });
+      ov.addEventListener('focusout',e=>{ if(e.target.matches('.fld')) setTimeout(()=>{ if(!(document.activeElement&&document.activeElement.matches&&document.activeElement.matches('.fld'))) ov.classList.remove('typing'); },120); }); }
     eb.innerHTML=h;
     if(keepV){ const nv=eb.querySelector('#edv'); if(nv) nv.replaceWith(keepV); }
     plSetup();
     bar=document.createElement('div'); bar.className='wbar'; ov.appendChild(bar); selEl=null;
     const f=document.createElement('div'); f.className='ef'; f.innerHTML='<button id="edgo"></button><small>Осталось правок на этот ролик: '+d.left+'. Новый ролик придёт в чат.</small>'; ov.appendChild(f);
-    const upd=()=>{ const n=cnt(), b=$('#edgo'); b.disabled=!n; b.style.opacity=n?1:.45;
+    const upd=()=>{ const n=cnt(), b=$('#edgo'); b.disabled=false; b.classList.toggle('idle',!n);
       b.innerHTML='Пересобрать'+(n?' · '+n+' '+plural(n,'правка','правки','правок'):'')+'<small>бесплатно'+(fsec(dsec())?' · '+fsec(dsec()):'')+'</small>';
       const u=$('#edun'); u.disabled=!HIST.length; u.innerHTML='↶'+(HIST.length?'<i>'+HIST.length+'</i>':''); };
     // ---- места подписей и плашек (перетаскивание пальцем)
@@ -2726,11 +2753,18 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
     const paint=el=>{ const i=+el.dataset.i; el.classList.toggle('del',!!isDel(i)); el.classList.toggle('key',!!isKey(i)); el.classList.toggle('chg',ED.words[i]!==undefined); };
     const closeBar=()=>{ bar.classList.remove('on'); if(selEl) selEl.classList.remove('sel'); selEl=null; };
     const wordEdit=el=>{ const i=+el.dataset.i, old=W[i].w, cur=ED.words[i]!==undefined?ED.words[i]:old; closeBar();
-      el.innerHTML='<input value="'+esc(cur)+'">'; const inp=el.querySelector('input'); inp.focus(); inp.select();
+      /* окно наверху (владелец 2026-11-23: клавиатура закрывала слово, непонятно, куда нажать, чтобы сохранить) */
+      const sh=document.createElement('div'); sh.className='ews';
+      sh.innerHTML='<div class="ews-in"><small>Исправить слово · было «'+esc(old)+'»</small><input id="ewin" value="'+esc(cur)+'" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">'
+        +'<div class="ews-b"><button data-a="no">Отмена</button><button class="pri" data-a="ok">Сохранить</button></div></div>';
+      ov.appendChild(sh); const inp=sh.querySelector('input'); setTimeout(()=>{ inp.focus(); inp.select(); },30);
+      const close=()=>{ sh.remove(); };
       const done=()=>{ const v=inp.value.trim(); const had=ED.words[i]; const next=(v&&v!==old)?v:undefined;
         if(next!==had){ snap(); if(next===undefined){ delete ED.words[i]; delete ED.all[i]; delete ED.learn[i]; } else ED.words[i]=next; }
-        el.textContent=ED.words[i]!==undefined?ED.words[i]:old; paint(el); upd(); if(ED.words[i]!==undefined) showBar(el); };
-      inp.onblur=done; inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); }; };
+        close(); el.textContent=ED.words[i]!==undefined?ED.words[i]:old; paint(el); upd(); if(ED.words[i]!==undefined) showBar(el); };
+      sh.querySelector('[data-a="ok"]').onclick=done; sh.querySelector('[data-a="no"]').onclick=close;
+      sh.addEventListener('click',e=>{ if(e.target===sh) close(); });
+      inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); done(); } }; };
     const showBar=el=>{ const i=+el.dataset.i; if(selEl) selEl.classList.remove('sel'); selEl=el; el.classList.add('sel');
       const v=$('#edv'); if(v&&W[i].t!=null){ try{ v.currentTime=W[i].t; }catch(e){} }
       const dl=isDel(i), ky=isKey(i), changed=ED.words[i]!==undefined, n=same(i).length;
@@ -2757,7 +2791,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       inp.oninput=()=>{ if(pc){ snap(); pc=false; } if(inp.value.trim()&&inp.value!==orig) ED.cards[i]=inp.value; else delete ED.cards[i]; upd(); };
       r.querySelector('.dc').onclick=()=>{ snap(); ED.drop[i]=!ED.drop[i]; r.classList.toggle('off',ED.drop[i]); upd(); }; });
     $('#edun').onclick=()=>{ if(!HIST.length) return; ED=JSON.parse(HIST.pop()); build(); };
-    $('#edgo').onclick=async()=>{ const b=$('#edgo'); b.disabled=true; b.textContent='Отправляю…';
+    $('#edgo').onclick=async()=>{ const b=$('#edgo'); if(!cnt()){ toast('Сначала поправьте слово, мем, плашку или место — потом «Пересобрать»'); return; } b.disabled=true; b.textContent='Отправляю…';
       const words=Object.assign({},ED.words), learn=[];
       Object.keys(ED.all).forEach(i=>{ const nv=rawcore(ED.words[i]||''); if(!nv) return; same(+i).forEach(j=>{ if(words[j]===undefined){ const raw=String(W[j].w), lead=raw.match(/^[\s.,!?;:«»"'()\[\]…—–-]*/)[0], tail=raw.match(/[\s.,!?;:«»"'()\[\]…—–-]*$/)[0]; words[j]=lead+nv+tail; } }); });
       Object.keys(ED.learn).forEach(i=>{ if(ED.words[i]!==undefined) learn.push({from:norm(W[i].w),to:rawcore(ED.words[i])}); });
@@ -2766,6 +2800,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       const ks=m=>Object.keys(m).map(Number); if(ks(ED.cut).length) edits.cut=ks(ED.cut); if(ks(ED.restore).length) edits.restore=ks(ED.restore);
       if(Object.keys(ED.pl.cap).length||Object.keys(ED.pl.card).length||Object.keys(ED.pl.hook||{}).length) edits.places=ED.pl;
       const md=Object.keys(ED.mdrop||{}).filter(k=>ED.mdrop[k]).map(Number); if(md.length) edits.drop_memes=md;
+      const msw={}; Object.keys(ED.mswap||{}).forEach(k=>{ if(!ED.mdrop[k]) msw[k]=ED.mswap[k].id; }); if(Object.keys(msw).length) edits.swap_memes=msw;
       if(ks(ED.kon).length) edits.keys_on=ks(ED.kon); if(ks(ED.koff).length) edits.keys_off=ks(ED.koff); if(learn.length) edits.learn=learn;
       const rw=Object.keys(ED.rest).filter(r=>r[0]==='g').map(r=>+r.slice(1)), rp=Object.keys(ED.rest).filter(r=>r[0]==='p').map(r=>+r.slice(1)); if(rw.length) edits.restore_words=rw; if(rp.length) edits.restore_pauses=rp;
       try{ await api('/api/edit/'+EDJ,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}); toast('Правка принята — новый ролик придёт в чат'); edClose(); }
@@ -2837,7 +2872,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
     /* только карточка сцены и навигация: видео не трогаем (иначе оно встаёт на паузу) */
     function showScene(){ const old=$('#escard'); if(!old||GEN) return;
       const l=d.lines[SC], w0=l.words.find(x=>x.t!=null);
-      const box=document.createElement('div'); box.innerHTML='<div class="escard" id="escard"><div class="eh2">Текст сцены · '+fsec2(w0?w0.t:l.t)+'</div><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>';
+      const box=document.createElement('div'); box.innerHTML='<div class="escard" id="escard"><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>';
       const nw=box.firstChild; old.replaceWith(nw); bindWords(nw); closeBar();
       $$('#fst .fsg').forEach(x=>x.classList.toggle('on',+x.dataset.sc===SC));
       const nb=$('#edov .enav b'); if(nb) nb.innerHTML='Сцена '+(SC+1)+' <small>из '+d.lines.length+'</small>'; }
@@ -2848,7 +2883,17 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
     tlSetup();
     eb.querySelectorAll('.emr').forEach(r=>{ const k=+r.dataset.mk, m=(d.memes||[]).find(x=>x.k===k);
       r.querySelector('[data-mx]').onclick=()=>{ snap(); if(ED.mdrop[k]) delete ED.mdrop[k]; else ED.mdrop[k]=1; build(); };
-      r.querySelector('[data-mg]').onclick=()=>{ const v=$('#edv'); if(v&&m){ try{ v.currentTime=m.t+0.05; v.play(); }catch(e){} } }; });
+      r.querySelector('[data-mg]').onclick=()=>{ const v=$('#edv'); if(v&&m){ try{ v.currentTime=m.t+0.05; v.play(); }catch(e){} } };
+      const ms=r.querySelector('[data-ms]'); if(ms) ms.onclick=async()=>{ if(ED.mswap[k]){ snap(); delete ED.mswap[k]; build(); return; }
+        const box=$('#emalt'+k); if(box.style.display!=='none'){ box.style.display='none'; return; }
+        box.style.display='block'; box.innerHTML='<div class="hint">Подбираю мемы к этому месту…</div>';
+        let a; try{ a=(await api('/api/edit/'+EDJ+'/meme_alts?k='+k)).alts||[]; }catch(e){ box.innerHTML='<div class="hint">Не получилось: '+esc(e.message)+'</div>'; return; }
+        if(!a.length){ box.innerHTML='<div class="hint">Других подходящих мемов не нашлось.</div>'; return; }
+        box.innerHTML=a.map((x,j)=>'<div class="ea"><span>'+esc(x.title||'Мем')+' <small>· '+String(x.dur).replace('.',',')+' с</small></span><button data-pv="'+j+'">▶</button><button class="pri" data-pk="'+j+'">Выбрать</button></div>').join('');
+        box.querySelectorAll('[data-pv]').forEach(b=>b.onclick=()=>{ const x=a[+b.dataset.pv], o=document.createElement('div'); o.className='emv';
+          o.innerHTML='<video playsinline autoplay controls src="'+(API||API0)+x.url+'"></video><button>Закрыть</button>'; ov.appendChild(o);
+          o.querySelector('button').onclick=()=>o.remove(); });
+        box.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{ const x=a[+b.dataset.pk]; snap(); ED.mswap[k]={id:x.id,title:x.title||'Мем'}; build(); }); }; });
     const card=$('#escard'); if(card){ let sx=null; card.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; },{passive:true});
       card.addEventListener('touchend',e=>{ if(sx==null) return; const dx=e.changedTouches[0].clientX-sx; sx=null; if(Math.abs(dx)>60) goSc(SC+(dx<0?1:-1)); }); }
     upd(); };
