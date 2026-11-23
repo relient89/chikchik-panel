@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='78f671a2ab';
+(function(){ var B='d13b011aa5';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2726,8 +2726,8 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
     ov.innerHTML='<div class="eh"><b>Редактирование</b><button class="undo" id="edun" title="Шаг назад">↶</button><button id="edx">Закрыть</button></div><div class="eb"></div>';
     $('#edx').onclick=edClose; const eb=ov.querySelector('.eb'); ov.classList.toggle('gen',!!GEN); ov.classList.remove('typing');
     let h=(d.url?'<div class="estk"><div class="evw'+(MV?' mv':'')+'"><div class="evbox"><video id="edv" controls playsinline preload="auto" src="'+(API||API0)+d.url+'"></video><div class="etc" id="etc">0:00,0</div><div class="epl" id="epl"></div></div></div><!--STRIP--></div>'
-         +(d.layout?'<div class="evt"><button id="edmv" class="'+(MV?'on':'')+'">'+(MV?'Готово':'Двигать подписи, плашки, заголовок')+'</button></div>'
-           +(MV?'<p class="hint">Поставьте видео на паузу: подписи, плашки и заголовок этого момента обведены рамкой — перетащите пальцем, куда нужно (заголовок — выше или ниже). ✕ — вернуть место на выбор программы.</p>':''):''):'')
+         +(d.layout?'<div class="evt">'+(MV?'<button id="edpp">▶ Смотреть</button>':'')+'<button id="edmv" class="'+(MV?'on':'')+'">'+(MV?'Готово':'Двигать подписи, плашки, заголовок')+'</button></div>'
+           +(MV?'<p class="hint">На паузе рамки можно тянуть пальцем. ✕ — вернуть место программе.</p>':''):''):'')
          +'<p class="hint hint1">Коснитесь слова: исправить, убрать, выделить'+(low?' · жёлтые — сомнительные':'')+(restN?' · пунктир — вырезанное':'')+'</p>';
     { const N=d.lines.length; if(SC>=N) SC=N-1; if(SC<0) SC=0;
       const t0=l=>{ const w=l.words.find(x=>x.t!=null); return w?w.t:l.t; }, ends=d.lines.map((l,k)=>k+1<N?t0(d.lines[k+1]):(t0(l)+l.words.reduce((a,x)=>a+(x.d||0),0)+0.3));
@@ -2767,6 +2767,10 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
     // ---- места подписей и плашек (перетаскивание пальцем)
     function plSetup(){ const v=$('#edv'), box=$('#epl'); if(!v||!box||!d.layout) return;
       const mb=$('#edmv'); if(mb) mb.onclick=()=>{ MV=!MV; if(MV){ try{ v.pause(); }catch(e){} } build(); };
+      /* рамки подписей и плашек лежат поверх кадра и закрывают круглую ▶ (владелец 2026-11-23) — своя кнопка вне кадра */
+      const pp=$('#edpp'); if(pp){ const lab=()=>{ pp.textContent=v.paused?'▶ Смотреть':'❚❚ Пауза'; }; lab();
+        pp.onclick=()=>{ try{ if(v.paused) v.play(); else v.pause(); }catch(e){} };
+        if(!v._ppOn){ v._ppOn=1; ['play','pause','ended'].forEach(e=>v.addEventListener(e,()=>{ const b=$('#edpp'); if(b) b.textContent=v.paused?'▶ Смотреть':'❚❚ Пауза'; })); } }
       const draw=()=>plPaint(v,box);
       if(!v._pl){ v._pl=1; ['pause','seeked','play','loadedmetadata','timeupdate'].forEach(e=>v.addEventListener(e,()=>{ const b=$('#epl'); if(b) plPaint(v,b); })); window.addEventListener('resize',()=>{ const b=$('#epl'); if(b&&$('#edv')) plPaint($('#edv'),b); }); }
       draw(); }
