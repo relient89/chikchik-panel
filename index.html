@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='d13b011aa5';
+(function(){ var B='94c81f2a86';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -254,7 +254,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .pane[data-only=main] > #accColor,.pane[data-only=main] > #accFont{display:none}
 .pane[data-only=col] #accColor > .acch,.pane[data-only=fnt] #accFont > .acch{pointer-events:none}
 .pane[data-only=col] #accColor > .acch .chev,.pane[data-only=fnt] .acch .chev{display:none}
-.fsrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fsrow .fontsel{min-width:0;flex-direction:column;align-items:flex-start;gap:2px;position:relative;padding:10px 30px 10px 14px}.fsrow .fl{font-size:12px;color:var(--mut);font-weight:600}.fsrow .fa{position:absolute;right:12px;top:50%;translate:0 -50%}.fsrow .fv{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fsrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.fsrow .fontsel{min-width:0;flex-direction:column;align-items:flex-start;gap:2px;position:relative;padding:10px 30px 10px 14px}.fsrow .fl{font-size:12px;color:var(--mut);font-weight:600}.fsrow .fa{position:absolute;right:12px;top:50%;translate:0 -50%}.fsrow .fv{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fontsel{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:14px 16px;border-radius:18px;
   background:rgba(255,255,255,.06);border:1px solid var(--rim);color:var(--txt);text-align:left}
 .fontsel .fl{font-weight:700;font-size:15px}.fontsel .fv{flex:1;text-align:right;font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1859,7 +1859,8 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
           <div class="cgrp"><div class="cgh"><span class="cgt">Тройки<small>три цвета: главное слово · текст · мелкие слова или подложка</small></span></div><div class="pals" id="pals"></div></div>
           <div class="note">Однотонные — весь текст одним цветом. Пары подобраны как у дизайнеров: спокойная база и один яркий акцент. «Цвета стиля» — у каждого стиля субтитров из списка ниже (Фокус, Журнал, Неон…) свои цвета; этот вариант их не меняет.</div></div></div>
       <div class="fsrow"><button class="fontsel" id="fontSel" type="button"><span class="fl">Шрифт</span><span class="fv" id="fontSelV"></span><span class="fa">▾</span></button>
-        <button class="fontsel" id="frameSel" type="button"><span class="fl">Обводка</span><span class="fv" id="frameSelV"></span><span class="fa">▾</span></button></div>
+        <button class="fontsel" id="frameSel" type="button"><span class="fl">Обводка</span><span class="fv" id="frameSelV"></span><span class="fa">▾</span></button>
+        <button class="fontsel" id="placeSel" type="button"><span class="fl">Место</span><span class="fv" id="placeSelV"></span><span class="fa">▾</span></button></div>
       <div class="acc" id="accSize" style="display:none"><button class="acch" data-acc="accSize"><span class="ri">Аа</span><span class="rt">Размер субтитров<small id="sizeSub"></small></span><span class="chev"></span></button>
         <div class="accb"><div class="duo"><div class="stepbox"><button data-size="-1">−</button><div><span>Размер</span><b id="sizeV"></b></div><button data-size="1">+</button></div>
           <button class="pick" id="wordsBtn"><small>Слов на экране за раз</small><span id="wordsV"></span></button></div>
@@ -1948,7 +1949,7 @@ if(UI3) document.body.classList.add('ui3');
 Object.assign(IC,{frm:I('<rect x="3.500" y="6.500" width="17" height="11" rx="3.500"/><path d="M8 12h8"/>'),
   note:I('<path d="M9 18V6l10-2v12"/><circle cx="6.500" cy="18" r="2.500"/><circle cx="16.500" cy="16" r="2.500"/>'),
   globe:I('<circle cx="12" cy="12" r="8.500"/><path d="M3.500 12h17M12 3.500c2.500 2.400 2.500 14.600 0 17M12 3.500c-2.500 2.400-2.500 14.600 0 17"/>'),
-  pause:I('<path d="M9 6v12M15 6v12"/>'), star:I('<path d="M12 4l2.400 4.900 5.400.800-3.900 3.800.900 5.400L12 16.400 7.200 18.900l.900-5.400L4.200 9.700l5.400-.800z"/>'),
+  pause:I('<path d="M9 6v12M15 6v12"/>'), sun:I('<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.600 5.600l1.400 1.400M17 17l1.400 1.400M5.600 18.400L7 17M17 7l1.400-1.400"/>'), star:I('<path d="M12 4l2.400 4.900 5.400.800-3.900 3.800.900 5.400L12 16.400 7.200 18.900l.900-5.400L4.200 9.700l5.400-.800z"/>'),
   insv:I('<rect x="3.500" y="5" width="17" height="14" rx="3"/><rect x="11" y="10" width="7" height="6" rx="1.500" fill="currentColor"/>'), playt:I('<path d="M8 5.500v13l11-6.500z" fill="currentColor"/>')});
 /* панель инструментов: [id, подпись, иконка, шторка, «включено»] — порядок по частоте использования */
 let retTouched=false; const RETOUCH=true;   /* ретушь убрана 2026-11-18 (тяжёлая: +4 мин на минуту ролика); true — вернуть во все версии */
@@ -1962,6 +1963,7 @@ const TOOLS3=[
   ['snd2','Речь',()=>IC.mic,'snd2',()=>!!(P.voice||P.denoise||P.sub_lang)],
   ['music','Музыка',()=>IC.note,'mus',()=>!!P.music&&P.music!=='off'],
   ['memes','Мемы',()=>IC.sm,'memes3',()=>!!P.memes&&P.memes!=='off'],
+  ['atmo','Свет',()=>IC.sun,'atmo3',()=>!!P.atmo],
   ['pic','Камера',()=>IC.cam,'pic',()=>P.camera!=='off'||P.speed!==100],
   ['ret','Ретушь',()=>IC.face,'ret',()=>P.retouch!=='off']].filter(t=>RETOUCH||t[0]!=='ret');
 function renderTools3(){ if(!UI3) return; const box=$('#tools3'), sl=box.scrollLeft; box.innerHTML='';
@@ -2059,6 +2061,8 @@ const LST={
     lfoot(b, P.auto ? 'Включено. Музыка, мемы, вставки и звук — как выбраны в панели снизу.' : 'Выключено: оформление выбираете сами в панели снизу. Включите переключатель вверху — всё подберу я.'); },
   tpl3(b){ tplSheet(b); },
   mus(b){ musicRows(b); },
+  atmo3(b){ radios(b,'Свет в ролике',ATMO.map(x=>[x[1],x[2]]),Math.max(0,ATMO.findIndex(x=>x[0]===(P.atmo||''))),i=>{ P.atmo=ATMO[i][0]; atmoTouched=true; },
+    'Свет накладывается по силуэту человека: фон и вы — отдельно. Монтаж почти не дольше.'); },
   memes3(b){ const M=['off','clean','all']; radios(b,'Мемы-вставки',[['Выкл','без мемов'],['Обычные','короткие смешные вставки к месту'],['С ненормативной лексикой','обычные и с ненормативной лексикой']],
     Math.max(0,M.indexOf(P.memes||'off')),i=>{ P.memes=M[i]; },'Мем ставлю к месту по смыслу, не чаще одного на минуту ролика.'); },
 };
@@ -2324,7 +2328,7 @@ const stylesWord=n=>n+' '+plural(n,'стиль','стиля','стилей');
 // ---------- шторка ----------
 const SHEETS={sub:{title:'Субтитры',key:'captions'},card:{title:'Плашки',key:'cards'},col:{title:'Цвет текста'},snd:{title:'Звук и площадка'},
   vid:{title:'Ролик'},ret:{title:'Ретушь лица'},snd2:{title:UI3?'Речь':'Звук'},pic:{title:'Камера и скорость'},hk:{title:'Заголовок',key:'hook'},subcol:{title:'Цвет субтитров'},subfnt:{title:'Шрифт субтитров'},ins:{title:'Вставки'},parts:{title:UI3?'Видео ролика':'Части ролика'},
-  auto3:{title:'Сделай красиво',key:'auto'},tpl3:{title:'Мои стили'},subfr:{title:'Обводка и тень'},mus:{title:'Музыка'},memes3:{title:'Мемы'},lang3:{title:'Язык'}};
+  auto3:{title:'Сделай красиво',key:'auto'},tpl3:{title:'Мои стили'},subfr:{title:'Обводка и тень'},mus:{title:'Музыка'},memes3:{title:'Мемы'},lang3:{title:'Язык'},atmo3:{title:'Свет'}};
 let sheet=null, deep=null, curGroup=null, curCGroup=null;
 function openSheet(id){ if(UI3 && sheet && sheet!==id) restoreMoved(); tgBack(true); sheet=id; deep=null; $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); noKeep=true; renderSheet(); $('#sbody').scrollTop=0;
   if(id==='subcol') requestAnimationFrame(colPrev);
@@ -2350,7 +2354,9 @@ function renderSheet(){ if(!sheet) return; if(!noKeep){ const keepY=$('#sbody').
   minis.length=0; cardLive.length=0;
   if((sheet==='sub'||SUBX) && !deep){ $('#sTitle').textContent=S.title;
     { const fs=$('#fontSel'), f=D.fonts.find(x=>x.id===P.cap_font), cp=D.pairs.find(x=>x.id===P.cap_pair);
-      $('#fontSelV').textContent=fontName(); $('#fontSelV').style.fontFamily=f?`'${f.id}'`:(cp?`'${cp.main}'`:''); fs.onclick=e=>fontPick(e.currentTarget); } $('#placesV').textContent=(PLACES.find(x=>x[0]===P.cap_places)||PLACES[0])[1]; $('#sizeV').textContent=P.cap_size+' %'; $('#wordsV').textContent=P.cap_words||'авто'; 
+      $('#fontSelV').textContent=fontName(); $('#fontSelV').style.fontFamily=f?`'${f.id}'`:(cp?`'${cp.main}'`:''); fs.onclick=e=>fontPick(e.currentTarget); } $('#placesV').textContent=(PLACES.find(x=>x[0]===P.cap_places)||PLACES[0])[1];
+      { const ps=$('#placeSel'); $('#placeSelV').textContent=(PLACES.find(x=>x[0]===P.cap_places)||PLACES[0])[1];
+        ps.onclick=e=>popup(e.currentTarget,'Место субтитров',PLACES.map(x=>[x[1][0].toUpperCase()+x[1].slice(1),x[2]]),Math.max(0,PLACES.findIndex(x=>x[0]===P.cap_places)),i=>{ P.cap_places=PLACES[i][0]; last=-2; renderSheet(); }); } $('#sizeV').textContent=P.cap_size+' %'; $('#wordsV').textContent=P.cap_words||'авто'; 
     /* владелец 2026-11-16: «Как в стиле» с пояснением, дальше «Нет» и по нарастающей, по 3 в ряд; цвет — только там,
        где он есть. Названия как в CapCut и InShot: обводка, тень, свечение, фон */
     { const FR=[['default','Как в стиле','обводка или тень, задуманные стилем'],['none','Без обводки','чистый текст'],['outline','Обводка','чёрный контур вокруг букв'],
