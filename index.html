@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='2f14820300';
+(function(){ var B='1e0818a15c';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -285,20 +285,23 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .vjob .vb{display:flex;gap:8px;margin-top:10px}.vjob .vb button{flex:1;padding:12px;border-radius:14px;font-weight:700;background:rgba(255,255,255,.08);color:var(--txt)}
 .vjob .vb button.pri{background:var(--acc);color:#111}
 .vjob .vb button.edb{flex:none;padding:12px 16px}
-#edov{position:fixed;inset:0;z-index:60;background:var(--bg,#0b0d12);display:none;flex-direction:column}
+#edov{position:fixed;inset:0;z-index:60;background:var(--bg,#0b0d12);display:none;flex-direction:column;overflow:hidden}
 #edov.on{display:flex}
 #edov .eh{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--rim);
   padding-top:calc(14px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px))}   /* не под часами и кнопками Telegram (2026-11-22) */
 #edov .eh b{flex:1;font-size:17px}#edov .eh button{padding:8px 14px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt);font-weight:700}
-#edov .eb{flex:1;overflow-y:auto;padding:14px 16px 240px}
+#edov .eb{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:14px 16px 240px}
+/* ничего шире экрана: длинные плитки переносятся, а не тянут меню вбок (владелец 2026-11-23: «меню уезжает влево-вправо») */
+#edov .eb *{max-width:100%;box-sizing:border-box}#edov .ewd,#edov .ecd,#edov .enav{min-width:0}
 .jprog{height:6px;border-radius:3px;background:rgba(255,255,255,.12);margin:10px 0 6px;overflow:hidden}
 .jprog i{display:block;height:100%;border-radius:3px;background:var(--acc);transition:width .6s;animation:jpulse 1.6s ease-in-out infinite}
 @keyframes jpulse{50%{opacity:.55}}
 .jstage{font-size:13px;color:var(--mut)}
-#edov .eh2{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:16px 2px 8px}
+#edov .eh2{font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--acc);margin:22px 2px 10px;
+  padding-left:9px;border-left:3px solid var(--acc);line-height:1.1}       /* разделы видно сразу, не сливаются с настройками (2026-11-23) */
 #edov .eln{display:flex;gap:10px;align-items:baseline;margin:6px 0}#edov .eln>small{flex:none;width:34px;color:var(--mut);font-size:11px}
 #edov .ewd{display:flex;flex-wrap:wrap;gap:6px 6px}
-#edov .w{padding:5px 9px;border-radius:10px;background:rgba(255,255,255,.07);font-size:16px;line-height:1.2}
+#edov .w{padding:5px 9px;border-radius:10px;background:rgba(255,255,255,.07);font-size:16px;line-height:1.2;overflow-wrap:anywhere;min-width:0}
 #edov .w.low{background:rgba(255,196,60,.2);box-shadow:inset 0 0 0 1px rgba(255,196,60,.55)}
 #edov .w.chg{background:var(--acc);color:#111;font-weight:700}
 #edov .w input{font:inherit;color:var(--txt);background:transparent;border:0;outline:0;width:9ch;min-width:5ch}
@@ -311,8 +314,19 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 #edov .ef small{display:block;text-align:center;color:var(--mut);margin-top:6px;font-size:12px}
 #edov .hint{color:var(--mut);font-size:13px;margin:0 2px 6px}
 #edov .evw{padding:10px 16px 0;display:flex;justify-content:center}
-#edov .etl{display:flex;gap:3px;margin:12px 0 6px;height:8px}
-#edov .etl i{min-width:4px;border-radius:4px;background:rgba(255,255,255,.18);cursor:pointer}
+/* лента ролика (2026-11-23): сцены по времени, мемы, бегунок — идёт вместе с видео, тянется пальцем */
+#edov .etw{position:relative;margin:14px 0 4px;height:34px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer}
+#edov .etl{position:absolute;left:0;right:0;top:9px;height:16px}
+#edov .etl i{position:absolute;top:0;bottom:0;border-radius:5px;background:rgba(255,255,255,.18)}
+#edov .etl i.mm{background:rgba(255,150,40,.75);top:-3px;bottom:-3px}#edov .etl i.mm.off{background:rgba(255,150,40,.2);outline:1px dashed rgba(255,150,40,.8)}
+#edov .eph{position:absolute;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#fff;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.45);pointer-events:none}
+#edov .eph:before{content:"";position:absolute;left:50%;top:-5px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+#edov .etime{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;margin:0 0 4px}
+#edov .etc{position:absolute;left:8px;top:8px;padding:3px 7px;border-radius:8px;background:rgba(0,0,0,.6);color:#fff;font:700 13px/1.2 system-ui;font-variant-numeric:tabular-nums;pointer-events:none;z-index:2}
+#edov .emr{display:flex;align-items:center;gap:8px;margin:8px 0;padding:10px 12px;border-radius:14px;background:rgba(255,150,40,.1);border:1px solid rgba(255,150,40,.3)}
+#edov .emr span{flex:1;min-width:0}#edov .emr small{color:var(--mut)}#edov .emr.off span{opacity:.4;text-decoration:line-through}
+#edov .emr button{flex:none;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.08);color:var(--txt)}
+#edov .plb.hook{border-color:rgba(255,200,60,.95)}
 #edov .etl i.ch{background:rgba(182,255,60,.45)}#edov .etl i.on{background:var(--acc)}
 #edov .enav{display:flex;align-items:center;gap:8px;margin:6px 0 10px}
 #edov .enav b{flex:1;text-align:center;font-size:16px}#edov .enav b small{color:var(--mut);font-weight:500}
@@ -2585,6 +2599,8 @@ function drawUps(){ for(const pr of UPS){ const el=upTile(pr.name); if(!el) cont
 async function apiDel(kind,i){ try{ AS=await api('/api/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,i,j:JID()})}); }
   catch(e){ toast(e.message); } if(sheet) renderSheet(); render(); }
 function fmmss(t){ t=Math.round(t||0); return Math.floor(t/60)+':'+String(t%60).padStart(2,'0'); }
+/* время с десятыми: 1:05,3 — в редакторе видно секунды (владелец 2026-11-23) */
+function fsec2(t){ t=Math.max(0,+t||0); const m=Math.floor(t/60), s=t-m*60; return m+':'+(s<10?'0':'')+s.toFixed(1).replace('.',','); }
 function ftiles(box, head, items, kind, canAdd, foot, addFn){ const h=document.createElement('div'); h.className='lhead'; h.textContent=head; box.appendChild(h);
   const g=document.createElement('div'); g.className='ftiles';
   items.forEach(it=>{ const t=document.createElement('div'); t.className='ftile';
@@ -2602,7 +2618,7 @@ loadState(); tplLoad();
 /* Правка готового ролика (2026-11-19): слова по строкам (сомнительные — жёлтым), заголовок, плашки. Бесплатно, до трёх раз. */
 let EDJ=null, ED={words:{},cards:{},drop:{},hook:null};
 function edClose(){ $('#edov').classList.remove('on'); EDJ=null; }
-async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{},pl:{cap:{},card:{}}}); ED=fresh(); let HIST=[], SC=0, GEN=false, MV=false;
+async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{},pl:{cap:{},card:{},hook:{}},mdrop:{}}); ED=fresh(); let HIST=[], SC=0, GEN=false, MV=false;
   let ov=$('#edov'); if(!ov){ ov=document.createElement('div'); ov.id='edov'; document.body.appendChild(ov); }
   ov.innerHTML='<div class="eh"><b>Править ролик</b><button id="edx">Закрыть</button></div><div class="eb"><div class="empty">Загружаю…</div></div>'; ov.classList.add('on');
   $('#edx').onclick=edClose;
@@ -2616,26 +2632,30 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
   const low=d.lines.reduce((n,l)=>n+l.words.filter(w=>w.low).length,0);
   const restN=Object.keys(R).length;
   const snap=()=>{ HIST.push(JSON.stringify(ED)); if(HIST.length>60) HIST.shift(); };
-  const cnt=()=>Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0)+Object.keys(ED.cut).length+Object.keys(ED.restore).length+Object.keys(ED.kon).length+Object.keys(ED.koff).length+Object.keys(ED.rest).length+Object.keys(ED.pl.cap).length+Object.keys(ED.pl.card).length;
+  const cnt=()=>Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0)+Object.keys(ED.cut).length+Object.keys(ED.restore).length+Object.keys(ED.kon).length+Object.keys(ED.koff).length+Object.keys(ED.rest).length+Object.keys(ED.pl.cap).length+Object.keys(ED.pl.card).length+Object.keys(ED.pl.hook||{}).length+Object.keys(ED.mdrop||{}).length;
   const dsec=()=>Object.keys(ED.cut).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.restore).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.rest).reduce((a,r)=>a+(R[r].d||0),0);
   const fsec=x=>Math.abs(x)<0.05?'':(x>0?'−':'+')+Math.abs(x).toFixed(1).replace('.',',')+' с';
   let selEl=null, bar=null;
   const build=()=>{ const keepV0=$('#edv'); if(keepV0) keepV0.remove();      // тот же ролик — без перезагрузки
     ov.innerHTML='<div class="eh"><b>Редактирование</b><button class="undo" id="edun" title="Шаг назад">↶</button><button id="edx">Закрыть</button></div><div class="eb"></div>';
     $('#edx').onclick=edClose; const eb=ov.querySelector('.eb');
-    let h=(d.url?'<div class="evw'+(MV?' mv':'')+'"><div class="evbox"><video id="edv" controls playsinline preload="metadata" src="'+(API||API0)+d.url+'"></video><div class="epl" id="epl"></div></div></div>'
-         +(d.layout?'<div class="evt"><button id="edmv" class="'+(MV?'on':'')+'">✥ '+(MV?'Готово':'Двигать подписи и плашки')+'</button></div>'
-           +(MV?'<p class="hint">Поставьте видео на паузу: подписи и плашки этого момента обведены рамкой — перетащите пальцем, куда нужно. ✕ — вернуть место на выбор программы.</p>':''):''):'')
+    let h=(d.url?'<div class="evw'+(MV?' mv':'')+'"><div class="evbox"><video id="edv" controls playsinline preload="metadata" src="'+(API||API0)+d.url+'"></video><div class="etc" id="etc">0:00,0</div><div class="epl" id="epl"></div></div></div>'
+         +(d.layout?'<div class="evt"><button id="edmv" class="'+(MV?'on':'')+'">✥ '+(MV?'Готово':'Двигать подписи, плашки, заголовок')+'</button></div>'
+           +(MV?'<p class="hint">Поставьте видео на паузу: подписи, плашки и заголовок этого момента обведены рамкой — перетащите пальцем, куда нужно (заголовок — выше или ниже). ✕ — вернуть место на выбор программы.</p>':''):''):'')
          +'<p class="hint">Коснитесь слова, чтобы исправить, убрать или сделать главным.'+(low?' Жёлтые — программа не уверена.':'')+(restN?' Пунктир — вырезанное автомонтажом, коснитесь, чтобы вернуть.':'')+'</p>';
     { const N=d.lines.length; if(SC>=N) SC=N-1; if(SC<0) SC=0;
       const t0=l=>{ const w=l.words.find(x=>x.t!=null); return w?w.t:l.t; }, ends=d.lines.map((l,k)=>k+1<N?t0(d.lines[k+1]):(t0(l)+l.words.reduce((a,x)=>a+(x.d||0),0)+0.3));
       const tot=Math.max(0.1,ends[N-1]-t0(d.lines[0]));
-      h+='<div class="etl" id="etl">'+d.lines.map((l,k)=>'<i data-sc="'+k+'" class="'+(k===SC&&!GEN?'on':'')+(l.words.some(w=>w.i!=null&&(ED.cut[w.i]||ED.words[w.i]!==undefined||ED.kon[w.i]||ED.koff[w.i]))||l.words.some(w=>w.r&&ED.rest[w.r])?' ch':'')+'" style="flex:'+Math.max(0.2,ends[k]-t0(l)).toFixed(2)+'"></i>').join('')+'</div>';
+      h+='<div class="etw" id="etw"><div class="etl" id="etl">'+d.lines.map((l,k)=>'<i data-sc="'+k+'" data-a="'+t0(l)+'" data-b="'+ends[k]+'" class="'+(k===SC&&!GEN?'on':'')+(l.words.some(w=>w.i!=null&&(ED.cut[w.i]||ED.words[w.i]!==undefined||ED.kon[w.i]||ED.koff[w.i]))||l.words.some(w=>w.r&&ED.rest[w.r])?' ch':'')+'"></i>').join('')
+        +(d.memes||[]).map(m=>'<i class="mm'+(ED.mdrop[m.k]?' off':'')+'" data-a="'+m.t+'" data-b="'+(m.t+m.d)+'" data-mm="'+m.k+'"></i>').join('')+'</div><i class="eph" id="eph"></i></div>'
+        +'<div class="etime"><span id="etnow">0:00,0</span><span id="etdur"></span></div>';
       h+='<div class="enav"><button id="escp" aria-label="Предыдущая сцена">‹</button><b>'+(GEN?'Общие настройки':'Сцена '+(SC+1)+' <small>из '+N+'</small>')+'</b><button id="escn" aria-label="Следующая сцена">›</button><button id="egen" class="'+(GEN?'on':'')+'">Общие</button></div>';
       if(!GEN){ const l=d.lines[SC];
-        h+='<div class="escard" id="escard"><div class="eh2">Текст сцены · '+fmmss(t0(l))+'</div><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; } }
+        h+='<div class="escard" id="escard"><div class="eh2">Текст сцены · '+fsec2(t0(l))+'</div><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; } }
     h+='<div id="edgen" style="display:'+(GEN?'block':'none')+'">'+'<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">'
       +((d.hook_alts||[]).length?'<p class="hint">Режиссёр предлагает ещё (коснитесь — подставить):</p><div class="ewd" id="edhalts">'+d.hook_alts.map((a,k)=>'<span class="w" data-ha="'+k+'">'+esc(a)+'</span>').join('')+'</div>':'');
+    if((d.memes||[]).length){ h+='<div class="eh2">Мемы</div><p class="hint">Оранжевые отрезки на ленте — мемы. Убранный мем не вернётся при пересборке.</p>';
+      d.memes.forEach(m=>{ h+='<div class="emr'+(ED.mdrop[m.k]?' off':'')+'" data-mk="'+m.k+'"><span>'+esc(m.title||'Мем')+' <small>· '+fsec2(m.t)+'</small></span><button data-mg="1">▶</button><button data-mx="1">'+(ED.mdrop[m.k]?'Вернуть':'Убрать')+'</button></div>'; }); }
     if(d.cards.length){ h+='<div class="eh2">Плашки</div><p class="hint">Черта | отделяет главное от подписи, например «25 | минут».</p>'; d.cards.forEach(c=>{ h+='<div class="ecd'+(ED.drop[c.i]?' off':'')+'" data-c="'+c.i+'"><input class="fld" value="'+esc(ED.cards[c.i]!==undefined?ED.cards[c.i]:c.text)+'" maxlength="120"><button class="dc" title="Убрать плашку">✕</button></div>'; }); }
     h+='</div>';
     const keepV=keepV0;
@@ -2658,18 +2678,20 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       const s=Math.min(cw/vw,ch/vh)*(vw/1080), ox=(cw-1080*s)/2, oy=(ch-1920*s)/2, t=v.currentTime+0.01;
       const items=[]; d.layout.phrases.forEach(p=>{ if(p.t0<=t&&t<p.t1) items.push({kind:'cap',key:String(p.w),box:p.box,text:p.text,user:p.user}); });
       d.layout.cards.forEach(c=>{ if(c.t0<=t&&t<c.t1&&!ED.drop[c.i]) items.push({kind:'card',key:String(c.i),box:c.box,text:c.text,user:c.user}); });
+      (d.layout.hook||[]).forEach(c=>{ if(c.t0<=t&&t<c.t1) items.push({kind:'hook',key:'0',box:c.box,text:c.text,user:c.user}); });
       items.forEach(it=>{ const [x0,y0,x1,y1]=it.box, w=x1-x0, hh=y1-y0, cur=ED.pl[it.kind][it.key];
         const moved=Array.isArray(cur), cx=moved?cur[0]:(x0+x1)/2, cy=moved?cur[1]:(y0+y1)/2;
         if(moved){ const g=document.createElement('div'); g.className='plb ghost'; Object.assign(g.style,{left:(ox+x0*s)+'px',top:(oy+y0*s)+'px',width:(w*s)+'px',height:(hh*s)+'px'}); box.appendChild(g); }
-        const el=document.createElement('div'); el.className='plb'+(it.kind==='card'?' card':'')+((moved||(it.user&&cur!==null))?' mv':'');
+        if(!ED.pl[it.kind]) ED.pl[it.kind]={};
+        const el=document.createElement('div'); el.className='plb'+(it.kind==='card'?' card':it.kind==='hook'?' hook':'')+((moved||(it.user&&cur!==null))?' mv':'');
         const pos=(X,Y)=>Object.assign(el.style,{left:(ox+(X-w/2)*s)+'px',top:(oy+(Y-hh/2)*s)+'px',width:(w*s)+'px',height:(hh*s)+'px'});
-        pos(cx,cy); el.innerHTML='<i>'+(it.kind==='card'?'Плашка: ':'')+esc(it.text)+'</i>'+((moved||(it.user&&cur!==null))?'<b>✕</b>':'');
+        pos(cx,cy); el.innerHTML='<i>'+(it.kind==='card'?'Плашка: ':it.kind==='hook'?'Заголовок: ':'')+esc(it.text)+'</i>'+((moved||(it.user&&cur!==null))?'<b>✕</b>':'');
         const x=el.querySelector('b'); if(x) x.addEventListener('pointerdown',e=>{ e.stopPropagation(); e.preventDefault(); snap();
           if(moved&&!it.user) delete ED.pl[it.kind][it.key]; else ED.pl[it.kind][it.key]=null; upd(); plPaint(v,box); });
         let st=null;
         el.addEventListener('pointerdown',e=>{ if(e.target.tagName==='B') return; e.preventDefault(); el.setPointerCapture(e.pointerId); st={x:e.clientX,y:e.clientY,cx,cy,go:false}; });
         el.addEventListener('pointermove',e=>{ if(!st) return; const dx=(e.clientX-st.x)/s, dy=(e.clientY-st.y)/s; if(Math.abs(dx)+Math.abs(dy)>4) st.go=true;
-          if(st.go){ st.nx=Math.max(w/2,Math.min(1080-w/2,st.cx+dx)); st.ny=Math.max(hh/2,Math.min(1920-hh/2,st.cy+dy)); pos(st.nx,st.ny); el.classList.add('mv'); } });
+          if(st.go){ st.nx=it.kind==='hook'?540:Math.max(w/2,Math.min(1080-w/2,st.cx+dx)); st.ny=Math.max(hh/2,Math.min(1920-hh/2,st.cy+dy)); pos(st.nx,st.ny); el.classList.add('mv'); } });
         const end=()=>{ if(st&&st.go){ snap(); ED.pl[it.kind][it.key]=[Math.round(st.nx),Math.round(st.ny)]; upd(); plPaint(v,box); } st=null; };
         el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
         box.appendChild(el); }); }
@@ -2697,8 +2719,9 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
         if(a==='all'){ if(ED.all[i]) delete ED.all[i]; else ED.all[i]=1; }
         if(a==='learn'){ if(ED.learn[i]) delete ED.learn[i]; else ED.learn[i]=1; }
         paint(el); upd(); showBar(el); }); };
-    eb.querySelectorAll('.w[data-i]').forEach(el=>{ paint(el); el.onclick=()=>{ if(el.querySelector('input')) return; showBar(el); }; });
-    eb.querySelectorAll('.w.gone').forEach(el=>{ el.onclick=()=>{ snap(); const r=el.dataset.r; if(ED.rest[r]) delete ED.rest[r]; else ED.rest[r]=1; el.classList.toggle('on',!!ED.rest[r]); closeBar(); upd(); }; });
+    function bindWords(root){ root.querySelectorAll('.w[data-i]').forEach(el=>{ paint(el); el.onclick=()=>{ if(el.querySelector('input')) return; showBar(el); }; });
+      root.querySelectorAll('.w.gone').forEach(el=>{ el.onclick=()=>{ snap(); const r=el.dataset.r; if(ED.rest[r]) delete ED.rest[r]; else ED.rest[r]=1; el.classList.toggle('on',!!ED.rest[r]); closeBar(); upd(); }; }); }
+    bindWords(eb);
     eb.querySelectorAll('#edhalts .w').forEach(el=>{ el.onclick=()=>{ const v=d.hook_alts[+el.dataset.ha], h=$('#edhook'); if(!h) return;
       snap(); h.value=v; ED.hook=v===(d.hook||'')?null:v; upd(); }; });
     let pend=false; const hk=$('#edhook'); hk.onfocus=()=>{ pend=true; }; hk.oninput=e=>{ if(pend){ snap(); pend=false; } ED.hook=e.target.value; if(ED.hook===(d.hook||'')) ED.hook=null; upd(); };
@@ -2713,16 +2736,55 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       const edits={}; if(Object.keys(words).length) edits.words=words; if(Object.keys(ED.cards).length) edits.cards=ED.cards;
       const dr=Object.keys(ED.drop).filter(k=>ED.drop[k]).map(Number); if(dr.length) edits.drop_cards=dr; if(ED.hook!==null) edits.hook=ED.hook;
       const ks=m=>Object.keys(m).map(Number); if(ks(ED.cut).length) edits.cut=ks(ED.cut); if(ks(ED.restore).length) edits.restore=ks(ED.restore);
-      if(Object.keys(ED.pl.cap).length||Object.keys(ED.pl.card).length) edits.places=ED.pl;
+      if(Object.keys(ED.pl.cap).length||Object.keys(ED.pl.card).length||Object.keys(ED.pl.hook||{}).length) edits.places=ED.pl;
+      const md=Object.keys(ED.mdrop||{}).filter(k=>ED.mdrop[k]).map(Number); if(md.length) edits.drop_memes=md;
       if(ks(ED.kon).length) edits.keys_on=ks(ED.kon); if(ks(ED.koff).length) edits.keys_off=ks(ED.koff); if(learn.length) edits.learn=learn;
       const rw=Object.keys(ED.rest).filter(r=>r[0]==='g').map(r=>+r.slice(1)), rp=Object.keys(ED.rest).filter(r=>r[0]==='p').map(r=>+r.slice(1)); if(rw.length) edits.restore_words=rw; if(rp.length) edits.restore_pauses=rp;
       try{ await api('/api/edit/'+EDJ,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({edits})}); toast('Правка принята — новый ролик придёт в чат'); edClose(); }
       catch(e){ b.disabled=false; upd(); toast(e.message); } };
+    /* Лента (владелец 2026-11-23): бегунок идёт вместе с видео, его тянут пальцем — видео перематывается следом;
+       касание — перемотка и сцена этого места; сцена на экране сама меняется, пока видео играет. */
+    function tlSetup(){ const v=$('#edv'), tw=$('#etw'); if(!v||!tw) return;
+      const dur=()=>(isFinite(v.duration)&&v.duration>0)?v.duration:Math.max(1,...[...tw.querySelectorAll('#etl i')].map(x=>+x.dataset.b||0));
+      const lay=()=>{ const D_=dur(); tw.querySelectorAll('#etl i').forEach(x=>{ const a=+x.dataset.a, b=Math.max(+x.dataset.b,a+0.15);
+          x.style.left=(100*a/D_)+'%'; x.style.width='calc('+(100*(b-a)/D_)+'% - 2px)'; });
+        const e=$('#etdur'); if(e) e.textContent=fsec2(D_); };
+      const starts=d.lines.map((l,j)=>{ const x=tw.querySelector('#etl i[data-sc="'+j+'"]'); return x?+x.dataset.a:0; });
+      const sceneAt=t=>{ let k=0; starts.forEach((a,j)=>{ if(a<=t+0.05) k=j; }); return k; };
+      const show=t=>{ const p=$('#eph'); if(p) p.style.left=(100*t/dur())+'%'; const a=$('#etc'); if(a) a.textContent=fsec2(t); const b=$('#etnow'); if(b) b.textContent=fsec2(t); };
+      v._tl=()=>{ lay(); show(v.currentTime||0); };
+      if(!v._tlOn){ v._tlOn=1; let raf=0;
+        const loop=()=>{ if(v._tl) v._tl(); if(!v.paused) raf=requestAnimationFrame(loop); };
+        v.addEventListener('play',()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(loop); });
+        ['loadedmetadata','durationchange','seeked','timeupdate','pause'].forEach(e=>v.addEventListener(e,()=>{ if(v._tl) v._tl(); if(e==='timeupdate'&&v._follow) v._follow(); })); }
+      v._follow=()=>{ if(GEN||v._scrub) return; const ae=document.activeElement; if(ae&&ae.tagName==='INPUT') return; if(bar&&bar.classList.contains('on')) return;
+        const k=sceneAt(v.currentTime||0); if(k!==SC){ SC=k; showScene(); } };
+      let sd=null;
+      const tAt=e=>{ const r=tw.getBoundingClientRect(); return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*dur(); };
+      tw.addEventListener('pointerdown',e=>{ e.preventDefault(); try{ tw.setPointerCapture(e.pointerId); }catch(er){} sd={x:e.clientX,mm:e.target&&e.target.dataset?e.target.dataset.mm:undefined}; v._scrub=1;
+        try{ v.pause(); }catch(er){} const t=tAt(e); try{ v.currentTime=t; }catch(er){} show(t); });
+      tw.addEventListener('pointermove',e=>{ if(!sd) return; const t=tAt(e); try{ if(v.fastSeek) v.fastSeek(t); else v.currentTime=t; }catch(er){} show(t); });
+      const up=e=>{ if(!sd) return; const t=tAt(e), tap=Math.abs(e.clientX-sd.x)<6, mm=sd.mm; sd=null;
+        try{ v.currentTime=t; }catch(er){} v._scrub=0; show(t);
+        if(tap&&mm!==undefined&&mm!==''){ GEN=true; build(); return; }       // касание мема — «Общие», там «Убрать»
+        if(!GEN){ const k=sceneAt(t); if(k!==SC){ SC=k; showScene(); } } };
+      tw.addEventListener('pointerup',up); tw.addEventListener('pointercancel',up);
+      lay(); show(v.currentTime||0); }
+    /* только карточка сцены и навигация: видео не трогаем (иначе оно встаёт на паузу) */
+    function showScene(){ const old=$('#escard'); if(!old||GEN) return;
+      const l=d.lines[SC], w0=l.words.find(x=>x.t!=null);
+      const box=document.createElement('div'); box.innerHTML='<div class="escard" id="escard"><div class="eh2">Текст сцены · '+fsec2(w0?w0.t:l.t)+'</div><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>';
+      const nw=box.firstChild; old.replaceWith(nw); bindWords(nw); closeBar();
+      $$('#etl i[data-sc]').forEach(x=>x.classList.toggle('on',+x.dataset.sc===SC));
+      const nb=$('#edov .enav b'); if(nb) nb.innerHTML='Сцена '+(SC+1)+' <small>из '+d.lines.length+'</small>'; }
     const goSc=k=>{ GEN=false; SC=Math.max(0,Math.min(d.lines.length-1,k)); build();
       const v=$('#edv'), l=d.lines[SC], w=l&&l.words.find(x=>x.t!=null); if(v&&w){ try{ v.currentTime=w.t; }catch(e){} } };
     $('#escp').onclick=()=>GEN?goSc(SC):goSc(SC-1); $('#escn').onclick=()=>GEN?goSc(SC):goSc(SC+1);
     $('#egen').onclick=()=>{ GEN=!GEN; build(); };
-    eb.querySelectorAll('#etl i').forEach(x=>x.onclick=()=>goSc(+x.dataset.sc));
+    tlSetup();
+    eb.querySelectorAll('.emr').forEach(r=>{ const k=+r.dataset.mk, m=(d.memes||[]).find(x=>x.k===k);
+      r.querySelector('[data-mx]').onclick=()=>{ snap(); if(ED.mdrop[k]) delete ED.mdrop[k]; else ED.mdrop[k]=1; build(); };
+      r.querySelector('[data-mg]').onclick=()=>{ const v=$('#edv'); if(v&&m){ try{ v.currentTime=m.t+0.05; v.play(); }catch(e){} } }; });
     const card=$('#escard'); if(card){ let sx=null; card.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; },{passive:true});
       card.addEventListener('touchend',e=>{ if(sx==null) return; const dx=e.changedTouches[0].clientX-sx; sx=null; if(Math.abs(dx)>60) goSc(SC+(dx<0?1:-1)); }); }
     upd(); };
