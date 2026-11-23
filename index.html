@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='828c8733ee';
+(function(){ var B='275467fae9';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2618,7 +2618,8 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       h+='<div class="enav"><button id="escp" aria-label="Предыдущая сцена">‹</button><b>'+(GEN?'Общие настройки':'Сцена '+(SC+1)+' <small>из '+N+'</small>')+'</b><button id="escn" aria-label="Следующая сцена">›</button><button id="egen" class="'+(GEN?'on':'')+'">Общие</button></div>';
       if(!GEN){ const l=d.lines[SC];
         h+='<div class="escard" id="escard"><div class="eh2">Текст сцены · '+fmmss(t0(l))+'</div><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; } }
-    h+='<div id="edgen" style="display:'+(GEN?'block':'none')+'">'+'<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">';
+    h+='<div id="edgen" style="display:'+(GEN?'block':'none')+'">'+'<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">'
+      +((d.hook_alts||[]).length?'<p class="hint">Режиссёр предлагает ещё (коснитесь — подставить):</p><div class="ewd" id="edhalts">'+d.hook_alts.map((a,k)=>'<span class="w" data-ha="'+k+'">'+esc(a)+'</span>').join('')+'</div>':'');
     if(d.cards.length){ h+='<div class="eh2">Плашки</div><p class="hint">Черта | отделяет главное от подписи, например «25 | минут».</p>'; d.cards.forEach(c=>{ h+='<div class="ecd'+(ED.drop[c.i]?' off':'')+'" data-c="'+c.i+'"><input class="fld" value="'+esc(ED.cards[c.i]!==undefined?ED.cards[c.i]:c.text)+'" maxlength="120"><button class="dc" title="Убрать плашку">✕</button></div>'; }); }
     h+='</div>';
     const keepV=keepV0;
@@ -2682,6 +2683,8 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
         paint(el); upd(); showBar(el); }); };
     eb.querySelectorAll('.w[data-i]').forEach(el=>{ paint(el); el.onclick=()=>{ if(el.querySelector('input')) return; showBar(el); }; });
     eb.querySelectorAll('.w.gone').forEach(el=>{ el.onclick=()=>{ snap(); const r=el.dataset.r; if(ED.rest[r]) delete ED.rest[r]; else ED.rest[r]=1; el.classList.toggle('on',!!ED.rest[r]); closeBar(); upd(); }; });
+    eb.querySelectorAll('#edhalts .w').forEach(el=>{ el.onclick=()=>{ const v=d.hook_alts[+el.dataset.ha], h=$('#edhook'); if(!h) return;
+      snap(); h.value=v; ED.hook=v===(d.hook||'')?null:v; upd(); }; });
     let pend=false; const hk=$('#edhook'); hk.onfocus=()=>{ pend=true; }; hk.oninput=e=>{ if(pend){ snap(); pend=false; } ED.hook=e.target.value; if(ED.hook===(d.hook||'')) ED.hook=null; upd(); };
     eb.querySelectorAll('.ecd').forEach(r=>{ const i=r.dataset.c, inp=r.querySelector('input'), orig=d.cards.find(c=>String(c.i)===i).text; let pc=false; inp.onfocus=()=>{ pc=true; };
       inp.oninput=()=>{ if(pc){ snap(); pc=false; } if(inp.value.trim()&&inp.value!==orig) ED.cards[i]=inp.value; else delete ED.cards[i]; upd(); };
