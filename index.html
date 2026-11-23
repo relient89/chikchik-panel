@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='422237b0bb';
+(function(){ var B='07988f3ca7';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2620,7 +2620,7 @@ function pickFiles(kind, orig){ if(PICK) PICK.remove(); const inp=document.creat
   const cancelPick=()=>{ if(done) return; done=true; window.removeEventListener('focus',back); dropPrep(); inp.remove(); if(PICK===inp) PICK=null; };
   /* iPhone после «Выбрать» сначала сам готовит видео (до минуты) и только потом отдаёт файлы — показываем это сразу */
   const back=()=>{ window.removeEventListener('focus',back); setTimeout(()=>{ if(done||prep) return;
-      prep={name:'Готовлю видео',kind,p:0,prep:1,drop:cancelPick}; UPS.push(prep); upBusy++; if(sheet) renderSheet(); render(); upSay(prep,'Телефон готовит видео…');
+      prep={name:'Видео',kind,p:0,prep:1,drop:cancelPick}; UPS.push(prep); upBusy++; if(sheet) renderSheet(); render(); upSay(prep,'Телефон готовит видео…');
       // старые телефоны не сообщают об отмене: файл так и не пришёл — значит, ничего не выбрали
       prepT=setTimeout(()=>{ if(!done&&!(inp.files&&inp.files.length)){ cancelPick(); toast('Видео не выбрано'); } },90000); },400); };
   window.addEventListener('focus',back);
@@ -2672,7 +2672,7 @@ async function upOne(kind,f,pre){ const pr=pre||{name:f.name,kind,p:0}; pr.q=0; 
     toast('Обрабатываю видео…'); AS=await api(`/api/up/${s.id}/done`,{method:'POST'}); API=API||API0; toast(kind==='insert'?'✓ Вставка добавлена':'✓ Видео добавлено'); }
   catch(e){ toast(pr.cancelled?'Загрузка отменена':'Не загрузилось «'+f.name+'»: '+e.message); }
   finally{ UPS.splice(UPS.indexOf(pr),1); upBusy--; if(sheet) renderSheet(); render(); } }
-function upLabel(u){ const n=u.of>1?u.n+' из '+u.of+' · ':''; return u.prep?'телефон готовит видео…':u.q?n+'в очереди':u.wait?n+'обрабатываю…':n+Math.round(u.p*100)+' %'; }
+function upLabel(u){ const n=u.of>1?u.n+' из '+u.of+' · ':''; return u.prep?'телефон готовит…':u.q?n+'в очереди':u.wait?n+'обрабатываю…':n+Math.round(u.p*100)+' %'; }
 function drawUps(){ for(const pr of UPS){ const el=upTile(pr.name); if(!el) continue;
   el.querySelector('.bar i').style.width=Math.round(pr.p*100)+'%'; el.querySelector('.fd').textContent=upLabel(pr); } }
 async function apiDel(kind,i){ try{ AS=await api('/api/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind,i,j:JID()})}); }
