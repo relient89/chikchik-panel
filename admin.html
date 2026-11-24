@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>ЧикЧик · Кабинет</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Кабинет администратора ЧикЧик — ОТДЕЛЬНАЯ страница (владелец 2026-11-24: не в приложении для людей).
+     Сама страница данных не содержит: всё приходит с сервера и только аккаунту из ADMIN_IDS (подпись Telegram). -->
+<style>
+[hidden]{display:none !important}
+:root{--bg:#090a0d;--txt:#f5f6f8;--mut:#9aa0ab;--acc:#c6ff4a;--onacc:#10140a;--line:rgba(255,255,255,.1);
+  --glass:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.05));--rim:rgba(255,255,255,.2);--blur:22px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;font-size:15px}
+body{background:radial-gradient(ellipse 90% 50% at 20% 0,rgba(198,255,74,.10),transparent 60%),radial-gradient(ellipse 80% 50% at 100% 30%,rgba(122,90,255,.16),transparent 60%),var(--bg);background-attachment:fixed}
+button{font:inherit;cursor:pointer;border:0;color:inherit;background:none}
+.glass{background:var(--glass);border:1px solid var(--rim);-webkit-backdrop-filter:blur(var(--blur)) saturate(170%);backdrop-filter:blur(var(--blur)) saturate(170%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 12px 34px rgba(0,0,0,.34)}
+.page{max-width:560px;margin:0 auto;padding:calc(12px + var(--tg-content-safe-area-inset-top,0px) + var(--tg-safe-area-inset-top,0px)) 16px 60px}
+.page h1{margin:6px 4px 4px;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.note{color:var(--mut);font-size:12.5px;margin:10px 4px 0;line-height:1.45}
+.empty{color:var(--mut);padding:26px 4px;line-height:1.5}
+.box{border-radius:22px;padding:16px;margin-top:12px}.box h4{margin:0 0 8px;font-size:16px;font-weight:800}
+.pstat{display:flex;gap:8px;margin:10px 0}.pstat div{flex:1;padding:10px 4px;border-radius:14px;background:rgba(255,255,255,.05);text-align:center;min-width:0}
+.pstat b{display:block;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pstat span{font-size:11px;color:var(--mut)}
+.pbtn{display:block;width:100%;margin-top:10px;padding:13px;border-radius:14px;background:var(--acc);color:#111;font-weight:800;font-size:15px;min-height:48px}
+.pbtn.ghost{background:rgba(255,255,255,.08);color:var(--txt)}
+.pbadge{display:inline-block;padding:3px 9px;border-radius:9px;background:var(--acc);color:#111;font-size:12px;font-weight:800;margin-left:6px}
+.linkrow{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.25);border-radius:999px;padding:5px 5px 5px 16px}
+.linkrow span{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dfe2e8}
+.pill{padding:10px 18px;border-radius:999px;background:var(--acc);color:var(--onacc);font-weight:800;font-size:14px;white-space:nowrap}
+.badge{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(255,255,255,.12);color:#dfe2e8}
+.badge.done{background:rgba(53,208,127,.18);color:#6ff0ae}.badge.failed{background:rgba(255,80,80,.18);color:#ff9a9a}
+.toast{position:fixed;left:16px;right:16px;top:calc(12px + var(--tg-content-safe-area-inset-top,0px) + var(--tg-safe-area-inset-top,0px));z-index:90;max-width:448px;margin:0 auto;padding:14px 16px;border-radius:18px;
+  font-size:15px;font-weight:700;background:rgba(18,20,26,.96);border:1px solid rgba(255,255,255,.18);opacity:0;translate:0 -8px;transition:.25s;pointer-events:none}
+.toast.on{opacity:1;translate:0 0}
+/* ===== Админка (владелец 2026-11-24) ===== */
+.atabs{display:flex;gap:6px;overflow-x:auto;margin:10px -16px 4px;padding:0 16px 4px;scrollbar-width:none}.atabs::-webkit-scrollbar{display:none}
+.atabs button,.achips button{flex:none;padding:9px 14px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid var(--rim);color:var(--txt);font-weight:700;font-size:14px;min-height:40px}
+.atabs button.on,.achips button.on{background:var(--acc);color:#111;border-color:transparent}
+.atabs i{font-style:normal;display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:#ff5a5a;color:#fff;font-size:12px;line-height:18px}
+.achips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}.achips button{padding:7px 12px;font-size:13px;min-height:36px}
+.agrp{margin-top:16px}.agrp h4{margin:0 4px 8px;font-size:12.5px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.agrid div{padding:12px 6px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line);text-align:center;min-width:0}
+.agrid b{display:block;font-size:19px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agrid span{display:block;margin-top:2px;font-size:11.5px;line-height:1.25;color:var(--mut)}.agrid .acc b{color:var(--acc)}
+.abanner{display:block;width:100%;margin-top:12px;padding:14px;border-radius:16px;background:rgba(255,90,90,.14);border:1px solid rgba(255,90,90,.45);color:var(--txt);font-size:15px;text-align:left}
+.achart{display:flex;align-items:flex-end;gap:4px;height:120px;padding:8px 8px 0;border-radius:16px;background:rgba(255,255,255,.04)}
+.achart div{flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:1px;position:relative;padding-bottom:16px}
+.achart i,.achart u{display:block;width:45%;min-height:2px;border-radius:3px 3px 0 0;background:var(--acc)}.achart u{background:#7aa7ff}
+.achart span{position:absolute;bottom:2px;font-size:9.5px;color:var(--mut)}
+.adot{display:inline-block;width:9px;height:9px;border-radius:3px;margin:0 4px 0 10px;vertical-align:-1px}.adot.a{background:var(--acc);margin-left:0}.adot.b{background:#7aa7ff}
+.atix.new{border:1px solid rgba(255,90,90,.5)}
+.ahead{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.ahead span{font-size:12px;color:var(--mut);white-space:nowrap}
+.awho{padding:0;color:var(--acc);font-weight:800;font-size:15px;text-align:left;background:none;border:0}
+.atext{margin:8px 0;white-space:pre-wrap;line-height:1.4;word-break:break-word}
+.aans{margin:8px 0;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.06);white-space:pre-wrap;font-size:14px}.aans small{display:block;margin-bottom:3px;color:var(--mut);font-size:11.5px}
+.ainp,.asearch,.anum,.asel{width:100%;box-sizing:border-box;border-radius:14px;border:1px solid var(--rim);background:rgba(0,0,0,.25);color:#fff;font:inherit;font-size:16px;padding:12px 14px}
+.ainp{min-height:72px;resize:vertical;margin-top:4px}.asearch{margin:10px 0 4px}
+.arow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}.arow .pill{padding:10px 16px;min-height:44px}
+.pill.ghost{background:rgba(255,255,255,.08);color:var(--txt)}
+.anum{width:92px;padding:10px 12px}.asel{width:auto;flex:1;padding:10px 12px;min-height:44px}
+.aperson{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;padding:12px 14px;border-radius:16px;text-align:left;color:var(--txt)}
+.aperson>span:first-child{flex:1;min-width:0}.aperson b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aperson small{display:block;color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aperson .am{flex:none;min-width:56px;text-align:center}.aperson .am b{font-size:14px}
+.aback{padding:12px 0 2px;color:var(--acc);font-weight:700;font-size:15px;background:none;border:0;min-height:44px}
+.aline{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line);font-size:14px}.box h4+.aline{border-top:0}
+.aline>span:first-child{min-width:80px;color:var(--mut);font-size:12.5px}.aline small{flex-basis:100%;color:var(--mut);word-break:break-word}
+.aline b{margin-left:auto}.aline .neg{color:#ff8a8a}.aline .pos{color:var(--acc)}
+.aev{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.aev:first-child{border-top:0}
+.aev .ei{flex:none;font-size:18px}.aev>span:nth-child(2){flex:1;min-width:0;font-size:14px}
+.aev small{display:block;margin-top:2px;color:var(--mut);font-size:12.5px;word-break:break-word}.aev time{color:var(--mut);font-size:11.5px;white-space:nowrap}.aev .awho{font-size:14px}
+#admBtn{margin-top:12px}
+</style></head>
+<body>
+<div class="page">
+  <h1>Кабинет</h1>
+  <div class="atabs" id="atabs" role="tablist"></div>
+  <div id="apane"><div class="empty">Загружаю…</div></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const tg=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?Telegram.WebApp:null;
+const Q=new URLSearchParams(location.search), API0=(Q.get('a')||'').replace(/\/+$/,''), API='', D={tariffs:{partner_pct:15,amb_pct:25}};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let toastT=null; function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),4000); }
+async function api(path,opt={}){ const r=await fetch(API0+path,{...opt,headers:{...(opt.headers||{}),'X-Tg':tg?tg.initData:''}});
+  let d={}; try{ d=await r.json(); }catch(e){} if(!r.ok) throw new Error(d.error||('Ошибка связи '+r.status)); return d; }
+/* ===== Админка (владелец 2026-11-24): видна только администратору; данные — запросами с подписью Telegram,
+   сервер сам проверяет, что это администратор. Как у V CUT (сводка, поиск человека, начислить/подписка/партнёр/
+   написать, рекламные ссылки) + обращения с ответом и лента событий. ===== */
+let ATAB='sum', AUSER=null, AQ='', AT_ST='open', AEV_KIND='', AOPEN=0;
+const AT=[['sum','Сводка'],['tix','Обращения'],['ppl','Люди'],['ev','События'],['ads','Реклама'],['bc','Рассылка']];
+const apost=(p,b)=>api(p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b||{})});
+const p2=n=>String(n).padStart(2,'0');
+const fdt=t=>{ if(!t) return '—'; const d=new Date(t*1000); return p2(d.getDate())+'.'+p2(d.getMonth()+1)+' '+p2(d.getHours())+':'+p2(d.getMinutes()); };
+const fday=t=>{ if(!t) return '—'; const d=new Date(t*1000); return p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'+String(d.getFullYear()).slice(2); };
+const arub=n=>(+n||0).toLocaleString('ru-RU')+' ₽';
+function aConfirm(msg){ return new Promise(res=>{ if(tg&&tg.showConfirm){ try{ tg.showConfirm(msg,ok=>res(!!ok)); return; }catch(e){} } res(confirm(msg)); }); }
+function aTabs(){ const tb=$('#atabs'); tb.innerHTML=AT.map(([k,n])=>`<button class="${k===ATAB?'on':''}" data-at="${k}">${n}${k==='tix'&&AOPEN?`<i>${AOPEN}</i>`:''}</button>`).join('');
+  tb.querySelectorAll('[data-at]').forEach(b=>b.onclick=()=>{ ATAB=b.dataset.at; AUSER=null; renderAdmin(); }); }
+function renderAdmin(){ aTabs(); const p=$('#apane');
+  if(!API0||!tg){ p.innerHTML='<div class="empty">Кабинет открывается из бота: команда /admin → «Открыть кабинет».</div>'; return; }
+  p.innerHTML='<div class="empty">Загружаю…</div>'; window.scrollTo(0,0);
+  ({sum:aSum,tix:aTix,ppl:()=>AUSER?aUser(AUSER):aPpl(),ev:()=>aEv(),ads:()=>aAds(),bc:aBc})[ATAB]().catch(e=>{ p.innerHTML=`<div class="empty">${esc(e.message)}</div>`; }); }
+function aWho(){ $$('#apane [data-u]').forEach(b=>b.onclick=()=>{ AUSER=+b.dataset.u; ATAB='ppl'; renderAdmin(); }); }
+async function aSum(){ const s=await api('/api/admin/summary'); AOPEN=s.tickets_open; aTabs();
+  const T=(v,l,acc)=>`<div${acc?' class="acc"':''}><b>${v}</b><span>${l}</span></div>`;
+  const mu=Math.max(1,...s.days.map(d=>d.users)), md=Math.max(1,...s.days.map(d=>d.done));
+  $('#apane').innerHTML=(s.tickets_open?`<button class="abanner" id="aOpenT">💬 Открытых обращений: <b>${s.tickets_open}</b> — ответить ›</button>`:'')
+   +`<div class="agrp"><h4>Люди</h4><div class="agrid">${T(s.users,'всего')}${T('+'+s.users_today,'сегодня',1)}${T('+'+s.users_7d,'за 7 дней')}${T(s.active_7d,'монтировали за 7 дн')}${T(s.made_any,'сделали ролик')}${T(s.referred+' / '+s.from_ads,'от друзей / рекламы')}</div></div>
+    <div class="agrp"><h4>Монтажи</h4><div class="agrid">${T(s.done_today,'готово сегодня',1)}${T(s.done_7d,'за 7 дней')}${T(s.done_all,'всего')}${T(s.running+' · '+s.queue,'идёт · очередь')}${T(s.fail_7d,'сбоев за 7 дн')}${T(s.subs,'подписок')}</div></div>
+    <div class="agrp"><h4>Деньги</h4><div class="agrid">${T(arub(s.rub_today),'сегодня',1)}${T(arub(s.rub_7d),'за 7 дней')}${T(arub(s.rub_30d),'за 30 дней')}${T(arub(s.rub_all),'всего')}${T(s.payers,'платящих')}${T(s.partners,'партнёров')}</div>
+      ${s.rub_all?'':'<div class="note" style="margin:8px 4px 0">Оплата пока не подключена — цифры появятся с первой оплатой.</div>'}</div>
+    <div class="agrp"><h4>14 дней</h4><div class="achart">${s.days.map(d=>`<div title="${d.d}: новых ${d.users}, роликов ${d.done}"><i style="height:${Math.round(d.users/mu*100)}%"></i><u style="height:${Math.round(d.done/md*100)}%"></u><span>${d.d.slice(0,2)}</span></div>`).join('')}</div>
+      <div class="note" style="margin:6px 4px 0"><span class="adot a"></span>новые люди (макс. ${mu} в день)<span class="adot b"></span>готовые ролики (макс. ${md})</div></div>
+    <button class="pbtn ghost" id="aRef">Обновить</button>`;
+  $('#aRef').onclick=renderAdmin; const o=$('#aOpenT'); if(o) o.onclick=()=>{ ATAB='tix'; AT_ST='open'; renderAdmin(); }; }
+async function aTix(){ const d=await api('/api/admin/tickets'+(AT_ST==='open'?'?status=open':'')), ts=d.tickets;
+  if(AT_ST==='open'){ AOPEN=ts.length; aTabs(); }
+  $('#apane').innerHTML=`<div class="achips">${[['open','Открытые'],['all','Все']].map(([k,n])=>`<button class="${k===AT_ST?'on':''}" data-st="${k}">${n}</button>`).join('')}</div>`
+   +(ts.map(t=>`<div class="box glass atix ${esc(t.status)}" data-id="${+t.id}"><div class="ahead"><button class="awho" data-u="${+t.tg_id}">${esc(t.who)}</button><span>№${+t.id} · ${fdt(t.t)}</span></div>
+     <div class="atext">${esc(t.text)}</div>${t.answer?`<div class="aans"><small>Ваш ответ${t.answered?' · '+fdt(t.answered):''}</small>${esc(t.answer)}</div>`:''}
+     ${t.status==='closed'?'<div class="note" style="margin:6px 0 0">✓ Решено</div>':`<textarea class="ainp" placeholder="Ответ придёт человеку в бот"></textarea><div class="arow"><button class="pill" data-r>Ответить</button><button class="pill ghost" data-c>Решено</button></div>`}</div>`).join('')
+    || `<div class="empty">${AT_ST==='open'?'Открытых обращений нет 👌':'Обращений пока не было'}</div>`);
+  $$('#apane [data-st]').forEach(b=>b.onclick=()=>{ AT_ST=b.dataset.st; renderAdmin(); }); aWho();
+  $$('#apane .atix').forEach(box=>{ const id=box.dataset.id, r=box.querySelector('[data-r]'), c=box.querySelector('[data-c]');
+    if(r) r.onclick=async()=>{ const txt=box.querySelector('textarea').value.trim(); if(!txt) return toast('Напишите ответ'); r.disabled=true;
+      try{ await apost('/api/admin/tickets/'+id+'/reply',{text:txt}); toast('✓ Ответ отправлен в бот'); renderAdmin(); }catch(e){ toast(e.message); r.disabled=false; } };
+    if(c) c.onclick=async()=>{ try{ await apost('/api/admin/tickets/'+id+'/close'); toast('✓ Отмечено решённым'); renderAdmin(); }catch(e){ toast(e.message); } }; }); }
+async function aPpl(){ const d=await api('/api/admin/users?q='+encodeURIComponent(AQ));
+  $('#apane').innerHTML=`<input class="asearch" id="aQ" type="search" placeholder="Ник, имя или номер Telegram" value="${esc(AQ)}" enterkeyhint="search">`
+   +(d.users.map(u=>`<button class="aperson glass" data-u="${+u.tg_id}"><span><b>${esc(u.name||('id '+u.tg_id))}</b><small>${u.username?'@'+esc(u.username)+' · ':''}${+u.tg_id}${u.src?' · реклама':''}</small></span><span class="am"><b>${+u.done}</b><small>роликов</small></span><span class="am"><b>${u.rub?arub(u.rub):fday(u.t)}</b><small>${u.rub?'оплатил':'пришёл'}</small></span></button>`).join('')
+    || '<div class="empty">Никого не нашли</div>')
+   +(d.users.length>=30&&!AQ?'<div class="note">Показаны 30 последних. Остальных — через поиск.</div>':'');
+  const q=$('#aQ'); let tm; q.oninput=()=>{ clearTimeout(tm); tm=setTimeout(()=>{ AQ=q.value.trim(); aPpl().then(()=>{ const n=$('#aQ'); n.focus(); n.setSelectionRange(n.value.length,n.value.length); }); },450); };
+  aWho(); }
+const AKIND={welcome:'приветствие',ref_friend:'подарок от друга',ref_active:'за друга с роликом',ref_invite:'за друга',ref_purchase:'с покупки друга',ladder_edits:'лестница друзей',
+  grant:'начислил админ',purchase:'покупка',spend:'монтаж',refund:'возврат за сбой',points:'обмен баллов',sub_purchase:'подписка',sub_gift:'подписка в подарок',ladder:'ступень лестницы'};
+const AJOB={done:'готов',failed:'ошибка',queued:'в очереди',running:'монтируется',starting:'запуск',draft:'ждёт запуска'};
+async function aUser(tg){ const c=await api('/api/admin/user/'+tg), P_=c.partner;
+  $('#apane').innerHTML=`<button class="aback" id="aBack">‹ Все люди</button>
+  <div class="box glass" style="margin-top:4px"><h4>${esc(c.name||'Без имени')}${c.admin?'<span class="pbadge">админ</span>':''}${P_?`<span class="pbadge">${P_.kind==='ambassador'?'амбассадор':'партнёр'} ${+P_.pct}%</span>`:''}</h4>
+    <div class="note" style="margin:0">${c.username?'@'+esc(c.username)+' · ':''}id ${+c.tg_id} · с нами с ${fday(c.created)}${c.ref_by?' · пришёл от '+esc(c.ref_by.who):''}${c.source?' · реклама «'+esc(c.source)+'»':''}${c.seen?' · заходил '+fdt(c.seen):''}</div>
+    <div class="pstat"><div><b>${+c.balance}</b><span>баланс</span></div><div><b>${+c.done}</b><span>роликов</span></div><div><b>${+c.invited}/${+c.active}</b><span>привёл / с роликом</span></div><div><b>${arub(c.rub)}</b><span>оплатил</span></div></div>
+    ${c.sub?`<div class="note" style="margin:0">Подписка «${esc(c.sub.name)}»: осталось ${+c.sub.left} из ${+c.sub.per_month} в этом месяце, до ${fday(c.sub.until)}</div>`:''}
+    ${P_?`<div class="note" style="margin:4px 0 0">Баллов партнёра: ${+P_.points} · с оплат: ${+P_.paid_count}</div>`:''}
+    ${c.username?`<a class="pbtn ghost" style="text-align:center;text-decoration:none" href="https://t.me/${encodeURIComponent(c.username)}" target="_blank">Открыть чат в Telegram</a>`:''}</div>
+  <div class="box glass"><h4>Начислить монтажи</h4><div class="arow">${[1,3,5,10].map(n=>`<button class="pill" data-g="${n}">+${n}</button>`).join('')}<input class="anum" id="aGn" type="number" inputmode="numeric" min="1" max="1000" placeholder="своё"><button class="pill" id="aG">+</button></div>
+    <div class="note" style="margin:8px 0 0">Человеку придёт сообщение «Вам начислено…».</div></div>
+  <div class="box glass"><h4>Подарить подписку</h4><div class="arow"><select class="asel" id="aTier"><option value="start">Старт · 20/мес</option><option value="pro">Про · 50/мес</option><option value="max">Макс · 100/мес</option></select>
+    <select class="asel" id="aMon"><option value="1">1 мес</option><option value="3">3 мес</option><option value="12">12 мес</option></select><button class="pill" id="aSub">Подарить</button></div></div>
+  <div class="box glass"><h4>Партнёрство</h4><div class="arow"><button class="pill${P_&&P_.kind==='partner'?'':' ghost'}" data-p="partner">Партнёр ${+((D.tariffs||{}).partner_pct||15)}%</button><button class="pill${P_&&P_.kind==='ambassador'?'':' ghost'}" data-p="ambassador">Амбассадор ${+((D.tariffs||{}).amb_pct||25)}%</button>${P_?'<button class="pill ghost" data-p="off">Снять</button>':''}</div>
+    <div class="arow"><input class="anum" id="aPct" type="number" inputmode="numeric" min="1" max="90" placeholder="свой %"><span class="note" style="margin:0;flex:1">свой процент — впишите и нажмите «Партнёр» или «Амбассадор»</span></div></div>
+  <div class="box glass"><h4>Написать в бот</h4><textarea class="ainp" id="aMsg" placeholder="Придёт от «команды ЧикЧик», с кнопкой «Ответить»"></textarea><button class="pbtn" id="aSend">Отправить</button></div>
+  <div class="box glass"><h4>Ролики</h4>${c.jobs.map(j=>`<div class="aline"><span>${fdt(j.t)}</span><span class="badge ${esc(j.status)}">${AJOB[j.status]||esc(j.status)}</span>${j.error?`<small>${esc(j.error)}</small>`:''}</div>`).join('')||'<div class="note" style="margin:0">Пока нет</div>'}</div>
+  ${c.tickets.length?`<div class="box glass"><h4>Обращения</h4>${c.tickets.map(t=>`<div class="aline"><span>${fdt(t.t)}</span><span>${t.status==='new'?'🔴 ждёт ответа':t.status==='answered'?'отвечено':'решено'}</span><small>${esc(t.text)}</small></div>`).join('')}</div>`:''}
+  <div class="box glass"><h4>Операции по балансу</h4>${c.history.map(h=>`<div class="aline"><span>${fdt(h.created)}</span><span>${AKIND[h.kind]||esc(h.kind)}</span><b class="${h.amount<0?'neg':'pos'}">${h.amount>0?'+':''}${+h.amount}</b></div>`).join('')||'<div class="note" style="margin:0">Пусто</div>'}</div>`;
+  $('#aBack').onclick=()=>{ AUSER=null; renderAdmin(); };
+  const act=async(path,body,msg)=>{ try{ await apost('/api/admin/user/'+tg+path,body); toast(msg); aUser(tg); }catch(e){ toast(e.message); } };
+  $$('#apane [data-g]').forEach(b=>b.onclick=()=>act('/grant',{n:+b.dataset.g},'✓ +'+b.dataset.g+' на балансе'));
+  $('#aG').onclick=()=>{ const n=+$('#aGn').value; if(!(n>=1&&n<=1000)) return toast('От 1 до 1000'); act('/grant',{n},'✓ +'+n+' на балансе'); };
+  $('#aSub').onclick=async()=>{ const t=$('#aTier'), m=$('#aMon'); if(!await aConfirm('Подарить «'+t.selectedOptions[0].text+'» на '+m.value+' мес.?')) return; act('/sub',{tier:t.value,months:+m.value},'✓ Подписка подарена'); };
+  $$('#apane [data-p]').forEach(b=>b.onclick=async()=>{ const k=b.dataset.p, pct=+$('#aPct').value||null;
+    if(k==='off'){ if(!await aConfirm('Снять партнёрство?')) return; return act('/partner',{pct:0},'✓ Больше не партнёр'); }
+    act('/partner',{kind:k,pct},'✓ Готово, человеку пришло сообщение'); });
+  $('#aSend').onclick=async()=>{ const t=$('#aMsg').value.trim(); if(!t) return toast('Напишите сообщение');
+    try{ await apost('/api/admin/user/'+tg+'/message',{text:t}); toast('✓ Отправлено'); $('#aMsg').value=''; }catch(e){ toast(e.message); } }; }
+const AEVK=[['','Все'],['new','Новые'],['done','Ролики'],['fail','Сбои'],['support','Обращения'],['pay','Оплаты'],['partner','Партнёры'],['ref','Друзья'],['admin','Мои действия']];
+const AEVI={new:'👋',done:'🎬',fail:'⚠️',support:'💬',pay:'💰',partner:'🤝',ref:'🎁',admin:'🛠'};
+async function aEv(more){ const d=await api('/api/admin/events?limit=50'+(AEV_KIND?'&kind='+AEV_KIND:'')+(more?'&before='+more:''));
+  const list=d.events.map(e=>`<div class="aev"><span class="ei">${AEVI[e.kind]||'•'}</span><span><b>${esc(e.kind_name)}</b>${e.who?` · <button class="awho" data-u="${+e.tg_id}">${esc(e.who)}</button>`:''}<small>${esc(e.text)}</small></span><time>${fdt(e.t)}</time></div>`).join('');
+  if(more) $('#aEvList').insertAdjacentHTML('beforeend',list);
+  else $('#apane').innerHTML=`<div class="achips">${AEVK.map(([k,n])=>`<button class="${k===AEV_KIND?'on':''}" data-ek="${k}">${n}</button>`).join('')}</div><div class="box glass" id="aEvList">${list||'<div class="empty">Событий пока нет — они записываются с момента запуска кабинета</div>'}</div>`;
+  const mb=$('#aEvMore'); if(mb) mb.remove();
+  if(d.events.length===50){ $('#apane').insertAdjacentHTML('beforeend','<button class="pbtn ghost" id="aEvMore">Показать ещё</button>'); $('#aEvMore').onclick=()=>aEv(d.events[49].id).catch(e=>toast(e.message)); }
+  $$('#apane [data-ek]').forEach(b=>b.onclick=()=>{ AEV_KIND=b.dataset.ek; renderAdmin(); }); aWho(); }
+async function aAds(d){ d=d||await api('/api/admin/ads');
+  $('#apane').innerHTML=`<div class="box glass"><h4>Новая рекламная ссылка</h4><div class="note" style="margin:0 0 8px">Под каждое место рекламы — своя ссылка: видно, сколько по ней пришло, сделали ролик и оплатили.</div>
+    <input class="asearch" id="aAdN" placeholder="Где реклама: блогер, канал, пост" maxlength="60" style="margin:0"><button class="pbtn" id="aAdGo">Создать ссылку</button></div>`
+   +(d.ads.map(a=>{ const url='https://t.me/'+d.bot+'?start=ad_'+a.code; return `<div class="box glass"><h4>${esc(a.name)}</h4><div class="linkrow"><span>${esc(url.replace('https://',''))}</span><button class="pill" data-cp="${esc(url)}">Копировать</button></div>
+     <div class="pstat"><div><b>${+a.came}</b><span>пришли</span></div><div><b>${+a.made}</b><span>сделали ролик</span></div><div><b>${+a.payers}</b><span>оплатили</span></div><div><b>${arub(a.rub)}</b><span>выручка</span></div></div>
+     <div class="note" style="margin:0">создана ${fday(a.t)}${a.came?' · сделали ролик '+Math.round(a.made/a.came*100)+'% пришедших':''}</div></div>`; }).join('')
+    || '<div class="empty">Ссылок пока нет</div>');
+  $('#aAdGo').onclick=async()=>{ const n=$('#aAdN').value.trim(); if(!n) return toast('Напишите, где стоит реклама');
+    try{ const r=await apost('/api/admin/ads',{name:n}); try{ await navigator.clipboard.writeText(r.url); toast('✓ Ссылка создана и скопирована'); }catch(_){ toast('✓ Ссылка создана'); } aAds(r); }catch(e){ toast(e.message); } };
+  $$('#apane [data-cp]').forEach(b=>b.onclick=async()=>{ try{ await navigator.clipboard.writeText(b.dataset.cp); b.textContent='Скопировано'; }catch(_){ b.textContent='Не вышло'; } }); }
+async function aBc(){ $('#apane').innerHTML=`<div class="box glass"><h4>Сообщение всем</h4><div class="note" style="margin:0 0 8px">Придёт каждому, кто запускал бота, от «команды ЧикЧик». Уходит в фоне, итог пришлю в чат.</div>
+    <textarea class="ainp" id="aBcT" style="min-height:130px" placeholder="Например: подключили оплату — тарифы во вкладке «Профиль»"></textarea><button class="pbtn" id="aBcGo">Отправить всем</button></div>`;
+  $('#aBcGo').onclick=async()=>{ const t=$('#aBcT').value.trim(); if(t.length<3) return toast('Напишите сообщение');
+    if(!await aConfirm('Отправить это сообщение ВСЕМ пользователям бота?')) return;
+    try{ const r=await apost('/api/admin/broadcast',{text:t}); toast('✓ Рассылка пошла: '+r.to+' чел.'); $('#aBcT').value=''; }catch(e){ toast(e.message); } }; }
+
+if(tg){ tg.ready(); tg.expand(); try{ tg.setHeaderColor('#090a0d'); tg.setBackgroundColor('#090a0d'); }catch(e){} }
+if(!tg) $('#apane').innerHTML='<div class="empty">Кабинет открывается из бота: команда /admin → «Открыть кабинет».</div>', aTabs();
+else renderAdmin();
+</script>
+</body></html>
