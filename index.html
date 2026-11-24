@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='4dffc6b721';
+(function(){ var B='5cfce246e3';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1850,9 +1850,9 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
   <h1>Профиль</h1><div class="note" style="margin:0 4px"><b style="color:var(--txt);font-size:17px" id="bal">0</b> <span id="balW">монтажей</span></div>
   <!-- цены и пакеты скрыты до подключения оплаты (владелец 2026-11-19); вернуть — убрать hidden у трёх блоков -->
   <h3 hidden>Пакеты монтажей</h3><div id="plans" hidden></div>
+  <div class="box glass" id="pointsBox" style="margin-top:12px" hidden></div>
   <div id="tariffs"></div>
   <button class="paybtn glass" id="payBtn" hidden>Оплату подключаем, скоро заработает</button>
-  <div class="box glass" style="margin-top:14px"><h4>Оплата</h4><div class="note" style="margin:0">Функция оплаты появится в ближайшее время.</div></div>
   <div class="note">Монтаж списывается в момент запуска и возвращается, если ролик не получился.</div>
 </div></div>
 
@@ -3023,20 +3023,32 @@ function renderPartner(){ const box=$('#partnerBox'); if(!box) return; const TF=
       <div class="note" style="margin:0">${+P_.pct}% баллами с каждой оплаты тех, кто пришёл по вашей ссылке. 1 балл = 1 ₽.</div>
       <div class="pstat"><div><b>${+P_.points||0}</b><span>баллов</span></div><div><b>${+P_.paid_count||0}</b><span>оплат</span></div><div><b>${+P_.earned||0}</b><span>заработано</span></div></div>
       <button class="pbtn${can?'':' ghost'}" id="pex">${can?'Обменять на монтажи · до '+can:'Обмен: '+per+' баллов = 1 монтаж'}</button>`;
-    const b=$('#pex'); if(can) b.onclick=e=>{ const opts=[1,5,10,25,can].filter((x,i,a)=>x<=can&&a.indexOf(x)===i);
-      popup(e.currentTarget,'Сколько монтажей?',opts.map(n=>[n+' '+plural(n,'монтаж','монтажа','монтажей'),(n*per)+' баллов']),opts.length-1,async i=>{
-        try{ const r=await api('/api/points/exchange',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({n:opts[i]})});
-          U.partner=r.partner; U.balance=r.balance; toast('✓ +'+opts[i]+' '+plural(opts[i],'монтаж','монтажа','монтажей')+' на балансе'); fillPages(); }
-        catch(er){ toast(API0?er.message:'Откройте приложение из бота'); } }); }; return; }
+    const b=$('#pex'); if(can) b.onclick=e=>exchangePoints(e.currentTarget); return; }
   box.innerHTML=`<h4>Партнёрская программа</h4>
-    <div class="note" style="margin:0">${+TF.partner_pct||15}% баллами с <b style="color:var(--txt)">каждой</b> оплаты тех, кто пришёл по вашей ссылке, а не только с первой. 1 балл = 1 ₽, баллы меняются на монтажи.<br>Блогерам — от ${+TF.amb_pct||25}% и индивидуальные условия.</div>
-    <button class="pbtn" id="papply">Стать партнёром</button>`;
+    <div class="note" style="margin:0">${+TF.partner_pct||15}% баллами с <b style="color:var(--txt)">каждой</b> оплаты тех, кто пришёл по вашей ссылке, а не только с первой. 1 балл = 1 ₽, баллы меняются на монтажи.</div>
+    <div class="note" style="margin:8px 0 0"><b style="color:var(--txt)">Как стать партнёром:</b> автоматически — когда 25 друзей сделают ролик; или по заявке — для блогеров и тех, у кого есть аудитория. Блогерам — от ${+TF.amb_pct||25}% и индивидуальные условия.</div>
+    <button class="pbtn" id="papply">Подать заявку</button>`;
   $('#papply').onclick=async()=>{ const me=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user, who=me?((me.first_name||'')+(me.username?' @'+me.username:'')):'';
     try{ await api('/api/partner/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({who})}); toast('✓ Заявка отправлена — ответим в чате'); $('#papply').textContent='Заявка отправлена'; $('#papply').disabled=true; }
     catch(e){ toast(API0?e.message:'Откройте приложение из бота'); } }; }
+/* обмен баллов на монтажи — из «Профиля» и из «Пригласить» */
+function exchangePoints(anchor){ const P_=U.partner||{}, per=(D.tariffs||{}).pts_per_edit||65, can=Math.floor((+P_.points||0)/per);
+  if(!can){ toast('Нужно '+per+' баллов на 1 монтаж'); return; } const opts=[1,5,10,25,can].filter((x,i,a)=>x<=can&&a.indexOf(x)===i);
+  popup(anchor,'Сколько монтажей?',opts.map(n=>[n+' '+plural(n,'монтаж','монтажа','монтажей'),(n*per)+' баллов']),opts.length-1,async i=>{
+    try{ const r=await api('/api/points/exchange',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({n:opts[i]})});
+      U.partner=r.partner; U.balance=r.balance; toast('✓ +'+opts[i]+' '+plural(opts[i],'монтаж','монтажа','монтажей')+' на балансе'); fillPages(); }
+    catch(er){ toast(API0?er.message:'Откройте приложение из бота'); } }); }
+/* баллы в «Профиле»: видны партнёру сразу под балансом */
+function renderPoints(){ const box=$('#pointsBox'); if(!box) return; const P_=U.partner; if(!P_){ box.hidden=true; return; }
+  const per=(D.tariffs||{}).pts_per_edit||65, can=Math.floor((+P_.points||0)/per); box.hidden=false;
+  box.innerHTML=`<h4>Баллы партнёра<span class="pbadge">${+P_.pct}%</span></h4>
+    <div class="pstat"><div><b>${+P_.points||0}</b><span>баллов</span></div><div><b>${can}</b><span>можно монтажей</span></div></div>
+    <div class="note" style="margin:0">1 балл = 1 ₽ · ${per} баллов = 1 монтаж. Начисляются с каждой оплаты ваших друзей.</div>
+    <button class="pbtn${can?'':' ghost'}" id="pex2">${can?'Обменять на монтажи':'Пока мало баллов для обмена'}</button>`;
+  $('#pex2').onclick=e=>exchangePoints(e.currentTarget); }
 function renderTariffs(){ const box=$('#tariffs'); if(!box) return; const TF=D.tariffs||{}; if(!U.show_prices||!(TF.tiers||[]).length){ box.innerHTML=''; return; }
   const m=TRM, fmt=v=>(+v).toLocaleString('ru-RU')+' ₽', sub=U.sub;
-  let h='<h3>Тарифы</h3>'+(U.balance<0?'<div class="note">Видно только вам: остальным цены откроются вместе с оплатой.</div>':'')
+  let h='<h3>Тарифы</h3>'
     +(sub?`<div class="note" style="margin:0 4px 8px">Ваша подписка «${esc(sub.name)}»: осталось ${+sub.left} из ${+sub.per_month} в этом месяце.</div>`:'')
     +'<div class="trm">'+[['1','1 месяц','без скидки'],['3','3 месяца','дешевле'],['12','12 месяцев','выгоднее всего']].map(x=>`<button data-trm="${x[0]}" class="${x[0]===m?'on':''}">${x[1]}<small>${x[2]}</small></button>`).join('')+'</div>';
   TF.tiers.forEach((t,i)=>{ const pm=+t.prices[m], base=+t.prices['1'], k=+m, save=(base-pm)*k;
@@ -3044,8 +3056,9 @@ function renderTariffs(){ const box=$('#tariffs'); if(!box) return; const TF=D.t
       <div class="tp"><b>${fmt(pm)}</b><small>в месяц</small>${save>0?`<div class="sv">экономия ${fmt(save)}</div>`:''}</div></div>`; });
   h+='<div class="note" style="margin:2px 4px 10px">Монтажи подписки обновляются раз в месяц, в день оплаты. Не хватило — докупите пакет.</div><h3>Пакеты · не сгорают</h3>';
   (TF.packs||[]).forEach(p=>{ h+=`<div class="tcard"><div class="tn"><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${(p.price/p.n).toFixed(0)} ₽ за монтаж · разово</small></div><div class="tp"><b>${fmt(p.price)}</b></div></div>`; });
-  h+='<button class="pbtn ghost" disabled>Оплата подключается</button>';
-  box.innerHTML=h; box.querySelectorAll('[data-trm]').forEach(b=>b.onclick=()=>{ TRM=b.dataset.trm; renderTariffs(); }); }
+  h+='<button class="pbtn ghost" id="payOff">💳 Оплата временно недоступна</button>';
+  box.innerHTML=h; box.querySelectorAll('[data-trm]').forEach(b=>b.onclick=()=>{ TRM=b.dataset.trm; renderTariffs(); });
+  const po=$('#payOff'); if(po) po.onclick=()=>toast('Оплата временно недоступна — скоро подключим. Пока монтажи — за приглашённых друзей.'); }
 /* лестница наград за друзей (владелец 2026-11-24): считаются друзья, сделавшие первый ролик */
 function renderLadder(){ const box=$('#ladderBox'); if(!box) return; const L=(D.tariffs||{}).ladder||[], a=+U.active||0; if(!L.length){ box.innerHTML=''; return; }
   const NM={edits:x=>'+'+x[2]+' монтажей',sub:()=>'месяц «Старта» бесплатно',partner:()=>'партнёр: 15% баллами с оплат друзей',ambassador:()=>'«Про» на месяц и амбассадор'};
@@ -3057,7 +3070,7 @@ function shareRef(){ const link=U.ref||'', fb=+U.friend_bonus||3, txt=`Монт�
   if(!link){ toast('Откройте приложение из бота'); return; }
   const u='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(txt);
   try{ if(tg&&tg.openTelegramLink){ tg.openTelegramLink(u); return; } }catch(e){} window.open(u,'_blank'); }
-function fillPages(){ try{ renderPartner(); renderTariffs(); renderLadder(); const sb=$('#shareref'); if(sb) sb.onclick=shareRef; }catch(e){}
+function fillPages(){ try{ renderPartner(); renderPoints(); renderTariffs(); renderLadder(); const sb=$('#shareref'); if(sb) sb.onclick=shareRef; }catch(e){}
   const bal=+U.balance||0; $('#bal').textContent=knowBalance?(bal<0?'∞':bal):''; $('#balW').textContent=knowBalance?(bal<0?'Безлимит: монтируйте сколько угодно':plural(bal,'монтаж','монтажа','монтажей')+' на балансе, без срока'):'Сколько монтажей осталось, покажет кнопка «Баланс» в чате';
   const pk=U.packages||[]; if(pk.length && !fillPages.init){ fillPages.init=1; curPlan=Math.max(0,pk.findIndex(p=>p.best)); }
   $('#plans').innerHTML=pk.map((p,i)=>`<button class="plan glass${i===curPlan?' on':''}" data-plan="${i}">${p.best?'<span class="flag">ЛУЧШАЯ ЦЕНА ЗА МОНТАЖ</span>':''}<span class="rd"></span><span><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${esc(p.note||'не сгорают')}</small></span><span class="pr">${esc(p.price)}</span></button>`).join('') || '<div class="empty">Пакеты появятся здесь.</div>';
