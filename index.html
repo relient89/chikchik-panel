@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='63e25ebd64';
+(function(){ var B='ee9b58d5aa';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -3078,7 +3078,7 @@ function renderTariffs(){ const box=$('#tariffs'); if(!box) return; const TF=D.t
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   function size(){ const box=$('#tariffs'); if(!box||!cv) return; const d=Math.min(2,window.devicePixelRatio||1); W=box.clientWidth; H=box.scrollHeight;
     cv.width=W*d; cv.height=H*d; cv.style.height=H+'px'; ctx.setTransform(d,0,0,d,0,0); }
-  function make(y){ const r=Math.random(); const big=Math.random()<.22; return {x:Math.random()*W, y:y==null?Math.random()*H:y, r:big?4+r*3:1+r*2.2, big, rot:Math.random()*6.28, rs:(Math.random()-.5)*1.2, v:big?14+r*14:12+r*26, a:Math.random()*6.28, w:.4+Math.random()*.8, o:big?.55+r*.35:.35+r*.55}; }
+  function make(y){ const r=Math.random(); const big=Math.random()<.3; return {x:Math.random()*W, y:y==null?Math.random()*H:y, r:big?4+r*3:1+r*2.2, big, rot:Math.random()*6.28, rs:(Math.random()-.5)*1.2, v:big?8+r*8:7+r*12, a:Math.random()*6.28, w:.4+Math.random()*.8, o:big?.35+r*.25:.2+r*.3}; }
   function tick(t){ raf=requestAnimationFrame(tick); const dt=Math.min(.05,(t-(last||t))/1000); last=t;
     if(curView!=='pay'||!cv||!cv.isConnected){ stop(); return; }
     ctx.clearRect(0,0,W,H);
@@ -3091,7 +3091,7 @@ function renderTariffs(){ const box=$('#tariffs'); if(!box) return; const TF=D.t
       else { ctx.beginPath(); ctx.arc(x,f.y,f.r,0,6.283); ctx.fillStyle='#fff'; ctx.shadowBlur=f.r*3; ctx.fill(); } } }
   function stop(){ if(raf) cancelAnimationFrame(raf); raf=0; last=0; }
   window.startSnow=function(){ stop(); if(reduce) return; cv=$('#snow'); if(!cv) return; ctx=cv.getContext('2d'); size();
-    const n=Math.max(25,Math.min(60,Math.round(W*H/9000))); flakes=Array.from({length:n},()=>make()); raf=requestAnimationFrame(tick); };
+    const n=Math.max(8,Math.min(18,Math.round(W*H/40000))); flakes=Array.from({length:n},()=>make()); raf=requestAnimationFrame(tick); };
   window.addEventListener('resize',()=>{ if(raf) size(); }); })();
 /* лестница наград за друзей (владелец 2026-11-24): считаются друзья, сделавшие первый ролик */
 function renderLadder(){ const box=$('#ladderBox'); if(!box) return; const L=(D.tariffs||{}).ladder||[], a=+U.active||0; if(!L.length){ box.innerHTML=''; return; }
