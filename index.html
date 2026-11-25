@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='fafa1cc22b';
+(function(){ var B='63e25ebd64';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -338,6 +338,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .tcard .tot{display:block;color:var(--txt);font-size:13px;font-weight:700;margin-top:3px}
 .promo{margin:4px 0 10px;padding:11px 14px;border-radius:14px;background:linear-gradient(90deg,rgba(255,90,90,.22),rgba(198,255,74,.14));border:1px solid rgba(255,90,90,.45);font-size:13.5px;line-height:1.35}
 .promo b{color:#fff}
+#tariffs{position:relative}#snow{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .pstat{display:flex;gap:8px;margin:10px 0}.pstat div{flex:1;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);text-align:center}
 .pstat b{display:block;font-size:19px}.pstat span{font-size:11px;color:var(--mut)}
 .pbtn{display:block;width:100%;margin-top:10px;padding:13px;border-radius:14px;background:var(--acc);color:#111;font-weight:800;font-size:15px}
@@ -3068,8 +3069,30 @@ function renderTariffs(){ const box=$('#tariffs'); if(!box) return; const TF=D.t
   h+='<div class="note" style="margin:2px 4px 10px">Монтажи подписки обновляются раз в месяц, в день оплаты. Не хватило — докупите пакет.</div><h3>Пакеты · не сгорают</h3>';
   (TF.packs||[]).forEach(p=>{ h+=`<div class="tcard"><div class="tn"><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${(p.price/p.n).toFixed(0)} ₽ за монтаж · разово</small></div><div class="tp">${pc(+p.regular||0,p.price)?`<span class="old">${fmt(p.regular)}</span>`:''}<b>${fmt(p.price)}</b>${pc(+p.regular||0,p.price)?`<span class="off">−${pc(+p.regular,p.price)}%</span>`:''}</div></div>`; });
   h+='<button class="pbtn ghost" id="payOff">💳 Оплата временно недоступна</button>';
+  h+='<canvas id="snow" aria-hidden="true"></canvas>';
   box.innerHTML=h; box.querySelectorAll('[data-trm]').forEach(b=>b.onclick=()=>{ TRM=b.dataset.trm; renderTariffs(); });
+  setTimeout(()=>{ try{ startSnow(); }catch(e){} },60);
   const po=$('#payOff'); if(po) po.onclick=()=>toast('Оплата временно недоступна — скоро подключим. Пока монтажи — за приглашённых друзей.'); }
+/* лёгкий снегопад над тарифами (владелец 2026-11-25): канвас, ~45 снежинок, только когда открыт «Профиль»; уважает «меньше движения» */
+(function(){ let raf=0, flakes=[], cv=null, ctx=null, W=0, H=0, last=0;
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function size(){ const box=$('#tariffs'); if(!box||!cv) return; const d=Math.min(2,window.devicePixelRatio||1); W=box.clientWidth; H=box.scrollHeight;
+    cv.width=W*d; cv.height=H*d; cv.style.height=H+'px'; ctx.setTransform(d,0,0,d,0,0); }
+  function make(y){ const r=Math.random(); const big=Math.random()<.22; return {x:Math.random()*W, y:y==null?Math.random()*H:y, r:big?4+r*3:1+r*2.2, big, rot:Math.random()*6.28, rs:(Math.random()-.5)*1.2, v:big?14+r*14:12+r*26, a:Math.random()*6.28, w:.4+Math.random()*.8, o:big?.55+r*.35:.35+r*.55}; }
+  function tick(t){ raf=requestAnimationFrame(tick); const dt=Math.min(.05,(t-(last||t))/1000); last=t;
+    if(curView!=='pay'||!cv||!cv.isConnected){ stop(); return; }
+    ctx.clearRect(0,0,W,H);
+    for(const f of flakes){ f.y+=f.v*dt; f.a+=f.w*dt; const x=f.x+Math.sin(f.a)*10;
+      if(f.y>H+6){ Object.assign(f,make(-6)); }
+      ctx.globalAlpha=f.o; ctx.shadowColor='rgba(220,240,255,.95)';
+      if(f.big){ f.rot+=f.rs*dt; ctx.save(); ctx.translate(x,f.y); ctx.rotate(f.rot); ctx.strokeStyle='#fff'; ctx.lineWidth=1.1; ctx.lineCap='round'; ctx.shadowBlur=6; ctx.beginPath();
+        for(let k=0;k<6;k++){ ctx.rotate(1.0472); ctx.moveTo(0,0); ctx.lineTo(0,-f.r); ctx.moveTo(0,-f.r*.55); ctx.lineTo(f.r*.28,-f.r*.8); ctx.moveTo(0,-f.r*.55); ctx.lineTo(-f.r*.28,-f.r*.8); }
+        ctx.stroke(); ctx.restore(); }
+      else { ctx.beginPath(); ctx.arc(x,f.y,f.r,0,6.283); ctx.fillStyle='#fff'; ctx.shadowBlur=f.r*3; ctx.fill(); } } }
+  function stop(){ if(raf) cancelAnimationFrame(raf); raf=0; last=0; }
+  window.startSnow=function(){ stop(); if(reduce) return; cv=$('#snow'); if(!cv) return; ctx=cv.getContext('2d'); size();
+    const n=Math.max(25,Math.min(60,Math.round(W*H/9000))); flakes=Array.from({length:n},()=>make()); raf=requestAnimationFrame(tick); };
+  window.addEventListener('resize',()=>{ if(raf) size(); }); })();
 /* лестница наград за друзей (владелец 2026-11-24): считаются друзья, сделавшие первый ролик */
 function renderLadder(){ const box=$('#ladderBox'); if(!box) return; const L=(D.tariffs||{}).ladder||[], a=+U.active||0; if(!L.length){ box.innerHTML=''; return; }
   const NM={edits:x=>'+'+x[2]+' монтажей',sub:()=>'месяц «Старта» бесплатно',partner:()=>'партнёр: 15% баллами с оплат друзей',ambassador:()=>'«Про» на месяц и амбассадор'};
