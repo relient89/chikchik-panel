@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='3a1475c400';
+(function(){ var B='fafa1cc22b';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -338,7 +338,6 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .tcard .tot{display:block;color:var(--txt);font-size:13px;font-weight:700;margin-top:3px}
 .promo{margin:4px 0 10px;padding:11px 14px;border-radius:14px;background:linear-gradient(90deg,rgba(255,90,90,.22),rgba(198,255,74,.14));border:1px solid rgba(255,90,90,.45);font-size:13.5px;line-height:1.35}
 .promo b{color:#fff}
-.tcard .tp b.hat{position:relative;display:inline-block;margin-top:12px}.tcard .tp b.hat::before{content:'';position:absolute;left:-9px;top:-15px;width:27px;height:22px;transform:rotate(-20deg);background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 52'><path d='M8 40 C14 18 30 4 46 6 C54 7 58 14 56 22 C52 16 46 15 42 20 C36 28 34 34 34 40 Z' fill='%23e3262f'/><path d='M8 40 C14 18 30 4 46 6 C40 10 34 18 30 40 Z' fill='%23ff4a4f' opacity='.55'/><rect x='4' y='36' width='36' height='11' rx='5.5' fill='%23fff'/><circle cx='57' cy='24' r='6.5' fill='%23fff'/></svg>") center/contain no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));pointer-events:none}
 .pstat{display:flex;gap:8px;margin:10px 0}.pstat div{flex:1;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);text-align:center}
 .pstat b{display:block;font-size:19px}.pstat span{font-size:11px;color:var(--mut)}
 .pbtn{display:block;width:100%;margin-top:10px;padding:13px;border-radius:14px;background:var(--acc);color:#111;font-weight:800;font-size:15px}
@@ -3060,14 +3059,14 @@ function renderTariffs(){ const box=$('#tariffs'); if(!box) return; const TF=D.t
   const m=TRM, fmt=v=>(+v).toLocaleString('ru-RU')+' ₽', sub=U.sub;
   const pc=(o,n)=>o>n?Math.round(100*(o-n)/o):0;
   let h='<h3>Тарифы</h3>'
-    +(TF.promo_until?`<div class="promo">🎄 <b>Праздничная акция в честь запуска</b> — цены ниже обычных до ${esc(TF.promo_until)}</div>`:'')
+    +(TF.promo_until?`<div class="promo">🔥 <b>Акция в честь запуска</b> — цены ниже обычных до ${esc(TF.promo_until)}</div>`:'')
     +(sub?`<div class="note" style="margin:0 4px 8px">Ваша подписка «${esc(sub.name)}»: осталось ${+sub.left} из ${+sub.per_month} в этом месяце.</div>`:'')
     +'<div class="trm">'+[['1','1 месяц','помесячно'],['3','3 месяца','дешевле'],['12','12 месяцев','выгоднее всего']].map(x=>`<button data-trm="${x[0]}" class="${x[0]===m?'on':''}">${x[1]}<small>${x[2]}</small></button>`).join('')+'</div>';
   TF.tiers.forEach((t,i)=>{ const pm=+t.prices[m], base=+t.prices['1'], k=+m, save=(base-pm)*k, old=+((t.regular||{})[m]||0), off=pc(old,pm);
     h+=`<div class="tcard${i===1?' hot':''}"><div class="tn"><b>${esc(t.name)}</b>${i===1?'<span class="pbadge">чаще всего</span>':''}<small>${+t.n} монтажей в месяц · ${(pm/t.n).toFixed(1).replace('.',',')} ₽ за монтаж</small>${k>1?`<span class="tot">${fmt(pm*k)} за ${k} ${plural(k,'месяц','месяца','месяцев')}</span>`:''}</div>
-      <div class="tp">${off?`<span class="old">${fmt(old)}</span>`:''}<b${off?' class="hat"':''}>${fmt(pm)}</b><small>в месяц</small>${off?`<span class="off">−${off}%</span>`:''}${save>0?`<div class="sv">экономия ${fmt(save)}</div>`:''}</div></div>`; });
+      <div class="tp">${off?`<span class="old">${fmt(old)}</span>`:''}<b>${fmt(pm)}</b><small>в месяц</small>${off?`<span class="off">−${off}%</span>`:''}${save>0?`<div class="sv">экономия ${fmt(save)}</div>`:''}</div></div>`; });
   h+='<div class="note" style="margin:2px 4px 10px">Монтажи подписки обновляются раз в месяц, в день оплаты. Не хватило — докупите пакет.</div><h3>Пакеты · не сгорают</h3>';
-  (TF.packs||[]).forEach(p=>{ h+=`<div class="tcard"><div class="tn"><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${(p.price/p.n).toFixed(0)} ₽ за монтаж · разово</small></div><div class="tp">${pc(+p.regular||0,p.price)?`<span class="old">${fmt(p.regular)}</span>`:''}<b${pc(+p.regular||0,p.price)?' class="hat"':''}>${fmt(p.price)}</b>${pc(+p.regular||0,p.price)?`<span class="off">−${pc(+p.regular,p.price)}%</span>`:''}</div></div>`; });
+  (TF.packs||[]).forEach(p=>{ h+=`<div class="tcard"><div class="tn"><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${(p.price/p.n).toFixed(0)} ₽ за монтаж · разово</small></div><div class="tp">${pc(+p.regular||0,p.price)?`<span class="old">${fmt(p.regular)}</span>`:''}<b>${fmt(p.price)}</b>${pc(+p.regular||0,p.price)?`<span class="off">−${pc(+p.regular,p.price)}%</span>`:''}</div></div>`; });
   h+='<button class="pbtn ghost" id="payOff">💳 Оплата временно недоступна</button>';
   box.innerHTML=h; box.querySelectorAll('[data-trm]').forEach(b=>b.onclick=()=>{ TRM=b.dataset.trm; renderTariffs(); });
   const po=$('#payOff'); if(po) po.onclick=()=>toast('Оплата временно недоступна — скоро подключим. Пока монтажи — за приглашённых друзей.'); }
