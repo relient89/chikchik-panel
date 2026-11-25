@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='ee9b58d5aa';
+(function(){ var B='acf7305bd7';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -3056,6 +3056,7 @@ function renderPoints(){ const box=$('#pointsBox'); if(!box) return; const P_=U.
     <div class="note" style="margin:0">1 балл = 1 ₽ · ${per} баллов = 1 монтаж. Начисляются с каждой оплаты ваших друзей.</div>
     <button class="pbtn${can?'':' ghost'}" id="pex2">${can?'Обменять на монтажи':'Пока мало баллов для обмена'}</button>`;
   $('#pex2').onclick=e=>exchangePoints(e.currentTarget); }
+let PAYM='once';
 function renderTariffs(){ const box=$('#tariffs'); if(!box) return; const TF=D.tariffs||{}; if(U.show_prices===false||!(TF.tiers||[]).length){ box.innerHTML=''; return; }   /* видны всем (2026-11-24), и при запуске кнопкой у скрепки, где данных о человеке в адресе нет */
   const m=TRM, fmt=v=>(+v).toLocaleString('ru-RU')+' ₽', sub=U.sub;
   const pc=(o,n)=>o>n?Math.round(100*(o-n)/o):0;
@@ -3068,9 +3069,11 @@ function renderTariffs(){ const box=$('#tariffs'); if(!box) return; const TF=D.t
       <div class="tp">${off?`<span class="old">${fmt(old)}</span>`:''}<b>${fmt(pm)}</b><small>в месяц</small>${off?`<span class="off">−${off}%</span>`:''}${save>0?`<div class="sv">экономия ${fmt(save)}</div>`:''}</div></div>`; });
   h+='<div class="note" style="margin:2px 4px 10px">Монтажи подписки обновляются раз в месяц, в день оплаты. Не хватило — докупите пакет.</div><h3>Пакеты · не сгорают</h3>';
   (TF.packs||[]).forEach(p=>{ h+=`<div class="tcard"><div class="tn"><b>${+p.n} ${plural(+p.n,'монтаж','монтажа','монтажей')}</b><small>${(p.price/p.n).toFixed(0)} ₽ за монтаж · разово</small></div><div class="tp">${pc(+p.regular||0,p.price)?`<span class="old">${fmt(p.regular)}</span>`:''}<b>${fmt(p.price)}</b>${pc(+p.regular||0,p.price)?`<span class="off">−${pc(+p.regular,p.price)}%</span>`:''}</div></div>`; });
+  h+='<h3>Способ оплаты тарифа</h3><div class="trm" id="paym">'+[['once','Разово','за весь срок'],['auto','Подписка','с автопродлением']].map(x=>`<button data-pm="${x[0]}" class="${x[0]===PAYM?'on':''}">${x[1]}<small>${x[2]}</small></button>`).join('')+'</div>'+`<div class="note" style="margin:2px 4px 8px">${PAYM==='auto'?'Продлевается сам на тот же срок, списание в день окончания. Напомним в боте за день. Отменить можно в любой момент — оплаченный срок останется.':'Один платёж за выбранный срок, без продления. Потом продлите сами, когда захотите.'} Пакеты — только разово.</div>`;
   h+='<button class="pbtn ghost" id="payOff">💳 Оплата временно недоступна</button>';
   h+='<canvas id="snow" aria-hidden="true"></canvas>';
-  box.innerHTML=h; box.querySelectorAll('[data-trm]').forEach(b=>b.onclick=()=>{ TRM=b.dataset.trm; renderTariffs(); });
+  box.innerHTML=h; box.querySelectorAll('[data-pm]').forEach(b=>b.onclick=()=>{ PAYM=b.dataset.pm; renderTariffs(); });
+  box.querySelectorAll('[data-trm]').forEach(b=>b.onclick=()=>{ TRM=b.dataset.trm; renderTariffs(); });
   setTimeout(()=>{ try{ startSnow(); }catch(e){} },60);
   const po=$('#payOff'); if(po) po.onclick=()=>toast('Оплата временно недоступна — скоро подключим. Пока монтажи — за приглашённых друзей.'); }
 /* лёгкий снегопад над тарифами (владелец 2026-11-25): канвас, ~45 снежинок, только когда открыт «Профиль»; уважает «меньше движения» */
