@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='b4e86ac137';
+(function(){ var B='b580a99017';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -644,6 +644,7 @@ h3{margin:18px 4px 8px;font-size:12px;letter-spacing:.08em;text-transform:upperc
 .ui3 .strip3{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
 .ui3 .strip3 .sc{min-width:0;padding-right:8px}.ui3 .strip3 .sc>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .ui3 .strip3 .sc small{overflow:hidden;text-overflow:ellipsis}
+.ui3 .strip3 .sc.add3{grid-column:1/-1;justify-content:center}   /* суфлёр — одна длинная кнопка на всю ширину (владелец 2026-11-26) */
 .ui3 .strip3 .sc{white-space:normal;line-height:1.15;gap:7px;padding:6px 8px 6px 6px;min-height:52px}.ui3 .strip3 .sc .th{flex:none;width:28px;height:28px}
 .ui2 #lstBody textarea{border-radius:14px;border:1px solid var(--rim);background:rgba(0,0,0,.25);color:#fff;font:inherit;font-size:15px;line-height:1.35;padding:12px 14px;min-height:76px;resize:vertical}
 .ui2 #lstBody textarea::placeholder{color:var(--mut)}
