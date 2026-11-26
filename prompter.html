@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Суфлёр ЧикЧик</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+html,body{margin:0;height:100%;background:#0b0c10;color:#f3f5f7;font:15px/1.45 -apple-system,system-ui,Segoe UI,Roboto,sans-serif}
+#box{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px}
+h1{font-size:24px;margin:0 0 10px}
+p{color:#9aa0aa;margin:0 0 18px}
+button{border:1px solid #c8ff3c;background:#c8ff3c;color:#111;border-radius:999px;padding:12px 22px;font-weight:700;font-size:15px}
+</style>
+</head>
+<body>
+<div id="box"><div><h1>🎥 Суфлёр</h1><p id="msg">Загружаю…</p><button id="btn" hidden>Закрыть</button></div></div>
+<script>
+// Оболочка: код суфлёра отдаёт сервер бота и только тем, кто оплатил тариф или пакет (владелец 2026-11-26).
+(async () => {
+  const tg = window.Telegram && Telegram.WebApp; try { tg.ready(); tg.expand(); } catch (e) {}
+  const api = (new URLSearchParams(location.search).get("a") || "").replace(/\/+$/, "");
+  const msg = document.getElementById("msg"), btn = document.getElementById("btn");
+  btn.onclick = () => { try { tg.close(); } catch (e) {} };
+  if (!api || !tg || !tg.initData) { msg.textContent = "Откройте суфлёр кнопкой «🎥 Суфлёр» в чате с ботом."; btn.hidden = false; return; }
+  try {
+    const r = await fetch(api + "/api/prompter", { headers: { "X-Tg": tg.initData } });
+    if (r.status === 402) {
+      msg.innerHTML = "Суфлёр работает, пока у вас есть оплаченные монтажи (любой тариф или пакет).<br>Тарифы — в «💰 Баланс» в чате.";
+      btn.hidden = false; return;
+    }
+    if (!r.ok) throw new Error(r.status + " " + r.statusText);
+    const d = await r.json();
+    const cfg = "<script>window.PCFG=" + JSON.stringify({ api, app_url: d.app_url }).replace(/</g, "\\u003c") + ";<\/script>";
+    document.open(); document.write(d.html.replace("<head>", "<head>" + cfg)); document.close();
+  } catch (e) {
+    msg.textContent = "Не удалось открыть суфлёр: " + e.message + ". Попробуйте ещё раз через минуту.";
+    btn.hidden = false;
+  }
+})();
+</script>
+</body>
+</html>
