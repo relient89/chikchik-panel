@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='acf7305bd7';
+(function(){ var B='b4e86ac137';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -1380,7 +1380,8 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .pro li::before{display:none}
 .pro li .box{flex:none;width:44px;height:44px;border-radius:13px;border:3px solid rgba(255,255,255,.5);box-sizing:border-box;
      display:grid;place-items:center;font-size:30px;line-height:1;color:transparent}
-.pro li>span:last-child{min-width:0;overflow-wrap:anywhere}.pro .tx{overflow-wrap:anywhere}
+.pro li>span:last-child{min-width:0}
+.card,.card *{overflow-wrap:normal;word-break:normal;hyphens:none;-webkit-hyphens:none}
 .pro li.on{color:#fff}.pro li.on .box{background:var(--c);border-color:var(--c);color:#111}
 .st-v_classic .pro{background:#15171c;border-radius:30px;box-shadow:0 18px 44px rgba(0,0,0,.42)}
 .st-v_classic .pro .cap{background:var(--c);color:#111}
@@ -1576,6 +1577,12 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .anim .pro .klab{animation:wipe .25s linear .25s both}
 /* «Подписывайтесь» (2026-11-22): аватар, призыв, кнопка нажимается и становится «Вы подписаны» */
 .pro.k-follow{max-width:none}.pro .fol{display:flex;align-items:center;gap:20px}
+/* призыв никогда не мелкий (владелец 2026-11-25): низкая капсула — значок, подпись, крупный текст; встаёт над лицом крупно */
+.pro.k-follow{display:flex;align-items:center;gap:18px;padding:12px 36px 12px 12px;border-radius:999px;max-width:none}
+.pro .fcap small{display:block;font:700 22px/1.2 'Manr',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:4px;white-space:nowrap}
+.pro .fcap b{display:block;font-size:56px;font-weight:800;line-height:1.05;white-space:nowrap}
+.st-v_light .pro .fcap small{color:rgba(20,22,26,.55)}
+.anim .pro.k-follow{animation:sh-left .34s cubic-bezier(.3,1.2,.5,1) both}
 .pro .fava{flex:none;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);
      border:2px solid rgba(255,255,255,.5);color:#fff}
 .pro .fava svg{width:44px;height:44px}
@@ -1629,8 +1636,8 @@ li::before{content:'';display:inline-block;width:14px;height:14px;border-radius:
 .pro .pc.minus{visibility:hidden}.pro .pc.minus.on{visibility:visible}
 .pro .ph{display:flex;align-items:center;gap:12px;font:800 28px/1 'Manr','Onest',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
 .pro .pm{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:26px;background:var(--c);color:#111}
-.pro .minus .pm{background:rgba(255,255,255,.2);color:inherit}
-.st-v_light .pro .minus .pm{background:rgba(20,22,26,.12)}
+.pro .minus .pm{background:#ff5d5d;color:#fff}      /* владелец 25.11: серый крестик выглядел как «не отмечено» */
+.st-v_light .pro .minus .pm{background:#e5484d;color:#fff}
 .pro .pi{font-size:36px;font-weight:600;line-height:1.2;margin:8px 0}
 .anim .pro .pc.minus.on{animation:wipe .35s cubic-bezier(.3,.6,.4,1) 1.1s both}
 .pro .cht{display:flex;align-items:flex-end;gap:16px}
@@ -2002,7 +2009,11 @@ function renderStrip3(){ if(!UI3) return; const box=$('#strip3'); box.innerHTML=
   const im=(INSM.find(x=>x[0]===P.ins_mode)||INSM[0])[1], nv=vidCount(), ni=insCount();
   /* владелец 2026-11-16: две кнопки в один ряд; каждая открывает свой экран с файлами и настройками */
   chip('add','+','Добавить видео',nv?nv+' '+plural(nv,'видео','видео','видео'):'',()=>openSheet('parts'));
-  chip('add add2','+','Добавить вставку',ni?ni+' · '+im.toLowerCase():'',()=>openSheet('ins')); }
+  chip('add add2','+','Добавить вставку',ni?ni+' · '+im.toLowerCase():'',()=>openSheet('ins'));
+  /* владелец 2026-11-26: суфлёр прямо в приложении (доступ проверяет сервер: только при оплаченных монтажах) */
+  chip('add add3','🎥','Суфлёр','запись с текстом',openPrompter); }
+function openPrompter(){ const a=API||API0; if(!a){ toast('Суфлёр откроется, когда приложение подключится к боту'); return; }
+  location.href='prompter.html?v='+Date.now()+'&from=app&a='+encodeURIComponent(a); }
 const vidCount=()=>API&&AS ? (AS.main?1+AS.parts.length:0) : (Q.get('d')==='0'?0:1);
 const insCount=()=>API&&AS ? AS.inserts.length : (+Q.get('k')||0);
 /* «Мои стили» (владелец 2026-11-16): до 20 наборов настроек со своими названиями. Хранятся в облаке Telegram

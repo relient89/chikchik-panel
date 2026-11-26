@@ -21,7 +21,9 @@ button{border:1px solid #c8ff3c;background:#c8ff3c;color:#111;border-radius:999p
   const tg = window.Telegram && Telegram.WebApp; try { tg.ready(); tg.expand(); } catch (e) {}
   const api = (new URLSearchParams(location.search).get("a") || "").replace(/\/+$/, "");
   const msg = document.getElementById("msg"), btn = document.getElementById("btn");
-  btn.onclick = () => { try { tg.close(); } catch (e) {} };
+  const fromApp = new URLSearchParams(location.search).get("from") === "app";   // открыт плиткой в приложении
+  if (fromApp) btn.textContent = "← Назад в приложение";
+  btn.onclick = () => { if (fromApp && history.length > 1) history.back(); else { try { tg.close(); } catch (e) {} } };
   if (!api || !tg || !tg.initData) { msg.textContent = "Откройте суфлёр кнопкой «🎥 Суфлёр» в чате с ботом."; btn.hidden = false; return; }
   try {
     const r = await fetch(api + "/api/prompter", { headers: { "X-Tg": tg.initData } });
