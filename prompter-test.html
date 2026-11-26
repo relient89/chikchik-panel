@@ -77,7 +77,9 @@ button:disabled{opacity:.45}
   <video id="out" playsinline controls></video>
   <div class="pad">
     <div id="rinfo" style="white-space:pre-line;font-size:14px;margin-bottom:10px"></div>
-    <div class="row"><button class="main" id="again">Переснять</button></div>
+    <div class="row"><button class="main" id="send">Отправить в монтаж</button></div>
+    <div class="row"><button id="save" style="flex:1">Сохранить на телефон</button><button id="again" style="flex:1">Переснять</button></div>
+    <div id="sinfo" style="font-size:13px;margin-top:6px"></div>
     <div id="rhint" style="color:var(--mut);font-size:12.5px;margin-top:8px">Пришлите скриншот этого экрана — по цифрам видно, годится ли камера Telegram для суфлёра.</div>
   </div>
 </div>
@@ -87,7 +89,7 @@ const tg = window.Telegram && Telegram.WebApp; try { tg.ready(); tg.expand(); tg
 const $ = id => document.getElementById(id);
 const TEXT0 = "Привет! Это проба суфлёра ЧикЧик.\n\nТекст бежит сверху, рядом с камерой, — так взгляд почти не уходит от объектива.\n\nСкорость и размер можно менять ползунками прямо во время записи.\n\nКасание по тексту — пауза.\n\nКогда запись закончится, вы увидите, в каком качестве камера Telegram пишет видео.";
 let text = TEXT0, stream = null, facing = "user", rec = null, chunks = [], recStart = 0, tick = null;
-let y = 0, paused = false, last = 0, running = false;
+let y = 0, paused = false, last = 0, running = false, drawing = false, cropInfo = null, lastBlob = null;
 
 $("ptext").textContent = text;
 $("spv").textContent = $("speed").value;
@@ -116,7 +118,7 @@ async function startCam() {
   }
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: facing, width: { ideal: 1080 }, height: { ideal: 1920 }, frameRate: { ideal: 30 } },
+      video: { facingMode: facing, width: { ideal: 1920 }, height: { ideal: 1920 }, aspectRatio: { ideal: 9 / 16 }, frameRate: { ideal: 30 } },
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true }
     });
   } catch (e) {
@@ -154,7 +156,19 @@ $("rec").onclick = async () => {
   for (const n of [3, 2, 1]) { $("count").textContent = n; $("count").style.display = "grid"; await new Promise(r => setTimeout(r, 800)); }
   $("count").style.display = "none";
   chunks = [];
-  rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8000000 });
+  // Камера в Telegram часто отдаёт горизонтальный кадр — пишем через холст 9:16: в файл попадает ровно то, что видно
+  // на экране (центр кадра), всегда вертикально
+  const v = $("live"), sw = v.videoWidth || 1280, sh = v.videoHeight || 720;
+  const cropW = Math.min(sw, sh * 9 / 16), cropH = cropW * 16 / 9;
+  const outH = cropH >= 1600 ? 1920 : cropH >= 1100 ? 1280 : 960, outW = Math.round(outH * 9 / 16);
+  const cv = document.createElement("canvas"); cv.width = outW; cv.height = outH;
+  const cx = cv.getContext("2d");
+  cropInfo = { sw, sh, outW, outH };
+  drawing = true;
+  (function draw() { if (!drawing) return; cx.drawImage(v, (sw - cropW) / 2, (sh - cropH) / 2, cropW, cropH, 0, 0, outW, outH); requestAnimationFrame(draw); })();
+  const cs = cv.captureStream(30);
+  stream.getAudioTracks().forEach(t => cs.addTrack(t));
+  rec = new MediaRecorder(cs, { mimeType: mime, videoBitsPerSecond: 8000000 });
   rec.ondataavailable = e => e.data && e.data.size && chunks.push(e.data);
   rec.onstop = finish;
   rec.start(1000);                       // кусками по секунде — так же пойдёт загрузка на сервер во время записи
@@ -168,10 +182,10 @@ $("rec").onclick = async () => {
 };
 
 function finish() {
-  clearInterval(tick); running = false;
+  clearInterval(tick); running = false; drawing = false;
   $("rec").textContent = "● Запись"; $("timer").style.display = "none";
   const secs = (Date.now() - recStart) / 1000;
-  const blob = new Blob(chunks, { type: rec.mimeType });
+  const blob = new Blob(chunks, { type: rec.mimeType }); lastBlob = blob; $("sinfo").textContent = "";
   const url = URL.createObjectURL(blob), out = $("out");
   out.src = url;
   $("result").style.display = "flex";
@@ -180,13 +194,38 @@ function finish() {
   out.onloadedmetadata = () => {
     $("rinfo").textContent =
       `Записано: ${secs.toFixed(1)} с · ${mb.toFixed(1)} МБ · ${(mb * 8 / secs).toFixed(1)} Мбит/с\n` +
-      `Кадр в файле: ${out.videoWidth}×${out.videoHeight} · камера отдавала ${s.width}×${s.height}, ${Math.round(s.frameRate || 0)} кадр/с\n` +
+      `Кадр в файле: ${out.videoWidth}×${out.videoHeight} (вертикально) · камера отдавала ${cropInfo.sw}×${cropInfo.sh},${Math.round(s.frameRate || 0)} кадр/с\n` +
       `Формат: ${rec.mimeType}\n` +
       `Устройство: ${(tg && tg.platform) || "?"} · Telegram ${(tg && tg.version) || "?"}`;
   };
 }
 
 $("again").onclick = () => { $("result").style.display = "none"; $("out").removeAttribute("src"); };
+const API = (new URLSearchParams(location.search).get("a") || "").replace(/\/+$/, "");
+function fileName() { return "suflyor_" + new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "") + (lastBlob.type.includes("mp4") ? ".mp4" : ".webm"); }
+$("send").onclick = () => {
+  if (!lastBlob) return;
+  if (!API || !tg || !tg.initData) { $("sinfo").textContent = "Отправка работает только из бота (кнопка в чате)."; return; }
+  const x = new XMLHttpRequest(), name = fileName();
+  x.open("POST", `${API}/api/upfile?kind=part&size=${lastBlob.size}&name=${encodeURIComponent(name)}&j=`);
+  x.setRequestHeader("X-Tg", tg.initData);
+  x.upload.onprogress = e => { if (e.lengthComputable) $("sinfo").textContent = `Отправляю… ${Math.round(e.loaded * 100 / e.total)} %`; };
+  x.onload = () => { $("sinfo").textContent = x.status < 300 ? "✅ Видео в боте — откройте чат, там можно запустить монтаж." : `Не получилось (${x.status}): ${x.statusText || x.responseText.slice(0, 120)}`; };
+  x.onerror = () => { $("sinfo").textContent = "Связь оборвалась, попробуйте ещё раз."; };
+  $("send").disabled = true; x.onloadend = () => { $("send").disabled = false; };
+  x.send(lastBlob);
+};
+$("save").onclick = async () => {
+  if (!lastBlob) return;
+  const file = new File([lastBlob], fileName(), { type: lastBlob.type });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); $("sinfo").textContent = "Выберите «Сохранить видео»."; return; }
+  } catch (e) { if (e.name === "AbortError") return; }
+  try {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = file.name; document.body.append(a); a.click(); a.remove();
+    $("sinfo").textContent = "Если файл не сохранился — нажмите «Отправить в монтаж»: видео окажется в чате, оттуда его можно сохранить.";
+  } catch (e) { $("sinfo").textContent = "Telegram не дал сохранить файл: " + e.message; }
+};
 function alertBox(t) { try { tg.showAlert(t); } catch (e) { alert(t); } }
 </script>
 </body>
