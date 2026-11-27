@@ -8,7 +8,7 @@
 <script>
 /* Самообновление: GitHub Pages кэширует страницу до 10 минут, а кнопки в старых сообщениях хранят старый адрес.
    При открытии сверяемся с опубликованной версией (без кэша) и, если вышла новая, сразу перезагружаемся в неё. */
-(function(){ var B='f455b81044';
+(function(){ var B='47becb9e2d';
   try{ fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
     if(!j||!j.v||j.v===B) return; var u=new URL(location.href); if(u.searchParams.get('rv')===j.v) return;      /* уже перешли на эту версию: не зацикливаемся */
     u.searchParams.set('rv',j.v); u.searchParams.set('t',Date.now()); location.replace(u.toString()); }).catch(function(){}); }catch(e){} })();
@@ -2745,7 +2745,7 @@ loadState(); tplLoad();
 /* Правка готового ролика (2026-11-19): слова по строкам (сомнительные — жёлтым), заголовок, плашки. Бесплатно, до трёх раз. */
 let EDJ=null, ED={words:{},cards:{},drop:{},hook:null};
 function edClose(){ $('#edov').classList.remove('on','typing'); EDJ=null; }
-async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{},pl:{cap:{},card:{},hook:{}},mdrop:{},mswap:{}}); ED=fresh(); let HIST=[], SC=0, GEN=false, MV=false;
+async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{},hook:null,cut:{},restore:{},kon:{},koff:{},all:{},learn:{},rest:{},pl:{cap:{},card:{},hook:{}},mdrop:{},mswap:{},speed:null}); ED=fresh(); let HIST=[], SC=0, GEN=false, MV=false;
   let ov=$('#edov'); if(!ov){ ov=document.createElement('div'); ov.id='edov'; document.body.appendChild(ov); }
   ov.innerHTML='<div class="eh"><b>Править ролик</b><button id="edx">Закрыть</button></div><div class="eb"><div class="empty">Загружаю…</div></div>'; ov.classList.add('on');
   $('#edx').onclick=edClose;
@@ -2759,7 +2759,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
   const low=d.lines.reduce((n,l)=>n+l.words.filter(w=>w.low).length,0);
   const restN=Object.keys(R).length;
   const snap=()=>{ HIST.push(JSON.stringify(ED)); if(HIST.length>60) HIST.shift(); };
-  const cnt=()=>Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0)+Object.keys(ED.cut).length+Object.keys(ED.restore).length+Object.keys(ED.kon).length+Object.keys(ED.koff).length+Object.keys(ED.rest).length+Object.keys(ED.pl.cap).length+Object.keys(ED.pl.card).length+Object.keys(ED.pl.hook||{}).length+Object.keys(ED.mdrop||{}).length+Object.keys(ED.mswap||{}).length;
+  const cnt=()=>Object.keys(ED.words).length+Object.keys(ED.cards).length+Object.keys(ED.drop).filter(k=>ED.drop[k]).length+(ED.hook!==null?1:0)+Object.keys(ED.cut).length+Object.keys(ED.restore).length+Object.keys(ED.kon).length+Object.keys(ED.koff).length+Object.keys(ED.rest).length+Object.keys(ED.pl.cap).length+Object.keys(ED.pl.card).length+Object.keys(ED.pl.hook||{}).length+Object.keys(ED.mdrop||{}).length+Object.keys(ED.mswap||{}).length+(ED.speed!=null?1:0);
   const dsec=()=>Object.keys(ED.cut).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.restore).reduce((a,i)=>a+(W[i].d||0),0)-Object.keys(ED.rest).reduce((a,r)=>a+(R[r].d||0),0);
   const fsec=x=>Math.abs(x)<0.05?'':(x>0?'−':'+')+Math.abs(x).toFixed(1).replace('.',',')+' с';
   let selEl=null, bar=null;
@@ -2788,7 +2788,10 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       h+='<div class="enav"><button id="escp" aria-label="Предыдущая сцена">‹</button><b>'+(GEN?'Общие настройки':'Сцена '+(SC+1)+' <small>из '+N+'</small>')+'</b><button id="escn" aria-label="Следующая сцена">›</button><button id="egen" class="'+(GEN?'on':'')+'">Общие</button></div>';
       if(!GEN){ const l=d.lines[SC];
         h+='<div class="escard" id="escard"><div class="ewd">'+l.words.map(w=>w.r?'<span class="w gone'+(ED.rest[w.r]?' on':'')+'" data-r="'+w.r+'">'+esc(w.w)+'</span>':'<span class="w'+(w.low?' low':'')+'" data-i="'+w.i+'">'+esc(ED.words[w.i]!==undefined?ED.words[w.i]:w.w)+'</span>').join('')+'</div></div>'; } }
-    h+='<div id="edgen" style="display:'+(GEN?'block':'none')+'">'+'<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">'
+    /* скорость ролика (владелец 2026-11-26): меняется при пересборке */
+    const SPN={100:'×1',110:'×1.1',125:'×1.25',150:'×1.5'}, spCur=ED.speed!=null?ED.speed:(+d.speed||100);
+    const spRow=(d.speeds||[]).length?'<div class="eh2">Скорость ролика</div><div class="ewd" id="edspd">'+d.speeds.map(v=>'<span class="w'+(v===spCur?' on':'')+'" data-sp="'+v+'" style="'+(v===spCur?'background:var(--acc);color:var(--onacc)':'')+'">'+(SPN[v]||('×'+v/100))+'</span>').join('')+'</div><p class="hint">Ускорение делается при пересборке; субтитры, плашки и мемы встанут под новую скорость.</p>':'';
+    h+='<div id="edgen" style="display:'+(GEN?'block':'none')+'">'+spRow+'<div class="eh2">Заголовок в начале</div><input class="fld" id="edhook" value="'+esc(ED.hook!==null?ED.hook:(d.hook||''))+'" maxlength="60" placeholder="Нет заголовка — можно вписать свой">'
       +((d.hook_alts||[]).length?'<p class="hint">Режиссёр предлагает ещё (коснитесь — подставить):</p><div class="ewd" id="edhalts">'+d.hook_alts.map((a,k)=>'<span class="w" data-ha="'+k+'">'+esc(a)+'</span>').join('')+'</div>':'');
     if((d.memes||[]).length){ h+='<div class="eh2">Мемы</div><p class="hint">Оранжевые отрезки на ленте — мемы. Убранный мем не вернётся при пересборке.</p>';
       d.memes.forEach(m=>{ const sw=ED.mswap[m.k];
@@ -2876,6 +2879,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
     function bindWords(root){ root.querySelectorAll('.w[data-i]').forEach(el=>{ paint(el); el.onclick=()=>{ if(el.querySelector('input')) return; showBar(el); }; });
       root.querySelectorAll('.w.gone').forEach(el=>{ el.onclick=()=>{ snap(); const r=el.dataset.r; if(ED.rest[r]) delete ED.rest[r]; else ED.rest[r]=1; el.classList.toggle('on',!!ED.rest[r]); closeBar(); upd(); }; }); }
     bindWords(eb);
+    eb.querySelectorAll('#edspd .w').forEach(el=>{ el.onclick=()=>{ snap(); const v=+el.dataset.sp; ED.speed=(v===(+d.speed||100))?null:v; build(); }; });
     eb.querySelectorAll('#edhalts .w').forEach(el=>{ el.onclick=()=>{ const v=d.hook_alts[+el.dataset.ha], h=$('#edhook'); if(!h) return;
       snap(); h.value=v; ED.hook=v===(d.hook||'')?null:v; upd(); }; });
     let pend=false; const hk=$('#edhook'); hk.onfocus=()=>{ pend=true; }; hk.oninput=e=>{ if(pend){ snap(); pend=false; } ED.hook=e.target.value; if(ED.hook===(d.hook||'')) ED.hook=null; upd(); };
@@ -2888,7 +2892,7 @@ async function edOpen(jid){ EDJ=jid; const fresh=()=>({words:{},cards:{},drop:{}
       Object.keys(ED.all).forEach(i=>{ const nv=rawcore(ED.words[i]||''); if(!nv) return; same(+i).forEach(j=>{ if(words[j]===undefined){ const raw=String(W[j].w), lead=raw.match(/^[\s.,!?;:«»"'()\[\]…—–-]*/)[0], tail=raw.match(/[\s.,!?;:«»"'()\[\]…—–-]*$/)[0]; words[j]=lead+nv+tail; } }); });
       Object.keys(ED.learn).forEach(i=>{ if(ED.words[i]!==undefined) learn.push({from:norm(W[i].w),to:rawcore(ED.words[i])}); });
       const edits={}; if(Object.keys(words).length) edits.words=words; if(Object.keys(ED.cards).length) edits.cards=ED.cards;
-      const dr=Object.keys(ED.drop).filter(k=>ED.drop[k]).map(Number); if(dr.length) edits.drop_cards=dr; if(ED.hook!==null) edits.hook=ED.hook;
+      const dr=Object.keys(ED.drop).filter(k=>ED.drop[k]).map(Number); if(dr.length) edits.drop_cards=dr; if(ED.hook!==null) edits.hook=ED.hook; if(ED.speed!=null) edits.speed=ED.speed;
       const ks=m=>Object.keys(m).map(Number); if(ks(ED.cut).length) edits.cut=ks(ED.cut); if(ks(ED.restore).length) edits.restore=ks(ED.restore);
       if(Object.keys(ED.pl.cap).length||Object.keys(ED.pl.card).length||Object.keys(ED.pl.hook||{}).length) edits.places=ED.pl;
       const md=Object.keys(ED.mdrop||{}).filter(k=>ED.mdrop[k]).map(Number); if(md.length) edits.drop_memes=md;
